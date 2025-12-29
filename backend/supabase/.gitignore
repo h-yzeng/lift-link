@@ -1,0 +1,16 @@
+# Supabase
+.branches
+.temp/
+
+# Secrets - DO NOT commit these
+.env
+config.toml
+
+# Supabase
+.branches
+.temp
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local

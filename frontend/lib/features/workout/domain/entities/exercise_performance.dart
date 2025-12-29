@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'workout_set.dart';
+import 'package:liftlink/features/workout/domain/entities/workout_set.dart';
 
 part 'exercise_performance.freezed.dart';
 part 'exercise_performance.g.dart';
@@ -82,10 +82,8 @@ class ExercisePerformance with _$ExercisePerformance {
 
   /// Heaviest weight lifted in working sets
   double? get maxWeight {
-    final weights = sets
-        .where((set) => !set.isWarmup)
-        .map((set) => set.weightKg)
-        .toList();
+    final weights =
+        sets.where((set) => !set.isWarmup).map((set) => set.weightKg).toList();
     if (weights.isEmpty) return null;
     return weights.reduce((a, b) => a > b ? a : b);
   }

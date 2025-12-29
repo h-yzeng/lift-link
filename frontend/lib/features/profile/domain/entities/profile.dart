@@ -10,7 +10,7 @@ class Profile with _$Profile {
 
   const factory Profile({
     required String id,
-    required String username,
+    String? username,
     String? displayName,
     String? avatarUrl,
     String? bio,
@@ -21,12 +21,19 @@ class Profile with _$Profile {
   factory Profile.fromJson(Map<String, dynamic> json) =>
       _$ProfileFromJson(json);
 
-  /// Returns the display name or falls back to username
-  String get displayNameOrUsername => displayName ?? username;
+  /// Returns the display name or falls back to username or "User"
+  String get displayNameOrUsername =>
+      displayName ?? username ?? 'User';
+
+  /// Whether the user has set a username
+  bool get hasUsername => username != null && username!.isNotEmpty;
 
   /// Whether the user has set a custom display name
   bool get hasCustomDisplayName =>
       displayName != null && displayName!.isNotEmpty;
+
+  /// Whether the user has completed profile setup
+  bool get hasCompletedProfile => hasUsername;
 
   /// Whether the user has set an avatar
   bool get hasAvatar => avatarUrl != null && avatarUrl!.isNotEmpty;
@@ -36,7 +43,7 @@ class Profile with _$Profile {
 
   /// Returns initials for avatar placeholder (max 2 characters)
   String get initials {
-    final name = displayName ?? username;
+    final name = displayName ?? username ?? 'User';
     if (name.isEmpty) return '?';
 
     final words = name.trim().split(RegExp(r'\s+'));

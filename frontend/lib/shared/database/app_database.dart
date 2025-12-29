@@ -5,11 +5,11 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-import 'tables/exercises_table.dart';
-import 'tables/friendships_table.dart';
-import 'tables/profiles_table.dart';
-import 'tables/sets_table.dart';
-import 'tables/workout_sessions_table.dart';
+import 'package:liftlink/shared/database/tables/exercises_table.dart';
+import 'package:liftlink/shared/database/tables/friendships_table.dart';
+import 'package:liftlink/shared/database/tables/profiles_table.dart';
+import 'package:liftlink/shared/database/tables/sets_table.dart';
+import 'package:liftlink/shared/database/tables/workout_sessions_table.dart';
 
 part 'app_database.g.dart';
 
@@ -70,7 +70,8 @@ class AppDatabase extends _$AppDatabase {
   Future<List<ExerciseEntity>> getAllExercises() => select(exercises).get();
 
   Future<List<ExerciseEntity>> getExercisesByMuscleGroup(String muscleGroup) =>
-      (select(exercises)..where((e) => e.muscleGroup.equals(muscleGroup))).get();
+      (select(exercises)..where((e) => e.muscleGroup.equals(muscleGroup)))
+          .get();
 
   Future<ExerciseEntity?> getExerciseById(String id) =>
       (select(exercises)..where((e) => e.id.equals(id))).getSingleOrNull();
@@ -78,8 +79,7 @@ class AppDatabase extends _$AppDatabase {
   Future<int> insertExercise(ExercisesCompanion exercise) =>
       into(exercises).insert(exercise);
 
-  Stream<List<ExerciseEntity>> watchAllExercises() =>
-      select(exercises).watch();
+  Stream<List<ExerciseEntity>> watchAllExercises() => select(exercises).watch();
 
   // ============================================================================
   // WORKOUT SESSION QUERIES
@@ -147,11 +147,10 @@ class AppDatabase extends _$AppDatabase {
   // SET QUERIES
   // ============================================================================
 
-  Future<List<SetEntity>> getSets(String exercisePerformanceId) =>
-      (select(sets)
-            ..where((s) => s.exercisePerformanceId.equals(exercisePerformanceId))
-            ..orderBy([(s) => OrderingTerm.asc(s.setNumber)]))
-          .get();
+  Future<List<SetEntity>> getSets(String exercisePerformanceId) => (select(sets)
+        ..where((s) => s.exercisePerformanceId.equals(exercisePerformanceId))
+        ..orderBy([(s) => OrderingTerm.asc(s.setNumber)]))
+      .get();
 
   Future<int> insertSet(SetsCompanion set) => into(sets).insert(set);
 
@@ -184,8 +183,7 @@ class AppDatabase extends _$AppDatabase {
   Future<List<FriendshipEntity>> getPendingFriendRequests(String userId) =>
       (select(friendships)
             ..where(
-              (f) =>
-                  f.status.equals('pending') & f.addresseeId.equals(userId),
+              (f) => f.status.equals('pending') & f.addresseeId.equals(userId),
             ))
           .get();
 

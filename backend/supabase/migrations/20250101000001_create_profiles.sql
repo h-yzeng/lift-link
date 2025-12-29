@@ -1,7 +1,7 @@
 -- Create profiles table
 CREATE TABLE profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    username TEXT UNIQUE NOT NULL,
+    username TEXT UNIQUE,
     display_name TEXT,
     avatar_url TEXT,
     bio TEXT,
@@ -27,20 +27,28 @@ CREATE TRIGGER update_profiles_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 
 -- Create function to handle new user creation
-CREATE OR REPLACE FUNCTION handle_new_user()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+SECURITY DEFINER
+SET search_path = public
+LANGUAGE plpgsql
+AS $$
 BEGIN
-    INSERT INTO profiles (id, username, display_name)
+    INSERT INTO public.profiles (id, username, display_name)
     VALUES (
         NEW.id,
-        COALESCE(NEW.raw_user_meta_data->>'username', NEW.email),
-        COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.email)
+        NEW.raw_user_meta_data->>'username',
+        COALESCE(NEW.raw_user_meta_data->>'display_name', split_part(NEW.email, '@', 1))
     );
     RETURN NEW;
 END;
-$$ language 'plpgsql' SECURITY DEFINER;
+$$;
+
+-- Grant necessary permissions to auth admin
+GRANT USAGE ON SCHEMA public TO supabase_auth_admin;
+GRANT ALL ON public.profiles TO supabase_auth_admin;
 
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW
-    EXECUTE FUNCTION handle_new_user();
+    EXECUTE FUNCTION public.handle_new_user();

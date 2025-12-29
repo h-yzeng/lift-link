@@ -17,7 +17,7 @@ abstract class SupabaseConfig {
   /// The Supabase anonymous key.
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: '',
+    defaultValue: 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH',
   );
 
   /// Whether we're using local development mode.

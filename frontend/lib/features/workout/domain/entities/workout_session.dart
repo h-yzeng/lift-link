@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'exercise_performance.dart';
+import 'package:liftlink/features/workout/domain/entities/exercise_performance.dart';
 
 part 'workout_session.freezed.dart';
 part 'workout_session.g.dart';
@@ -62,7 +62,8 @@ class WorkoutSession with _$WorkoutSession {
 
   /// Total number of working sets (excluding warmups)
   int get totalWorkingSets {
-    return exercises.fold(0, (sum, exercise) => sum + exercise.workingSetsCount);
+    return exercises.fold(
+        0, (sum, exercise) => sum + exercise.workingSetsCount,);
   }
 
   /// Total volume across all exercises
@@ -97,10 +98,8 @@ class WorkoutSession with _$WorkoutSession {
 
   /// Get the highest 1RM across all exercises in this workout
   double? get highestOneRM {
-    final allOneRMs = exercises
-        .map((e) => e.maxOneRM)
-        .whereType<double>()
-        .toList();
+    final allOneRMs =
+        exercises.map((e) => e.maxOneRM).whereType<double>().toList();
     if (allOneRMs.isEmpty) return null;
     return allOneRMs.reduce((a, b) => a > b ? a : b);
   }

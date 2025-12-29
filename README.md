@@ -1,6 +1,6 @@
-# LiftLink 💪
-
 <div align="center">
+
+# LiftLink 
 
 ![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)
@@ -22,28 +22,28 @@
 
 ---
 
-## 📖 About
+## About
 
 LiftLink is a modern fitness tracking application that helps you log workouts, track progress, and connect with friends for motivation. Built with **Flutter** and **Supabase**, it features a robust offline-first architecture that ensures your workout data is always available, even without internet connectivity.
 
-### ✨ Features
+### Features
 
-- 🏋️ **Workout Tracking** - Log exercises, sets, reps, and weight
-- 📊 **Automatic 1RM Calculation** - Real-time estimated one-rep max using Epley Formula
-- 👥 **Social Features** - Connect with friends and share progress
-- 📴 **Offline-First** - Full functionality without internet connection
-- 🔄 **Cloud Sync** - Automatic synchronization when online
-- 🎯 **Exercise Library** - 20+ pre-loaded exercises + custom exercise creation
-- 📈 **Progress Tracking** - View workout history and personal records
-- 🔒 **Secure** - Row-level security with Supabase
+- **Workout Tracking** - Log exercises, sets, reps, and weight
+- **Automatic 1RM Calculation** - Real-time estimated one-rep max using Epley Formula
+- **Social Features** - Connect with friends and share progress
+- **Offline-First** - Full functionality without internet connection
+- **Cloud Sync** - Automatic synchronization when online
+- **Exercise Library** - 20+ pre-loaded exercises + custom exercise creation
+- **Progress Tracking** - View workout history and personal records
+- **Secure** - Row-level security with Supabase
 
-### 🎯 Screenshots
+### Screenshots
 
 > Coming soon - App is currently in development
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **Framework**: Flutter 3.38+
@@ -66,7 +66,7 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -124,7 +124,7 @@ For production, replace with your Supabase Cloud URL and key.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 LiftLink follows **Clean Architecture** principles with strict separation of concerns:
 
@@ -163,7 +163,7 @@ For detailed architecture documentation, see [docs/architecture.md](docs/archite
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 LiftLink/
@@ -185,7 +185,7 @@ LiftLink/
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -205,9 +205,9 @@ flutter test test/unit/workout_set_test.dart
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
-### Phase 1: Foundation ✅
+### Phase 1: Foundation (Completed)
 - [x] Project scaffolding
 - [x] Database schema with RLS
 - [x] Offline-first architecture
@@ -241,7 +241,7 @@ See [docs/task.md](docs/task.md) for detailed task breakdown.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! This project follows Clean Architecture principles and uses Flutter best practices.
 
@@ -262,13 +262,10 @@ See [docs/planning.md](docs/planning.md) for detailed development guidelines.
 
 ---
 
-## 👤 Author
+## Author
 
-**Your Name**
+**Henry Zeng**
 - GitHub: [@h-yzeng](https://github.com/h-yzeng)
 - Email: thyzeng@gmail.com
----
-
-<div align="center">
 
 </div>

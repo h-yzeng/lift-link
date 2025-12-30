@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
+import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -68,13 +69,20 @@ class HomePage extends ConsumerWidget {
                           ),
                           const SizedBox(height: 8),
                           const Text(
-                            'Your fitness tracking journey starts here. '
-                            'Future features will include:\n\n'
-                            '• Workout tracking\n'
-                            '• Exercise library\n'
-                            '• Progress analytics\n'
-                            '• Social features\n'
-                            '• And much more!',
+                            'Your fitness tracking journey starts here.',
+                          ),
+                          const SizedBox(height: 16),
+                          FilledButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ExerciseListPage(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.fitness_center),
+                            label: const Text('Browse Exercise Library'),
                           ),
                         ],
                       ),

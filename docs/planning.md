@@ -222,14 +222,19 @@ supabase status
 - ✅ Core domain entities
 - ✅ Documentation
 
-### Phase 2 (Core Features) - 🔄 IN PROGRESS (33% Complete)
+### Phase 2 (Core Features) - 🔄 IN PROGRESS (66% Complete)
 - ✅ Authentication (COMPLETED 2025-12-29)
   - User entity with email/password support
   - Login and registration flows
   - Auth state management with Riverpod
   - Route protection based on auth state
-- ⏳ Exercise library (NEXT)
-- ⏳ Active workout tracking
+- ✅ Exercise Library Browser (COMPLETED 2025-12-29)
+  - Search and filter functionality
+  - Offline-first with background sync
+  - 20 seeded system exercises
+  - Custom exercise support
+  - Color-coded muscle group display
+- ⏳ Active workout tracking (NEXT)
 - ⏳ Workout history
 - ⏳ 1RM calculations (client-side computed property)
 
@@ -252,6 +257,42 @@ supabase status
 ---
 
 ## Recent Updates
+
+### 2025-12-29 - Exercise Library Browser Complete
+**Completed Work:**
+- Full exercise library browser with search and filtering
+- Domain layer: Repository interface, 3 use cases
+- Data layer: Local/remote data sources, offline-first repository
+- Presentation layer: Riverpod providers, exercise card widget, list page with filters
+- Initial sync logic: Automatically syncs on first launch when local DB is empty
+- Search functionality: Real-time search by exercise name or description
+- Filtering: By muscle group, equipment type, custom-only toggle
+- 20 system exercises seeded in database
+
+**Files Added:**
+- `features/workout/domain/repositories/exercise_repository.dart`
+- `features/workout/domain/usecases/*` (3 use cases)
+- `features/workout/data/models/exercise_model.dart`
+- `features/workout/data/datasources/*` (local + remote)
+- `features/workout/data/repositories/exercise_repository_impl.dart`
+- `features/workout/presentation/providers/exercise_providers.dart`
+- `features/workout/presentation/widgets/exercise_card.dart`
+- `features/workout/presentation/pages/exercise_list_page.dart`
+
+**Files Modified:**
+- `features/auth/presentation/pages/home_page.dart` - Added exercise library navigation
+
+**Bug Fixes:**
+- Fixed missing networkInfo provider
+- Added synchronous initial sync for empty local database
+- Fixed import issues for userMessage extension
+
+**Next Steps:**
+1. Implement active workout tracking to log exercises and sets
+2. Add workout history view
+3. Display 1RM calculations in workout tracking
+
+---
 
 ### 2025-12-29 - Authentication System Complete
 **Completed Work:**
@@ -284,5 +325,5 @@ supabase status
 
 ---
 
-**Document Version**: 1.1
-**Last Updated**: 2025-12-29
+**Document Version**: 1.2
+**Last Updated**: 2025-12-29 (Exercise Library Browser completed)

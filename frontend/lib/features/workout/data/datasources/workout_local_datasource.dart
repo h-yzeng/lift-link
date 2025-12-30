@@ -23,6 +23,9 @@ abstract class WorkoutLocalDataSource {
   /// Add a set to an exercise
   Future<WorkoutSet> addSetToExercise(WorkoutSet set);
 
+  /// Get a set by ID
+  Future<WorkoutSet?> getSetById(String setId);
+
   /// Update a set
   Future<WorkoutSet> updateSet(WorkoutSet set);
 
@@ -137,6 +140,19 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
       return set;
     } catch (e) {
       throw CacheException(message: 'Failed to add set: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<WorkoutSet?> getSetById(String setId) async {
+    try {
+      final query = database.select(database.sets)
+        ..where((s) => s.id.equals(setId));
+
+      final result = await query.getSingleOrNull();
+      return result?.toEntity();
+    } catch (e) {
+      throw CacheException(message: 'Failed to get set: ${e.toString()}');
     }
   }
 

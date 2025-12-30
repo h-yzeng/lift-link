@@ -14,6 +14,7 @@ import 'package:liftlink/features/workout/domain/usecases/complete_workout.dart'
 import 'package:liftlink/features/workout/domain/usecases/get_active_workout.dart';
 import 'package:liftlink/features/workout/domain/usecases/get_workout_history.dart';
 import 'package:liftlink/features/workout/domain/usecases/start_workout.dart';
+import 'package:liftlink/features/workout/domain/usecases/update_set.dart';
 import 'package:liftlink/features/workout/presentation/providers/exercise_providers.dart'
     hide networkInfoProvider;
 
@@ -73,6 +74,11 @@ CompleteWorkout completeWorkoutUseCase(Ref ref) {
 @riverpod
 GetWorkoutHistory getWorkoutHistoryUseCase(Ref ref) {
   return GetWorkoutHistory(ref.watch(workoutRepositoryProvider));
+}
+
+@riverpod
+UpdateSet updateSetUseCase(Ref ref) {
+  return UpdateSet(ref.watch(workoutRepositoryProvider));
 }
 
 // Active workout provider - streams the current active workout

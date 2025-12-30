@@ -5,6 +5,7 @@
 ### Phase 1: Project Foundation (✅ COMPLETED - 2025-12-29)
 
 #### Project Scaffolding
+
 - [x] Created root directory structure (`frontend/`, `backend/`, `docs/`)
 - [x] Created `.gitignore` files (root, frontend, backend)
 - [x] Set up Flutter project structure
@@ -15,6 +16,7 @@
 - [x] Successfully ran Flutter app on Windows desktop
 
 #### Database Schema (Supabase)
+
 - [x] Created migration `20250101000001_create_profiles.sql`
   - profiles table with auto-creation trigger
   - updated_at trigger
@@ -35,6 +37,7 @@
 - [x] Applied all migrations to local Supabase
 
 #### Offline Database (Drift)
+
 - [x] Created `profiles_table.dart` with sync tracking
 - [x] Created `exercises_table.dart`
 - [x] Created `workout_sessions_table.dart` with `isPendingSync` flag
@@ -43,6 +46,7 @@
 - [x] Created `app_database.dart` with all tables and query methods
 
 #### Domain Layer (Entities)
+
 - [x] Created `workout_set.dart` with **1RM calculation** using Epley Formula
   - `calculated1RM` getter: `weight × (1 + reps/30)`
   - Returns null for warmup sets
@@ -58,12 +62,14 @@
 - [x] Created `friendship.dart` with status enum
 
 #### Core Infrastructure
+
 - [x] Created `exceptions.dart` (ServerException, CacheException, etc.)
 - [x] Created `failures.dart` using freezed sealed class
 - [x] Created `network_info.dart` for connectivity checking
 - [x] Created `supabase_config.dart` with environment variable support
 
 #### Documentation
+
 - [x] Created `architecture.md` with Clean Architecture explanation
 - [x] Created `database-schema.md` with ERD and RLS policies
 - [x] Created `setup-guide.md` with Windows setup instructions
@@ -72,6 +78,7 @@
 - [x] Created `CLAUDE.md` for Claude Code assistant guidance
 
 #### App Structure
+
 - [x] Created `main.dart` with Supabase initialization
 - [x] Created `app.dart` with Material theme and placeholder screen
 - [x] App successfully compiles and runs on Windows
@@ -83,6 +90,7 @@
 ### Phase 2: Authentication System (✅ COMPLETED - 2025-12-29)
 
 #### Auth Domain Layer
+
 - [x] Created `user.dart` entity with freezed
   - Email, username, display name, avatar URL support
   - Helper methods: displayNameOrFallback, hasCompletedProfile, isEmailVerified
@@ -97,6 +105,7 @@
   - [x] `get_current_user.dart` with auth state stream
 
 #### Auth Data Layer
+
 - [x] Created `user_model.dart` with Supabase User extension mapper
   - Converts Supabase User to domain User entity
   - Handles DateTime parsing from Supabase format
@@ -112,6 +121,7 @@
   - User ID caching on successful auth
 
 #### Auth Presentation Layer
+
 - [x] Created `auth_providers.dart` with Riverpod code generation
   - Infrastructure providers (Supabase, SharedPreferences, NetworkInfo)
   - Data source providers
@@ -138,6 +148,7 @@
   - Redirect to home when authenticated
 
 #### Infrastructure Updates
+
 - [x] Added `shared_preferences` dependency to pubspec.yaml
 - [x] Updated `supabase_config.dart` with local development defaults
 - [x] Fixed all type ambiguities with import aliases
@@ -149,6 +160,7 @@
 ### Phase 2: Exercise Library Browser (✅ COMPLETED - 2025-12-29)
 
 #### Exercise Domain Layer
+
 - [x] Created `exercise_repository.dart` interface
   - getAllExercises, getExerciseById, searchExercises
   - filterExercises with multiple criteria
@@ -160,6 +172,7 @@
   - [x] `filter_exercises.dart` for multi-criteria filtering
 
 #### Exercise Data Layer
+
 - [x] Created `exercise_model.dart` with converters
   - Drift ExerciseEntity ↔ Domain Exercise
   - Supabase JSON ↔ Domain Exercise
@@ -178,6 +191,7 @@
   - Network connectivity checking
 
 #### Exercise Presentation Layer
+
 - [x] Created `exercise_providers.dart` with Riverpod
   - Infrastructure providers (Database, NetworkInfo)
   - Data source providers
@@ -200,6 +214,7 @@
 - [x] Updated `home_page.dart` with navigation button
 
 #### Bug Fixes
+
 - [x] Fixed missing networkInfo provider import
 - [x] Added initial sync logic for empty local database
 - [x] Fixed userMessage extension import
@@ -209,6 +224,7 @@
 ### Phase 2: Active Workout Tracking (✅ COMPLETED - 2025-12-29)
 
 #### Workout Domain Layer
+
 - [x] Created `workout_repository.dart` interface
   - startWorkout, getActiveWorkout, addExerciseToWorkout, addSetToExercise
   - updateSet, removeSet, removeExercise, completeWorkout
@@ -222,6 +238,7 @@
   - [x] `get_workout_history.dart` with date filtering
 
 #### Workout Data Layer
+
 - [x] Created `workout_session_model.dart` with Drift/Supabase mappers
 - [x] Created `exercise_performance_model.dart` with nested sets support
 - [x] Created `workout_set_model.dart` with 1RM calculation
@@ -241,6 +258,7 @@
   - Automatic sync on workout completion
 
 #### Workout Presentation Layer
+
 - [x] Created `workout_providers.dart` with Riverpod
   - Infrastructure providers (database, Supabase, NetworkInfo)
   - Repository and use case providers
@@ -269,6 +287,7 @@
   - Continue workout navigation
 
 #### Infrastructure Updates
+
 - [x] Added `exerciseName` field to ExercisePerformances table
 - [x] Fixed ambiguous import for networkInfoProvider
 - [x] Fixed Supabase filter/order query syntax
@@ -280,6 +299,7 @@
 ## 🔴 Critical Priority (Phase 2 - Next)
 
 ### Workout History
+
 - [ ] **Build history UI**
   - [ ] Create `workout_history_provider.dart`
   - [ ] Create `workout_history_page.dart` with list view
@@ -293,6 +313,7 @@
 ## 🟡 Medium Priority (Phase 3)
 
 ### Data Synchronization
+
 - [ ] **Implement sync service**
   - [ ] Create `sync_service.dart` for background sync
   - [ ] Add periodic sync when app is active
@@ -302,6 +323,7 @@
   - [ ] Add manual sync button
 
 ### Custom Exercises
+
 - [ ] **Add custom exercise creation**
   - [ ] Create `create_exercise_page.dart`
   - [ ] Add form validation
@@ -309,6 +331,7 @@
   - [ ] Add edit and delete functionality
 
 ### Profile Management
+
 - [ ] **Build profile features**
   - [ ] Create `profile_provider.dart`
   - [ ] Create `profile_page.dart` with edit mode
@@ -318,6 +341,7 @@
   - [ ] Show workout stats (total workouts, total volume, etc.)
 
 ### Friend System
+
 - [ ] **Implement friend requests**
   - [ ] Create `friends_provider.dart`
   - [ ] Create `friends_list_page.dart`
@@ -338,6 +362,7 @@
 ## 🟢 Low Priority (Phase 4)
 
 ### Analytics & Progress Tracking
+
 - [ ] **Add progress charts**
   - [ ] Create `progress_charts_page.dart`
   - [ ] Add volume over time chart
@@ -352,6 +377,7 @@
   - [ ] Add PR notifications
 
 ### Testing
+
 - [ ] **Unit Tests**
   - [ ] Test WorkoutSet.calculated1RM with various inputs
   - [ ] Test ExercisePerformance aggregate calculations
@@ -371,6 +397,7 @@
   - [ ] Test friend request flow
 
 ### Code Generation
+
 - [ ] **Run build_runner** (after creating models)
   - [ ] Generate freezed files
   - [ ] Generate json_serializable files
@@ -382,6 +409,7 @@
 ## 🔵 Future Enhancements (Phase 5+)
 
 ### Advanced Features
+
 - [ ] Workout templates and programs
 - [ ] Rest timer with notifications
 - [ ] Exercise video demonstrations
@@ -391,6 +419,7 @@
 - [ ] Bodyweight tracking integration
 
 ### UI/UX Improvements
+
 - [ ] Dark mode
 - [ ] Custom themes
 - [ ] Haptic feedback
@@ -400,6 +429,7 @@
 - [ ] Accessibility improvements (screen reader, font scaling)
 
 ### Platform Expansion
+
 - [ ] iOS release
 - [ ] Android release
 - [ ] Web version
@@ -407,6 +437,7 @@
 - [ ] Android Wear companion app
 
 ### Performance & DevOps
+
 - [ ] Add error logging (Sentry)
 - [ ] Add crash reporting
 - [ ] Add analytics (Google Analytics, Mixpanel)
@@ -429,11 +460,13 @@ None currently. All foundation work completed successfully.
 ### Important Technical Decisions
 
 **1RM Calculation:**
+
 - Always calculated client-side using Epley Formula: `weight × (1 + reps/30)`
 - Never stored in database to allow formula updates without data migration
 - Returns null for warmup sets or invalid data (zero weight/reps)
 
 **Offline-First Architecture:**
+
 - Drift (SQLite) is source of truth for UI
 - All writes go to Drift first (instant UI update)
 - Supabase sync happens in background when online
@@ -441,12 +474,14 @@ None currently. All foundation work completed successfully.
 - Last-write-wins conflict resolution based on `updated_at`
 
 **Clean Architecture:**
+
 - Domain layer has zero dependencies (pure Dart)
 - Data layer implements domain interfaces
 - Presentation layer depends on domain only
 - All cross-layer communication via interfaces
 
 **Code Generation:**
+
 - Run `flutter pub run build_runner build --delete-conflicting-outputs` after:
   - Creating/modifying any freezed model
   - Creating/modifying Drift tables
@@ -471,6 +506,7 @@ None currently. All foundation work completed successfully.
 ## 📊 Progress Summary
 
 ### Phase 1: Foundation (✅ 100% Complete)
+
 - Project scaffolding
 - Database schema with RLS
 - Offline-first architecture
@@ -478,6 +514,7 @@ None currently. All foundation work completed successfully.
 - Documentation
 
 ### Phase 2: Core Features (🔄 100% Complete)
+
 - ✅ Authentication System (100%)
 - ✅ Exercise Library Browser (100%)
 - ✅ Active Workout Tracking (100%)

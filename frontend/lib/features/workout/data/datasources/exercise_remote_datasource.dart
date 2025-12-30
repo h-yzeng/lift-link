@@ -42,16 +42,20 @@ class ExerciseRemoteDataSourceImpl implements ExerciseRemoteDataSource {
   @override
   Future<List<Exercise>> fetchAllExercises({String? userId}) async {
     try {
-      final query = supabaseClient.from('exercises').select();
-
-      // Get system exercises + user's custom exercises
-      if (userId != null) {
-        query.or('is_custom.eq.false,created_by.eq.$userId');
-      } else {
-        query.eq('is_custom', false);
-      }
-
-      final response = await query.order('muscle_group').order('name');
+      // Build query properly with method chaining
+      final response = userId != null
+          ? await supabaseClient
+              .from('exercises')
+              .select()
+              .or('is_custom.eq.false,created_by.eq.$userId')
+              .order('muscle_group')
+              .order('name')
+          : await supabaseClient
+              .from('exercises')
+              .select()
+              .eq('is_custom', false)
+              .order('muscle_group')
+              .order('name');
 
       return (response as List<dynamic>)
           .map((json) => exerciseFromJson(json as Map<String, dynamic>))

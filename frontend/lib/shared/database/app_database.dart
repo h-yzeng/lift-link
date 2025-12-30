@@ -30,7 +30,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -59,6 +59,31 @@ class AppDatabase extends _$AppDatabase {
             await customStatement(
               'ALTER TABLE profiles ADD COLUMN preferred_units TEXT NOT NULL DEFAULT "imperial"',
             );
+          }
+
+          // Migration from v3 to v4: Make username nullable
+          if (from < 4) {
+            // SQLite doesn't support ALTER COLUMN, need to recreate table
+            await customStatement(
+              'CREATE TABLE profiles_new ('
+              'id TEXT PRIMARY KEY, '
+              'username TEXT, '
+              'display_name TEXT, '
+              'avatar_url TEXT, '
+              'bio TEXT, '
+              'preferred_units TEXT NOT NULL DEFAULT "imperial", '
+              'created_at INTEGER NOT NULL, '
+              'updated_at INTEGER NOT NULL, '
+              'synced_at INTEGER'
+              ')',
+            );
+
+            await customStatement(
+              'INSERT INTO profiles_new SELECT * FROM profiles',
+            );
+
+            await customStatement('DROP TABLE profiles');
+            await customStatement('ALTER TABLE profiles_new RENAME TO profiles');
           }
         },
         beforeOpen: (details) async {

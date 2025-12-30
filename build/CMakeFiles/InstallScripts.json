@@ -1,0 +1,12 @@
+{
+  "InstallScripts": [
+    "C:/Users/tommy/LiftLink/build/cmake_install.cmake",
+    "C:/Users/tommy/LiftLink/build/flutter/cmake_install.cmake",
+    "C:/Users/tommy/LiftLink/build/runner/cmake_install.cmake",
+    "C:/Users/tommy/LiftLink/build/plugins/app_links/cmake_install.cmake",
+    "C:/Users/tommy/LiftLink/build/plugins/connectivity_plus/cmake_install.cmake",
+    "C:/Users/tommy/LiftLink/build/plugins/sqlite3_flutter_libs/cmake_install.cmake",
+    "C:/Users/tommy/LiftLink/build/plugins/url_launcher_windows/cmake_install.cmake"
+  ],
+  "Parallel": false
+}

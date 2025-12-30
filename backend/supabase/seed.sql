@@ -1,0 +1,3 @@
+-- Seed file intentionally empty
+-- Exercises are already seeded in migration 20250101000002_create_exercises.sql
+-- User accounts must be created through the registration flow

@@ -1,0 +1,198 @@
+{
+  "configurations": [
+    {
+      "directories": [
+        {
+          "build": ".",
+          "childIndexes": [1, 2, 3, 4, 5, 6],
+          "hasInstallRule": true,
+          "jsonFile": "directory-.-Debug-123e162d33f3b44fc890.json",
+          "minimumCMakeVersion": {
+            "string": "3.14"
+          },
+          "projectIndex": 0,
+          "source": "."
+        },
+        {
+          "build": "flutter",
+          "jsonFile": "directory-flutter-Debug-79e0260f2327d8493c28.json",
+          "minimumCMakeVersion": {
+            "string": "3.14"
+          },
+          "parentIndex": 0,
+          "projectIndex": 0,
+          "source": "flutter",
+          "targetIndexes": [2, 3, 4]
+        },
+        {
+          "build": "runner",
+          "jsonFile": "directory-runner-Debug-86f38b7dcb6f33eb04e4.json",
+          "minimumCMakeVersion": {
+            "string": "3.14"
+          },
+          "parentIndex": 0,
+          "projectIndex": 1,
+          "source": "runner",
+          "targetIndexes": [5]
+        },
+        {
+          "build": "plugins/app_links",
+          "jsonFile": "directory-plugins.app_links-Debug-f4f68743cfd2146c47d5.json",
+          "minimumCMakeVersion": {
+            "string": "3.14"
+          },
+          "parentIndex": 0,
+          "projectIndex": 2,
+          "source": "flutter/ephemeral/.plugin_symlinks/app_links/windows",
+          "targetIndexes": [0]
+        },
+        {
+          "build": "plugins/connectivity_plus",
+          "jsonFile": "directory-plugins.connectivity_plus-Debug-8892e390d67bf7cf402e.json",
+          "minimumCMakeVersion": {
+            "string": "3.15"
+          },
+          "parentIndex": 0,
+          "projectIndex": 3,
+          "source": "flutter/ephemeral/.plugin_symlinks/connectivity_plus/windows",
+          "targetIndexes": [1]
+        },
+        {
+          "build": "plugins/sqlite3_flutter_libs",
+          "jsonFile": "directory-plugins.sqlite3_flutter_libs-Debug-29a935b9646d7cd0c9c2.json",
+          "minimumCMakeVersion": {
+            "string": "3.14"
+          },
+          "parentIndex": 0,
+          "projectIndex": 4,
+          "source": "flutter/ephemeral/.plugin_symlinks/sqlite3_flutter_libs/windows",
+          "targetIndexes": [6, 7]
+        },
+        {
+          "build": "plugins/url_launcher_windows",
+          "jsonFile": "directory-plugins.url_launcher_windows-Debug-b718b41db8fa69359ace.json",
+          "minimumCMakeVersion": {
+            "string": "3.10"
+          },
+          "parentIndex": 0,
+          "projectIndex": 5,
+          "source": "flutter/ephemeral/.plugin_symlinks/url_launcher_windows/windows",
+          "targetIndexes": [8]
+        }
+      ],
+      "name": "Debug",
+      "projects": [
+        {
+          "childIndexes": [1, 2, 3, 4, 5],
+          "directoryIndexes": [0, 1],
+          "name": "liftlink",
+          "targetIndexes": [2, 3, 4]
+        },
+        {
+          "directoryIndexes": [2],
+          "name": "runner",
+          "parentIndex": 0,
+          "targetIndexes": [5]
+        },
+        {
+          "directoryIndexes": [3],
+          "name": "app_links",
+          "parentIndex": 0,
+          "targetIndexes": [0]
+        },
+        {
+          "directoryIndexes": [4],
+          "name": "connectivity_plus",
+          "parentIndex": 0,
+          "targetIndexes": [1]
+        },
+        {
+          "directoryIndexes": [5],
+          "name": "sqlite3_flutter_libs",
+          "parentIndex": 0,
+          "targetIndexes": [6, 7]
+        },
+        {
+          "directoryIndexes": [6],
+          "name": "url_launcher_windows",
+          "parentIndex": 0,
+          "targetIndexes": [8]
+        }
+      ],
+      "targets": [
+        {
+          "directoryIndex": 3,
+          "id": "app_links_plugin::@a8b0f994486ec5bd9e7e",
+          "jsonFile": "target-app_links_plugin-Debug-4badaca4a59602fbc122.json",
+          "name": "app_links_plugin",
+          "projectIndex": 2
+        },
+        {
+          "directoryIndex": 4,
+          "id": "connectivity_plus_plugin::@6eaccbd1f84c59b7458d",
+          "jsonFile": "target-connectivity_plus_plugin-Debug-52cea5ea99cb2f25f537.json",
+          "name": "connectivity_plus_plugin",
+          "projectIndex": 3
+        },
+        {
+          "directoryIndex": 1,
+          "id": "flutter_assemble::@2bb09fbb03a373b2cb34",
+          "jsonFile": "target-flutter_assemble-Debug-03b3619c771eef19821f.json",
+          "name": "flutter_assemble",
+          "projectIndex": 0
+        },
+        {
+          "directoryIndex": 1,
+          "id": "flutter_wrapper_app::@2bb09fbb03a373b2cb34",
+          "jsonFile": "target-flutter_wrapper_app-Debug-02849eadfe779ca0f91b.json",
+          "name": "flutter_wrapper_app",
+          "projectIndex": 0
+        },
+        {
+          "directoryIndex": 1,
+          "id": "flutter_wrapper_plugin::@2bb09fbb03a373b2cb34",
+          "jsonFile": "target-flutter_wrapper_plugin-Debug-19195a0859fcd1669e40.json",
+          "name": "flutter_wrapper_plugin",
+          "projectIndex": 0
+        },
+        {
+          "directoryIndex": 2,
+          "id": "liftlink::@056c4f61b0156d1d9b06",
+          "jsonFile": "target-liftlink-Debug-7f6a391d417101c5cda0.json",
+          "name": "liftlink",
+          "projectIndex": 1
+        },
+        {
+          "directoryIndex": 5,
+          "id": "sqlite3::@4bedf820cada57b6209e",
+          "jsonFile": "target-sqlite3-Debug-0b4235959095ebad0736.json",
+          "name": "sqlite3",
+          "projectIndex": 4
+        },
+        {
+          "directoryIndex": 5,
+          "id": "sqlite3_flutter_libs_plugin::@4bedf820cada57b6209e",
+          "jsonFile": "target-sqlite3_flutter_libs_plugin-Debug-cf2fe241dc4d5183f646.json",
+          "name": "sqlite3_flutter_libs_plugin",
+          "projectIndex": 4
+        },
+        {
+          "directoryIndex": 6,
+          "id": "url_launcher_windows_plugin::@82e8e937a0da8e6132e4",
+          "jsonFile": "target-url_launcher_windows_plugin-Debug-c7558a4ae7e1f1fc3689.json",
+          "name": "url_launcher_windows_plugin",
+          "projectIndex": 5
+        }
+      ]
+    }
+  ],
+  "kind": "codemodel",
+  "paths": {
+    "build": "C:/Users/tommy/LiftLink/build",
+    "source": "C:/Users/tommy/LiftLink/frontend/windows"
+  },
+  "version": {
+    "major": 2,
+    "minor": 8
+  }
+}

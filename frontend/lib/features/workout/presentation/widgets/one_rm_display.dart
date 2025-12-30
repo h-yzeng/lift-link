@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:liftlink/core/utils/unit_conversion.dart';
 
 /// Widget to display the calculated 1RM using the Epley formula
 class OneRMDisplay extends StatelessWidget {
   final double? oneRM;
   final bool isWarmup;
+  final bool useImperialUnits;
 
   const OneRMDisplay({
     required this.oneRM,
     this.isWarmup = false,
+    this.useImperialUnits = false,
     super.key,
   });
 
@@ -64,7 +67,7 @@ class OneRMDisplay extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            '${oneRM!.toStringAsFixed(1)} kg',
+            UnitConversion.formatWeight(oneRM!, useImperialUnits),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                   fontWeight: FontWeight.bold,

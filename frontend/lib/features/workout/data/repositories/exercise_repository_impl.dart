@@ -153,6 +153,28 @@ class ExerciseRepositoryImpl implements ExerciseRepository {
     String? userId,
   }) async {
     try {
+      // First check if we have ANY exercises in the local database
+      final allExercises = await localDataSource.getAllExercises(userId: userId);
+
+      // If local database is completely empty and we're online, perform initial sync
+      if (allExercises.isEmpty && await networkInfo.isConnected) {
+        final syncResult = await syncExercises(userId: userId);
+
+        // If sync succeeded, get filtered results
+        if (syncResult.isRight()) {
+          final exercises = await localDataSource.filterExercises(
+            muscleGroup: muscleGroup,
+            equipmentType: equipmentType,
+            customOnly: customOnly,
+            userId: userId,
+          );
+          return Right(exercises);
+        }
+        // Sync failed, return empty list
+        return const Right([]);
+      }
+
+      // Get filtered exercises from local database
       final exercises = await localDataSource.filterExercises(
         muscleGroup: muscleGroup,
         equipmentType: equipmentType,
@@ -160,26 +182,8 @@ class ExerciseRepositoryImpl implements ExerciseRepository {
         userId: userId,
       );
 
-      // If local is empty and we're online, perform initial sync and wait
-      if (exercises.isEmpty && await networkInfo.isConnected) {
-        final syncResult = await syncExercises(userId: userId);
-
-        // If sync succeeded, read fresh data from local
-        if (syncResult.isRight()) {
-          final freshExercises = await localDataSource.filterExercises(
-            muscleGroup: muscleGroup,
-            equipmentType: equipmentType,
-            customOnly: customOnly,
-            userId: userId,
-          );
-          return Right(freshExercises);
-        }
-        // Sync failed, return empty list
-        return Right(exercises);
-      }
-
       // Sync in background if we have data
-      if (await networkInfo.isConnected) {
+      if (allExercises.isNotEmpty && await networkInfo.isConnected) {
         _syncInBackground(userId: userId);
       }
 
@@ -293,6 +297,8 @@ class ExerciseRepositoryImpl implements ExerciseRepository {
         userId: userId,
       );
 
+      // Clear existing exercises before syncing to prevent duplicates
+      await localDataSource.clearExercises();
       await localDataSource.upsertExercises(exercises);
 
       return const Right(null);

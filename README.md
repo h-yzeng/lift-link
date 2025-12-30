@@ -1,6 +1,6 @@
 <div align="center">
 
-# LiftLink 
+# LiftLink
 
 ![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)
@@ -46,6 +46,7 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
 ## Tech Stack
 
 ### Frontend
+
 - **Framework**: Flutter 3.38+
 - **Language**: Dart 3.2+
 - **State Management**: Riverpod with code generation
@@ -54,12 +55,14 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
 - **JSON**: json_serializable
 
 ### Backend
+
 - **BaaS**: Supabase (PostgreSQL + Auth + Realtime)
 - **Database**: PostgreSQL 15+
 - **Authentication**: Supabase Auth
 - **Row-Level Security**: Enabled on all tables
 
 ### Architecture
+
 - **Pattern**: Clean Architecture (3-layer)
 - **Offline Strategy**: Local-first with background sync
 - **Error Handling**: Functional programming with Dartz (`Either<Failure, Result>`)
@@ -79,12 +82,14 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/LiftLink.git
    cd LiftLink
    ```
 
 2. **Set up Flutter project**
+
    ```bash
    cd frontend
    flutter create . --platforms=windows,android,ios
@@ -92,6 +97,7 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
    ```
 
 3. **Start local Supabase**
+
    ```bash
    cd ../backend/supabase
    supabase start
@@ -99,6 +105,7 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
    ```
 
 4. **Generate code**
+
    ```bash
    cd ../../frontend
    flutter pub run build_runner build --delete-conflicting-outputs
@@ -144,17 +151,20 @@ LiftLink follows **Clean Architecture** principles with strict separation of con
 ### Key Design Decisions
 
 **Offline-First Architecture**
+
 - Drift (SQLite) serves as the source of truth for the UI
 - All writes go to local database first for instant feedback
 - Background sync to Supabase when connectivity is available
 - Last-write-wins conflict resolution
 
 **1RM Calculation**
+
 - Calculated client-side using Epley Formula: `weight × (1 + reps/30)`
 - Never stored in database to allow formula updates without migration
 - Computed property on `WorkoutSet` entity
 
 **Security**
+
 - Row-Level Security (RLS) enforced at database level
 - Users can only access their own data
 - Accepted friends can view (but not modify) each other's workouts
@@ -199,6 +209,7 @@ flutter test test/unit/workout_set_test.dart
 ```
 
 **Test Coverage Goals:**
+
 - Domain layer: 100% (pure business logic)
 - Data layer: 80%+
 - Presentation layer: 60%+
@@ -208,6 +219,7 @@ flutter test test/unit/workout_set_test.dart
 ## Roadmap
 
 ### Phase 1: Foundation (Completed)
+
 - [x] Project scaffolding
 - [x] Database schema with RLS
 - [x] Offline-first architecture
@@ -215,6 +227,7 @@ flutter test test/unit/workout_set_test.dart
 - [x] Working Windows desktop app
 
 ### Phase 2: Core Features (In Progress)
+
 - [ ] Authentication (login, register)
 - [ ] Exercise library browser
 - [ ] Active workout tracking
@@ -222,16 +235,19 @@ flutter test test/unit/workout_set_test.dart
 - [ ] 1RM calculations and display
 
 ### Phase 3: Social
+
 - [ ] Friend request system
 - [ ] Activity feed
 - [ ] Shared workout viewing
 
 ### Phase 4: Analytics
+
 - [ ] Progress charts
 - [ ] Personal records tracking
 - [ ] Muscle group analysis
 
 ### Future
+
 - [ ] Workout templates
 - [ ] Rest timer
 - [ ] iOS & Android releases
@@ -252,6 +268,7 @@ Contributions are welcome! This project follows Clean Architecture principles an
 5. Open a Pull Request
 
 **Development Guidelines:**
+
 - Follow Clean Architecture layers
 - Use Freezed for data classes
 - Write tests for new features
@@ -265,6 +282,7 @@ See [docs/planning.md](docs/planning.md) for detailed development guidelines.
 ## Author
 
 **Henry Zeng**
+
 - GitHub: [@h-yzeng](https://github.com/h-yzeng)
 - Email: thyzeng@gmail.com
 

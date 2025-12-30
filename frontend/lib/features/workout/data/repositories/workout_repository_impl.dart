@@ -179,27 +179,13 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     String? notes,
   }) async {
     try {
-      // Get the current set first
-      final workoutWithSet = await _findWorkoutContainingSet(setId);
-      if (workoutWithSet == null) {
-        return const Left(CacheFailure(message: 'Set not found'));
-      }
-
-      // Find the set in the workout
-      WorkoutSet? currentSet;
-      for (final exercise in workoutWithSet.exercises) {
-        final foundSet = exercise.sets.where((s) => s.id == setId).firstOrNull;
-        if (foundSet != null) {
-          currentSet = foundSet;
-          break;
-        }
-      }
-
+      // Get the current set from database
+      final currentSet = await localDataSource.getSetById(setId);
       if (currentSet == null) {
         return const Left(CacheFailure(message: 'Set not found'));
       }
 
-      // Create updated set
+      // Create updated set with new values (keep existing values for null params)
       final updatedSet = currentSet.copyWith(
         reps: reps ?? currentSet.reps,
         weightKg: weightKg ?? currentSet.weightKg,
@@ -210,7 +196,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
         updatedAt: DateTime.now(),
       );
 
-      // Update in local
+      // Update in local database
       final savedSet = await localDataSource.updateSet(updatedSet);
 
       // Sync to remote in background
@@ -411,15 +397,4 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     }
   }
 
-  /// Helper to find a workout containing a specific set
-  Future<WorkoutSession?> _findWorkoutContainingSet(String setId) async {
-    try {
-      // This is inefficient but works for now
-      // In a production app, you'd want to add a query method to find by set ID
-      // For now, we'll assume the caller knows the workout context
-      return null;
-    } catch (e) {
-      return null;
-    }
-  }
 }

@@ -37,7 +37,7 @@ BEGIN
     INSERT INTO public.profiles (id, username, display_name)
     VALUES (
         NEW.id,
-        NEW.raw_user_meta_data->>'username',
+        COALESCE(NEW.raw_user_meta_data->>'username', split_part(NEW.email, '@', 1)),
         COALESCE(NEW.raw_user_meta_data->>'display_name', split_part(NEW.email, '@', 1))
     );
     RETURN NEW;

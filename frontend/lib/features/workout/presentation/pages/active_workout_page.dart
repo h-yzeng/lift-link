@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/error/failures.dart';
+import 'package:liftlink/core/utils/unit_conversion.dart';
+import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_performance.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
@@ -105,13 +107,13 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
     }
   }
 
-  Future<void> _completeWorkout() async {
+  Future<void> _completeWorkout(WorkoutSession currentWorkout) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Complete Workout?'),
         content: Text(
-          'You completed ${widget.workout.exerciseCount} exercises with ${widget.workout.totalSets} sets.',
+          'You completed ${currentWorkout.exerciseCount} exercises with ${currentWorkout.totalSets} sets.',
         ),
         actions: [
           TextButton(
@@ -134,25 +136,41 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
 
     try {
       final useCase = ref.read(completeWorkoutUseCaseProvider);
-      final result = await useCase(workoutSessionId: widget.workout.id);
+      final result = await useCase(workoutSessionId: currentWorkout.id);
 
       result.fold(
         (failure) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(failure.userMessage)),
+              SnackBar(
+                content: Text('Failed to complete workout: ${failure.userMessage}'),
+                backgroundColor: Colors.red,
+              ),
             );
           }
         },
         (completedWorkout) {
           if (mounted) {
+            ref.invalidate(activeWorkoutProvider);
             Navigator.pop(context);
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Workout completed!')),
+              const SnackBar(
+                content: Text('Workout completed!'),
+                backgroundColor: Colors.green,
+              ),
             );
           }
         },
       );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -165,16 +183,34 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
   @override
   Widget build(BuildContext context) {
     final workoutAsync = ref.watch(activeWorkoutProvider);
+    final profileAsync = ref.watch(currentProfileProvider);
+
+    // Get unit preference, default to imperial
+    final useImperialUnits = profileAsync.maybeWhen(
+      data: (profile) => profile?.usesImperialUnits ?? true,
+      orElse: () => true,
+    );
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.workout.title),
         actions: [
           if (!_isLoading)
-            IconButton(
-              icon: const Icon(Icons.check_circle),
-              onPressed: _completeWorkout,
-              tooltip: 'Complete Workout',
+            Consumer(
+              builder: (context, ref, child) {
+                final workoutAsync = ref.watch(activeWorkoutProvider);
+                return workoutAsync.maybeWhen(
+                  data: (workout) {
+                    if (workout == null) return const SizedBox.shrink();
+                    return IconButton(
+                      icon: const Icon(Icons.check_circle),
+                      onPressed: () => _completeWorkout(workout),
+                      tooltip: 'Complete Workout',
+                    );
+                  },
+                  orElse: () => const SizedBox.shrink(),
+                );
+              },
             ),
         ],
       ),
@@ -209,7 +245,10 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
                     ),
                     _StatItem(
                       label: 'Volume',
-                      value: workout.formattedTotalVolume,
+                      value: UnitConversion.formatWeight(
+                        workout.totalVolume,
+                        useImperialUnits,
+                      ),
                     ),
                   ],
                 ),
@@ -246,6 +285,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
                           final exercise = workout.exercises[index];
                           return _ExerciseCard(
                             exercise: exercise,
+                            useImperialUnits: useImperialUnits,
                             onAddSet: () => _addSet(exercise),
                           );
                         },
@@ -300,17 +340,52 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-class _ExerciseCard extends StatelessWidget {
+class _ExerciseCard extends ConsumerWidget {
   final ExercisePerformance exercise;
+  final bool useImperialUnits;
   final VoidCallback onAddSet;
 
   const _ExerciseCard({
     required this.exercise,
+    required this.useImperialUnits,
     required this.onAddSet,
   });
 
+  Future<void> _updateSet(
+    WidgetRef ref,
+    BuildContext context,
+    String setId,
+    int reps,
+    double weightKg,
+    bool isWarmup,
+    double? rpe,
+  ) async {
+    final useCase = ref.read(updateSetUseCaseProvider);
+    final result = await useCase(
+      setId: setId,
+      reps: reps,
+      weightKg: weightKg,
+      isWarmup: isWarmup,
+      rpe: rpe,
+    );
+
+    result.fold(
+      (Failure failure) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(failure.userMessage)),
+          );
+        }
+      },
+      (_) {
+        // Refresh the workout to show updated values
+        ref.invalidate(activeWorkoutProvider);
+      },
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.all(16),
       child: Padding(
@@ -331,7 +406,7 @@ class _ExerciseCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${exercise.totalSetsCount} sets • ${exercise.totalReps} reps • ${exercise.totalVolume.toStringAsFixed(0)} kg',
+                        '${exercise.totalSetsCount} sets • ${exercise.totalReps} reps • ${UnitConversion.formatWeight(exercise.totalVolume, useImperialUnits)}',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -339,7 +414,9 @@ class _ExerciseCard extends StatelessWidget {
                 ),
                 if (exercise.maxOneRM != null)
                   Chip(
-                    label: Text('Max: ${exercise.formattedMaxOneRM}'),
+                    label: Text(
+                      'Max: ${UnitConversion.formatWeight(exercise.maxOneRM!, useImperialUnits)}',
+                    ),
                     backgroundColor:
                         Theme.of(context).colorScheme.primaryContainer,
                   ),
@@ -362,6 +439,18 @@ class _ExerciseCard extends StatelessWidget {
               return SetInputRow(
                 setNumber: set.setNumber,
                 existingSet: set,
+                useImperialUnits: useImperialUnits,
+                onSave: (reps, weightKg, isWarmup, rpe) {
+                  _updateSet(
+                    ref,
+                    context,
+                    set.id,
+                    reps,
+                    weightKg,
+                    isWarmup,
+                    rpe,
+                  );
+                },
               );
             }),
 

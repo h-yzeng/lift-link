@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:liftlink/core/utils/unit_conversion.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_set.dart';
 import 'package:liftlink/features/workout/presentation/widgets/one_rm_display.dart';
 
@@ -7,12 +8,14 @@ import 'package:liftlink/features/workout/presentation/widgets/one_rm_display.da
 class SetInputRow extends StatefulWidget {
   final WorkoutSet? existingSet;
   final int setNumber;
+  final bool useImperialUnits;
   final Function(int reps, double weight, bool isWarmup, double? rpe)? onSave;
   final VoidCallback? onDelete;
 
   const SetInputRow({
     required this.setNumber,
     this.existingSet,
+    this.useImperialUnits = false,
     this.onSave,
     this.onDelete,
     super.key,
@@ -33,9 +36,16 @@ class _SetInputRowState extends State<SetInputRow> {
   void initState() {
     super.initState();
     _isWarmup = widget.existingSet?.isWarmup ?? false;
-    _weightController = TextEditingController(
-      text: widget.existingSet?.weightKg.toString() ?? '',
-    );
+
+    // Convert weight to display unit
+    final displayWeight = widget.existingSet != null
+        ? UnitConversion.formatWeightValue(
+            widget.existingSet!.weightKg,
+            widget.useImperialUnits,
+          )
+        : '';
+
+    _weightController = TextEditingController(text: displayWeight);
     _repsController = TextEditingController(
       text: widget.existingSet?.reps.toString() ?? '',
     );
@@ -54,14 +64,19 @@ class _SetInputRowState extends State<SetInputRow> {
   }
 
   void _saveSet() {
-    final weight = double.tryParse(_weightController.text);
+    final inputWeight = double.tryParse(_weightController.text);
     final reps = int.tryParse(_repsController.text);
     final rpe = _rpeController.text.isNotEmpty
         ? double.tryParse(_rpeController.text)
         : null;
 
-    if (weight != null && reps != null) {
-      widget.onSave?.call(reps, weight, _isWarmup, rpe);
+    if (inputWeight != null && reps != null) {
+      // Convert weight to kg if imperial units are used
+      final weightKg = widget.useImperialUnits
+          ? UnitConversion.lbsToKg(inputWeight)
+          : inputWeight;
+
+      widget.onSave?.call(reps, weightKg, _isWarmup, rpe);
       setState(() {
         _isEditing = false;
       });
@@ -108,10 +123,11 @@ class _SetInputRowState extends State<SetInputRow> {
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,1}')),
                 ],
-                decoration: const InputDecoration(
-                  labelText: 'Weight (kg)',
+                decoration: InputDecoration(
+                  labelText:
+                      'Weight (${UnitConversion.getWeightUnit(widget.useImperialUnits)})',
                   isDense: true,
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
               ),
             ),
@@ -170,6 +186,7 @@ class _SetInputRowState extends State<SetInputRow> {
             OneRMDisplay(
               oneRM: oneRM,
               isWarmup: _isWarmup,
+              useImperialUnits: widget.useImperialUnits,
             ),
             const SizedBox(width: 8),
 

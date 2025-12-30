@@ -3,7 +3,8 @@ import 'package:drift/drift.dart';
 @DataClassName('ProfileEntity')
 class Profiles extends Table {
   TextColumn get id => text()(); // UUID from Supabase
-  TextColumn get username => text().withLength(min: 3, max: 50)();
+  TextColumn get username =>
+      text().withLength(min: 3, max: 50).nullable()();
   TextColumn get displayName => text().nullable()();
   TextColumn get avatarUrl => text().nullable()();
   TextColumn get bio => text().nullable()();

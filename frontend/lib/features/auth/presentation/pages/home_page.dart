@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
+import 'package:liftlink/features/profile/presentation/pages/settings_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/active_workout_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
@@ -79,10 +80,13 @@ class HomePage extends ConsumerWidget {
         title: const Text('LiftLink'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              final logoutUseCase = await ref.read(logoutUseCaseProvider.future);
-              await logoutUseCase();
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const SettingsPage(),
+                ),
+              );
             },
           ),
         ],

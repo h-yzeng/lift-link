@@ -1,0 +1,3 @@
+C:/Users/tommy/LiftLink/build/_deps/sqlite3-subbuild/CMakeFiles/sqlite3-populate.dir
+C:/Users/tommy/LiftLink/build/_deps/sqlite3-subbuild/CMakeFiles/edit_cache.dir
+C:/Users/tommy/LiftLink/build/_deps/sqlite3-subbuild/CMakeFiles/rebuild_cache.dir

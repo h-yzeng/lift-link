@@ -30,7 +30,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -38,11 +38,28 @@ class AppDatabase extends _$AppDatabase {
           await m.createAll();
         },
         onUpgrade: (Migrator m, int from, int to) async {
-          // Handle future migrations here
-          // Example:
-          // if (from < 2) {
-          //   await m.addColumn(profiles, profiles.newColumn);
-          // }
+          // Migration from v1 to v2: Add exercise_name column if it doesn't exist
+          if (from < 2) {
+            // Delete and recreate tables to ensure clean schema
+            // This is acceptable during development before production
+            await m.deleteTable(exercisePerformances.actualTableName);
+            await m.deleteTable(sets.actualTableName);
+            await m.deleteTable(workoutSessions.actualTableName);
+
+            await m.createTable(workoutSessions);
+            await m.createTable(exercisePerformances);
+            await m.createTable(sets);
+
+            // Clear and resync exercises to remove duplicates
+            await delete(exercises).go();
+          }
+
+          // Migration from v2 to v3: Add preferred_units column
+          if (from < 3) {
+            await customStatement(
+              'ALTER TABLE profiles ADD COLUMN preferred_units TEXT NOT NULL DEFAULT "imperial"',
+            );
+          }
         },
         beforeOpen: (details) async {
           // Enable foreign keys

@@ -24,6 +24,7 @@ class ExercisePerformances extends Table {
   TextColumn get id => text()();
   TextColumn get workoutSessionId => text()();
   TextColumn get exerciseId => text()();
+  TextColumn get exerciseName => text()(); // Denormalized for display
   IntColumn get orderIndex => integer()();
   TextColumn get notes => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();

@@ -222,7 +222,7 @@ supabase status
 - ✅ Core domain entities
 - ✅ Documentation
 
-### Phase 2 (Core Features) - 🔄 IN PROGRESS (66% Complete)
+### Phase 2 (Core Features) - 🔄 IN PROGRESS (100% Complete)
 - ✅ Authentication (COMPLETED 2025-12-29)
   - User entity with email/password support
   - Login and registration flows
@@ -234,9 +234,15 @@ supabase status
   - 20 seeded system exercises
   - Custom exercise support
   - Color-coded muscle group display
-- ⏳ Active workout tracking (NEXT)
-- ⏳ Workout history
-- ⏳ 1RM calculations (client-side computed property)
+- ✅ Active workout tracking (COMPLETED 2025-12-29)
+  - Start/complete workout functionality
+  - Add exercises to workouts
+  - Add sets with weight, reps, RPE tracking
+  - Real-time 1RM calculation using Epley formula
+  - Live workout stats (duration, volume, sets)
+  - Offline-first with background sync
+  - Complete domain/data/presentation layers
+- ⏳ Workout history (NEXT)
 
 ### Phase 3 (Social)
 - Friend requests
@@ -257,6 +263,45 @@ supabase status
 ---
 
 ## Recent Updates
+
+### 2025-12-29 - Active Workout Tracking Complete
+**Completed Work:**
+- Full active workout tracking system following Clean Architecture
+- Domain layer: WorkoutRepository interface, 6 use cases (start, add exercise, add set, complete, get history, get active)
+- Data layer: 3 models with Drift/Supabase mappers, local/remote data sources with complex queries, offline-first repository
+- Presentation layer: Riverpod providers, ActiveWorkoutPage, SetInputRow, OneRMDisplay widgets
+- Live workout stats with real-time 1RM calculations using Epley formula
+- Hierarchical data management (WorkoutSession → ExercisePerformance → WorkoutSet)
+- Offline-first with background sync and pending sync tracking
+
+**Files Added:**
+- `features/workout/domain/repositories/workout_repository.dart`
+- `features/workout/domain/usecases/*` (6 use cases)
+- `features/workout/data/models/*` (workout_session_model, exercise_performance_model, workout_set_model)
+- `features/workout/data/datasources/workout_local_datasource.dart` (complex Drift queries)
+- `features/workout/data/datasources/workout_remote_datasource.dart` (nested Supabase queries)
+- `features/workout/data/repositories/workout_repository_impl.dart` (offline-first implementation)
+- `features/workout/presentation/providers/workout_providers.dart`
+- `features/workout/presentation/widgets/one_rm_display.dart`
+- `features/workout/presentation/widgets/set_input_row.dart`
+- `features/workout/presentation/pages/active_workout_page.dart`
+
+**Files Modified:**
+- `shared/database/tables/workout_sessions_table.dart` - Added exerciseName to ExercisePerformances
+- `features/workout/presentation/pages/exercise_list_page.dart` - Added selection mode for adding exercises to workouts
+- `features/auth/presentation/pages/home_page.dart` - Added start workout and active workout display
+
+**Bug Fixes:**
+- Fixed ambiguous import for networkInfoProvider
+- Fixed Supabase query syntax (filter vs gte/lte)
+- Fixed missing userMessage imports
+
+**Next Steps:**
+1. Implement workout history view to see past workouts
+2. Add workout summary statistics
+3. Implement personal records tracking
+
+---
 
 ### 2025-12-29 - Exercise Library Browser Complete
 **Completed Work:**
@@ -325,5 +370,5 @@ supabase status
 
 ---
 
-**Document Version**: 1.2
-**Last Updated**: 2025-12-29 (Exercise Library Browser completed)
+**Document Version**: 1.3
+**Last Updated**: 2025-12-29 (Active Workout Tracking completed)

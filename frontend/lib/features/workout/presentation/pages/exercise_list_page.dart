@@ -5,7 +5,12 @@ import 'package:liftlink/features/workout/presentation/providers/exercise_provid
 import 'package:liftlink/features/workout/presentation/widgets/exercise_card.dart';
 
 class ExerciseListPage extends ConsumerStatefulWidget {
-  const ExerciseListPage({super.key});
+  final bool selectionMode;
+
+  const ExerciseListPage({
+    this.selectionMode = false,
+    super.key,
+  });
 
   @override
   ConsumerState<ExerciseListPage> createState() => _ExerciseListPageState();
@@ -232,14 +237,20 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
                       final exercise = exercises[index];
                       return ExerciseCard(
                         exercise: exercise,
-                        onTap: () {
-                          // TODO: Navigate to exercise detail page
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Selected: ${exercise.name}'),
-                            ),
-                          );
-                        },
+                        onTap: widget.selectionMode
+                            ? () {
+                                Navigator.pop(context, {
+                                  'id': exercise.id,
+                                  'name': exercise.name,
+                                });
+                              }
+                            : () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Selected: ${exercise.name}'),
+                                  ),
+                                );
+                              },
                       );
                     },
                   ),

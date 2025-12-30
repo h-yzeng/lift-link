@@ -7,6 +7,8 @@ class Profiles extends Table {
   TextColumn get displayName => text().nullable()();
   TextColumn get avatarUrl => text().nullable()();
   TextColumn get bio => text().nullable()();
+  TextColumn get preferredUnits =>
+      text().withDefault(const Constant('imperial'))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get syncedAt => dateTime().nullable()(); // Last sync timestamp

@@ -14,6 +14,7 @@ class Profile with _$Profile {
     String? displayName,
     String? avatarUrl,
     String? bio,
+    @Default('imperial') String preferredUnits,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _Profile;
@@ -52,4 +53,10 @@ class Profile with _$Profile {
     }
     return (words[0][0] + words[1][0]).toUpperCase();
   }
+
+  /// Whether the user prefers imperial units
+  bool get usesImperialUnits => preferredUnits == 'imperial';
+
+  /// Whether the user prefers metric units
+  bool get usesMetricUnits => preferredUnits == 'metric';
 }

@@ -110,4 +110,23 @@ class WorkoutSession with _$WorkoutSession {
     // For now, we'll derive from exercise names if possible
     return [];
   }
+
+  /// Duration as a Duration object (for UI formatting)
+  Duration? get duration {
+    if (completedAt == null && durationMinutes == null) {
+      // For in-progress workouts, calculate from start time
+      return DateTime.now().difference(startedAt);
+    }
+    if (durationMinutes != null) {
+      return Duration(minutes: durationMinutes!);
+    }
+    if (completedAt != null) {
+      return completedAt!.difference(startedAt);
+    }
+    return null;
+  }
+
+  /// Count of personal records in this workout
+  /// For now, counts exercises that have a max 1RM value
+  int get personalRecordsCount => personalRecords.length;
 }

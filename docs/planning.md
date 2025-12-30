@@ -242,7 +242,7 @@ supabase status
 - ✅ Core domain entities
 - ✅ Documentation
 
-### Phase 2 (Core Features) - 🔄 IN PROGRESS (100% Complete)
+### Phase 2 (Core Features) - ✅ COMPLETED (2025-12-30)
 
 - ✅ Authentication (COMPLETED 2025-12-29)
   - User entity with email/password support
@@ -263,7 +263,12 @@ supabase status
   - Live workout stats (duration, volume, sets)
   - Offline-first with background sync
   - Complete domain/data/presentation layers
-- ⏳ Workout history (NEXT)
+- ✅ Workout History (COMPLETED 2025-12-30)
+  - Workout summary cards with stats
+  - Workout history list with date filtering
+  - Detailed workout view with exercise breakdown
+  - Sets table with RPE color coding
+  - Navigation from home page
 
 ### Phase 3 (Social)
 
@@ -287,6 +292,49 @@ supabase status
 ---
 
 ## Recent Updates
+
+### 2025-12-30 - Workout History Complete (Phase 2 Complete)
+
+**Completed Work:**
+
+- Full workout history feature with Clean Architecture
+- WorkoutSummaryCard widget with stats, PR indicator, relative dates
+- WorkoutHistoryPage with date range filtering and pull-to-refresh
+- WorkoutDetailPage with comprehensive exercise breakdown and sets table
+- Added `duration` and `personalRecordsCount` getters to WorkoutSession entity
+- UnitConversion utility for imperial/metric support
+- Navigation from home page to workout history
+
+**Bug Fixes:**
+
+- Fixed duplicate exercises issue (clear before sync)
+- Fixed "Set not found" error (implemented getSetById method)
+- Fixed Supabase query method chaining
+- Fixed imperial units display throughout app
+
+**Files Added:**
+
+- `core/utils/unit_conversion.dart` - Weight conversion utility
+- `features/workout/presentation/widgets/workout_summary_card.dart`
+- `features/workout/presentation/pages/workout_history_page.dart`
+- `features/workout/presentation/pages/workout_detail_page.dart`
+- `features/workout/domain/usecases/update_set.dart`
+
+**Files Modified:**
+
+- `features/workout/domain/entities/workout_session.dart` - Added duration and personalRecordsCount getters
+- `features/workout/data/datasources/workout_local_datasource.dart` - Added getSetById method
+- `features/workout/data/repositories/workout_repository_impl.dart` - Fixed updateSet
+- `features/workout/data/repositories/exercise_repository_impl.dart` - Fixed sync duplicates
+- `features/auth/presentation/pages/home_page.dart` - Added history navigation
+
+**Next Steps:**
+
+1. Phase 3: Social features (friend requests, activity feed)
+2. Data synchronization service
+3. Profile management
+
+---
 
 ### 2025-12-29 - Active Workout Tracking Complete
 
@@ -411,5 +459,5 @@ supabase status
 
 ---
 
-**Document Version**: 1.3
-**Last Updated**: 2025-12-29 (Active Workout Tracking completed)
+**Document Version**: 1.4
+**Last Updated**: 2025-12-30 (Phase 2 Complete - Workout History added)

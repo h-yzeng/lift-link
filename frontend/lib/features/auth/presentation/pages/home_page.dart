@@ -5,6 +5,7 @@ import 'package:liftlink/features/auth/presentation/providers/auth_providers.dar
 import 'package:liftlink/features/profile/presentation/pages/settings_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/active_workout_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
+import 'package:liftlink/features/workout/presentation/pages/workout_history_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 
 class HomePage extends ConsumerWidget {
@@ -246,6 +247,19 @@ class HomePage extends ConsumerWidget {
                                 },
                                 icon: const Icon(Icons.fitness_center),
                                 label: const Text('Browse Exercise Library'),
+                              ),
+                              const SizedBox(height: 8),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const WorkoutHistoryPage(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.history),
+                                label: const Text('View Workout History'),
                               ),
                             ],
                           ),

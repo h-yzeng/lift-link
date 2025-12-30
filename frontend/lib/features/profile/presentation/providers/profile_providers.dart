@@ -9,6 +9,7 @@ import 'package:liftlink/features/profile/data/repositories/profile_repository_i
 import 'package:liftlink/features/profile/domain/entities/profile.dart';
 import 'package:liftlink/features/profile/domain/repositories/profile_repository.dart';
 import 'package:liftlink/features/profile/domain/usecases/get_profile.dart';
+import 'package:liftlink/features/profile/domain/usecases/search_users.dart';
 import 'package:liftlink/features/profile/domain/usecases/update_profile.dart';
 import 'package:liftlink/shared/database/app_database.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
@@ -60,6 +61,11 @@ GetProfile getProfile(Ref ref) {
 @riverpod
 UpdateProfile updateProfile(Ref ref) {
   return UpdateProfile(ref.watch(profileRepositoryProvider));
+}
+
+@riverpod
+SearchUsers searchUsers(Ref ref) {
+  return SearchUsers(ref.watch(profileRepositoryProvider));
 }
 
 // Profile state provider

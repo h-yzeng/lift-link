@@ -40,6 +40,16 @@ sealed class Failure with _$Failure {
     String? message,
     List<String>? failedIds,
   }) = SyncFailure;
+
+  /// A failure when a requested resource is not found.
+  const factory Failure.notFound({
+    required String message,
+  }) = NotFoundFailure;
+
+  /// An unexpected failure.
+  const factory Failure.unexpected({
+    required String message,
+  }) = UnexpectedFailure;
 }
 
 /// Extension methods for Failure
@@ -57,6 +67,8 @@ extension FailureX on Failure {
         validation: (message, fieldErrors) => message,
         sync: (message, failedIds) =>
             message ?? 'Failed to sync data. Will retry when online.',
+        notFound: (message) => message,
+        unexpected: (message) => message,
       );
 
   /// Whether this failure should trigger a retry
@@ -68,5 +80,7 @@ extension FailureX on Failure {
         auth: (_, __) => false,
         validation: (_, __) => false,
         sync: (_, __) => true,
+        notFound: (_) => false,
+        unexpected: (_) => false,
       );
 }

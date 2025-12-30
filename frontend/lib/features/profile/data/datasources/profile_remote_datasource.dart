@@ -16,6 +16,12 @@ abstract class ProfileRemoteDataSource {
     String? bio,
     String? preferredUnits,
   });
+
+  /// Search for users by username or display name
+  Future<List<Profile>> searchUsers({
+    required String query,
+    int limit = 20,
+  });
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -68,6 +74,29 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
           .single();
 
       return _profileFromJson(response);
+    } on supabase.PostgrestException catch (e) {
+      throw ServerException(message: e.message);
+    } catch (e) {
+      throw ServerException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<List<Profile>> searchUsers({
+    required String query,
+    int limit = 20,
+  }) async {
+    try {
+      // Search for users by username or display name using ilike (case-insensitive)
+      final response = await supabaseClient
+          .from('profiles')
+          .select()
+          .or('username.ilike.%$query%,display_name.ilike.%$query%')
+          .limit(limit);
+
+      return (response as List)
+          .map((json) => _profileFromJson(json as Map<String, dynamic>))
+          .toList();
     } on supabase.PostgrestException catch (e) {
       throw ServerException(message: e.message);
     } catch (e) {

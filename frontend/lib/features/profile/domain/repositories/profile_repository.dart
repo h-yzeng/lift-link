@@ -22,4 +22,10 @@ abstract class ProfileRepository {
 
   /// Sync profile from remote
   Future<Either<Failure, void>> syncProfile(String userId);
+
+  /// Search for users by username or display name
+  Future<Either<Failure, List<Profile>>> searchUsers({
+    required String query,
+    int limit = 20,
+  });
 }

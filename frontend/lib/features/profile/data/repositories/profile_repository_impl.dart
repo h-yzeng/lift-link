@@ -106,6 +106,30 @@ class ProfileRepositoryImpl implements ProfileRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, List<Profile>>> searchUsers({
+    required String query,
+    int limit = 20,
+  }) async {
+    if (!await networkInfo.isConnected) {
+      return const Left(
+        NetworkFailure(message: 'No internet connection'),
+      );
+    }
+
+    try {
+      final profiles = await remoteDataSource.searchUsers(
+        query: query,
+        limit: limit,
+      );
+      return Right(profiles);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
   void _syncInBackground(String userId) {
     syncProfile(userId);
   }

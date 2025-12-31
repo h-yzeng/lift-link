@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
-import 'package:liftlink/features/profile/presentation/pages/settings_page.dart';
-import 'package:liftlink/features/social/presentation/pages/social_hub_page.dart';
+import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/workout/presentation/pages/active_workout_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
-import 'package:liftlink/features/workout/presentation/pages/workout_history_page.dart';
-import 'package:liftlink/features/workout/presentation/pages/personal_records_page.dart';
-import 'package:liftlink/features/workout/presentation/pages/progress_charts_page.dart';
-import 'package:liftlink/features/workout/presentation/pages/muscle_frequency_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 
 class HomePage extends ConsumerWidget {
@@ -58,7 +52,7 @@ class HomePage extends ConsumerWidget {
       (failure) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(failure.userMessage)),
+            SnackBar(content: Text(failure.message ?? 'Failed to start workout')),
           );
         }
       },
@@ -77,260 +71,100 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAsync = ref.watch(currentUserProvider);
+    final profileAsync = ref.watch(currentProfileProvider);
     final activeWorkoutAsync = ref.watch(activeWorkoutProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('LiftLink'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const SettingsPage(),
-                ),
-              );
-            },
-          ),
-        ],
       ),
-      body: userAsync.when(
-        data: (userData) {
-          if (userData == null) {
-            return const Center(
-              child: Text('Not logged in'),
-            );
-          }
+      body: SafeArea(
+        child: profileAsync.when(
+          data: (profile) {
+            final greeting = _getGreeting();
+            final displayName = profile?.displayNameOrUsername ?? 'there';
 
-          return Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: userData.avatarUrl != null
-                        ? NetworkImage(userData.avatarUrl!)
-                        : null,
-                    child: userData.avatarUrl == null
-                        ? const Icon(Icons.person, size: 50)
-                        : null,
+            return Column(
+              children: [
+                // Greeting header
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$greeting,',
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      Text(
+                        displayName,
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    userData.displayNameOrFallback,
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    userData.email,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 32),
+                ),
 
-                  // Active workout card
-                  activeWorkoutAsync.when(
+                // Main content
+                Expanded(
+                  child: activeWorkoutAsync.when(
                     data: (activeWorkout) {
                       if (activeWorkout != null) {
-                        return Card(
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ActiveWorkoutPage(workout: activeWorkout),
-                                ),
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.play_circle,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimaryContainer,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        'Active Workout',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .titleLarge
-                                            ?.copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimaryContainer,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    activeWorkout.title,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall
-                                        ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onPrimaryContainer,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    '${activeWorkout.exerciseCount} exercises • ${activeWorkout.totalSets} sets • ${activeWorkout.formattedDuration}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onPrimaryContainer,
-                                        ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  FilledButton.icon(
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              ActiveWorkoutPage(
-                                                  workout: activeWorkout,),
-                                        ),
-                                      );
-                                    },
-                                    icon: const Icon(Icons.arrow_forward),
-                                    label: const Text('Continue Workout'),
-                                  ),
-                                ],
+                        // Active workout view
+                        return SingleChildScrollView(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _ActiveWorkoutCard(
+                                workout: activeWorkout,
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ActiveWorkoutPage(workout: activeWorkout),
+                                    ),
+                                  );
+                                },
                               ),
-                            ),
+                              const SizedBox(height: 16),
+                              _QuickActionsGrid(
+                                onStartNewWorkout: () => _startWorkout(context, ref),
+                              ),
+                            ],
                           ),
                         );
                       }
 
-                      return Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Welcome to LiftLink!',
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'Your fitness tracking journey starts here.',
-                              ),
-                              const SizedBox(height: 16),
-                              FilledButton.icon(
-                                onPressed: () => _startWorkout(context, ref),
-                                icon: const Icon(Icons.play_arrow),
-                                label: const Text('Start Workout'),
-                              ),
-                              const SizedBox(height: 8),
-                              OutlinedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ExerciseListPage(),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.fitness_center),
-                                label: const Text('Browse Exercise Library'),
-                              ),
-                              const SizedBox(height: 8),
-                              OutlinedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const WorkoutHistoryPage(),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.history),
-                                label: const Text('View Workout History'),
-                              ),
-                              const SizedBox(height: 8),
-                              OutlinedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const SocialHubPage(),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.people),
-                                label: const Text('Friends & Social'),
-                              ),
-                              const SizedBox(height: 8),
-                              OutlinedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const PersonalRecordsPage(),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.emoji_events),
-                                label: const Text('Personal Records'),
-                              ),
-                              const SizedBox(height: 8),
-                              OutlinedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ProgressChartsPage(),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.show_chart),
-                                label: const Text('Progress Charts'),
-                              ),
-                              const SizedBox(height: 8),
-                              OutlinedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const MuscleFrequencyPage(),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.pie_chart),
-                                label: const Text('Muscle Analysis'),
-                              ),
-                            ],
-                          ),
+                      // No active workout view
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _StartWorkoutHero(
+                              onStartWorkout: () => _startWorkout(context, ref),
+                            ),
+                            const SizedBox(height: 24),
+                            _QuickActionsGrid(
+                              onStartNewWorkout: () => _startWorkout(context, ref),
+                              showStartWorkout: false,
+                            ),
+                          ],
                         ),
                       );
                     },
-                    loading: () => const Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(),
                     ),
-                    error: (_, __) => Card(
+                    error: (_, __) => Center(
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.all(16),
                         child: FilledButton.icon(
                           onPressed: () => _startWorkout(context, ref),
                           icon: const Icon(Icons.play_arrow),
@@ -339,14 +173,362 @@ class HomePage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                ],
+                ),
+              ],
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, __) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: FilledButton.icon(
+                onPressed: () => _startWorkout(context, ref),
+                icon: const Icon(Icons.play_arrow),
+                label: const Text('Start Workout'),
               ),
             ),
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('Error: $error'),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
+}
+
+class _ActiveWorkoutCard extends StatelessWidget {
+  final dynamic workout;
+  final VoidCallback onTap;
+
+  const _ActiveWorkoutCard({
+    required this.workout,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 4,
+      color: theme.colorScheme.primaryContainer,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.play_circle,
+                      color: theme.colorScheme.onPrimary,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'WORKOUT IN PROGRESS',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onPrimaryContainer,
+                            letterSpacing: 1.2,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          workout.title as String,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            color: theme.colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  _WorkoutStat(
+                    icon: Icons.fitness_center,
+                    label: '${workout.exerciseCount}',
+                    subtitle: 'Exercises',
+                  ),
+                  const SizedBox(width: 20),
+                  _WorkoutStat(
+                    icon: Icons.format_list_numbered,
+                    label: '${workout.totalSets}',
+                    subtitle: 'Sets',
+                  ),
+                  const SizedBox(width: 20),
+                  _WorkoutStat(
+                    icon: Icons.timer,
+                    label: workout.formattedDuration as String,
+                    subtitle: 'Duration',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: onTap,
+                style: FilledButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  minimumSize: const Size(double.infinity, 48),
+                ),
+                child: const Text('Continue Workout'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WorkoutStat extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String subtitle;
+
+  const _WorkoutStat({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Expanded(
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: theme.colorScheme.onPrimaryContainer,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            subtitle,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StartWorkoutHero extends StatelessWidget {
+  final VoidCallback onStartWorkout;
+
+  const _StartWorkoutHero({
+    required this.onStartWorkout,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 2,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              theme.colorScheme.primaryContainer,
+              theme.colorScheme.secondaryContainer,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.fitness_center,
+                size: 48,
+                color: theme.colorScheme.onPrimary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Ready to train?',
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Start tracking your workout',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: onStartWorkout,
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('Start Workout'),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size(double.infinity, 56),
+                textStyle: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickActionsGrid extends StatelessWidget {
+  final VoidCallback onStartNewWorkout;
+  final bool showStartWorkout;
+
+  const _QuickActionsGrid({
+    required this.onStartNewWorkout,
+    this.showStartWorkout = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            'Quick Actions',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.3,
+          children: [
+            if (showStartWorkout)
+              _QuickActionCard(
+                icon: Icons.add_circle,
+                label: 'New Workout',
+                color: Colors.green,
+                onTap: onStartNewWorkout,
+              ),
+            _QuickActionCard(
+              icon: Icons.search,
+              label: 'Browse Exercises',
+              color: Colors.blue,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ExerciseListPage(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _QuickActionCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickActionCard({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  size: 32,
+                  color: color,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

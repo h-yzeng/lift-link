@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:liftlink/features/auth/presentation/pages/home_page.dart';
+import 'package:liftlink/features/auth/presentation/pages/main_scaffold.dart';
 import 'package:liftlink/features/auth/presentation/pages/login_page.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 
@@ -28,9 +28,9 @@ class LiftLinkApp extends ConsumerWidget {
       themeMode: ThemeMode.system,
       home: authStateAsync.when(
         data: (user) {
-          // If user is logged in, show home page
+          // If user is logged in, show main scaffold with bottom navigation
           // Otherwise, show login page
-          return user != null ? const HomePage() : const LoginPage();
+          return user != null ? const MainScaffold() : const LoginPage();
         },
         loading: () => const Scaffold(
           body: Center(

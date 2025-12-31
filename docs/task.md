@@ -326,13 +326,94 @@
 
 ---
 
-## 🔴 Critical Priority (Phase 2 - Next)
+### Phase 3: Social Features (✅ COMPLETED - 2025-12-30)
 
-No critical items remaining in Phase 2. Ready for Phase 3.
+#### Social Domain Layer
+
+- [x] Created `friendship_repository.dart` interface
+  - sendFriendRequest, acceptFriendRequest, rejectFriendRequest
+  - getFriends, getPendingRequests, removeFriendship
+  - watchFriendships stream
+- [x] Extended `profile_repository.dart` with searchUsers
+- [x] Created 7 social use cases:
+  - [x] `send_friend_request.dart` with validation
+  - [x] `accept_friend_request.dart`
+  - [x] `reject_friend_request.dart`
+  - [x] `get_friends.dart`
+  - [x] `get_pending_requests.dart`
+  - [x] `remove_friendship.dart`
+  - [x] `search_users.dart` for finding friends
+- [x] Created `get_friends_workouts.dart` use case
+  - Aggregates workouts from all friends
+  - Sorts by date, limits results
+
+#### Social Data Layer
+
+- [x] Created `friendship_model.dart` with Drift/Supabase mappers
+  - Bidirectional friendship support (requester/addressee)
+  - Status enum conversion (pending/accepted/rejected)
+- [x] Created `profile_model.dart` for user profiles
+- [x] Created `friendship_local_datasource.dart` with Drift
+  - Complex bidirectional queries
+  - Pending sync tracking
+  - Friend lookup optimization
+- [x] Created `friendship_remote_datasource.dart` with Supabase
+  - RLS-compliant queries
+  - Type-safe JSON parsing
+- [x] Implemented `friendship_repository_impl.dart`
+  - Offline-first friend requests
+  - Local-first writes with background sync
+  - Network failure handling
+- [x] Extended `profile_remote_datasource.dart` with search
+
+#### Social Presentation Layer
+
+- [x] Created `friendship_providers.dart` with Riverpod
+  - Data source and repository providers
+  - Use case providers
+  - UI state providers (friendsList, pendingRequestsList, friendsWorkoutsFeed)
+- [x] Created `user_search_page.dart`
+  - Real-time search with debouncing
+  - Send friend request functionality
+  - Search results display
+- [x] Created `friend_requests_page.dart`
+  - Tabbed interface (received/sent)
+  - Accept/reject actions
+  - Cancel sent requests
+- [x] Created `friends_list_page.dart`
+  - Friends list display with avatars
+  - Remove friend functionality
+  - Empty state handling
+- [x] Created `social_hub_page.dart`
+  - Main social page with notification badges
+  - Quick access to all social features
+  - Pending request counter
+- [x] Created `activity_feed_page.dart`
+  - Friends' recent workouts feed
+  - PR indicators with trophy icons
+  - Relative timestamps (custom formatter)
+  - Pull-to-refresh
+  - Workout stats display
+- [x] Created reusable `user_list_tile.dart` widget
+- [x] Updated `home_page.dart` with social navigation
+
+#### Infrastructure Updates
+
+- [x] Added NotFoundFailure and UnexpectedFailure to failures.dart
+- [x] Fixed ambiguous networkInfoProvider imports
+- [x] Created custom relative time formatter (avoiding external deps)
+- [x] Ran build_runner to generate all code
+- [x] Zero compilation errors
 
 ---
 
-## 🟡 Medium Priority (Phase 3)
+## 🔴 Critical Priority (Phase 3 - Remaining)
+
+No critical items remaining in Phase 3. Ready for Phase 4.
+
+---
+
+## 🟡 Medium Priority (Phase 4)
 
 ### Data Synchronization
 
@@ -361,23 +442,6 @@ No critical items remaining in Phase 2. Ready for Phase 3.
   - [ ] Add bio editing
   - [ ] Add display name editing
   - [ ] Show workout stats (total workouts, total volume, etc.)
-
-### Friend System
-
-- [ ] **Implement friend requests**
-  - [ ] Create `friends_provider.dart`
-  - [ ] Create `friends_list_page.dart`
-  - [ ] Create `friend_requests_page.dart`
-  - [ ] Create `user_search_page.dart`
-  - [ ] Add send request functionality
-  - [ ] Add accept/reject functionality
-  - [ ] Add remove friend functionality
-
-- [ ] **Add friend activity viewing**
-  - [ ] Create `friend_progress_page.dart`
-  - [ ] Show friend's recent workouts
-  - [ ] Show friend's personal records
-  - [ ] Add privacy controls
 
 ---
 
@@ -522,8 +586,8 @@ None currently. All foundation work completed successfully.
 ---
 
 **Last Updated**: 2025-12-30
-**Current Phase**: Phase 2 Complete, Ready for Phase 3
-**Status**: All Phase 2 Core Features complete ✅
+**Current Phase**: Phase 3 Complete, Ready for Phase 4
+**Status**: All Phase 3 Social Features complete ✅
 
 ## 📊 Progress Summary
 
@@ -542,4 +606,12 @@ None currently. All foundation work completed successfully.
 - ✅ Active Workout Tracking (100%)
 - ✅ Workout History (100%)
 
-### Overall Project Progress: ~80% Complete
+### Phase 3: Social Features (✅ 100% Complete)
+
+- ✅ Friend Requests (100%)
+- ✅ User Search (100%)
+- ✅ Friends List Management (100%)
+- ✅ Activity Feed (100%)
+- ✅ Shared Workouts Visibility (100%)
+
+### Overall Project Progress: ~85% Complete

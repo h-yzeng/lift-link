@@ -1,4 +1,7 @@
-import 'package:liftlink/core/network/network_info_provider.dart';
+import 'package:liftlink/core/error/failures.dart';
+import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
+import 'package:liftlink/features/workout/presentation/providers/exercise_providers.dart'
+    hide networkInfoProvider;
 import 'package:liftlink/features/social/data/datasources/friendship_local_datasource.dart';
 import 'package:liftlink/features/social/data/datasources/friendship_remote_datasource.dart';
 import 'package:liftlink/features/social/data/repositories/friendship_repository_impl.dart';
@@ -10,8 +13,9 @@ import 'package:liftlink/features/social/domain/usecases/get_pending_requests.da
 import 'package:liftlink/features/social/domain/usecases/reject_friend_request.dart';
 import 'package:liftlink/features/social/domain/usecases/remove_friendship.dart';
 import 'package:liftlink/features/social/domain/usecases/send_friend_request.dart';
-import 'package:liftlink/shared/database/app_database.dart';
-import 'package:liftlink/shared/supabase/supabase_config.dart';
+import 'package:liftlink/features/social/domain/usecases/get_friends_workouts.dart';
+import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
+import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'friendship_providers.g.dart';
@@ -83,6 +87,14 @@ GetPendingRequests getPendingRequests(GetPendingRequestsRef ref) {
   return GetPendingRequests(ref.watch(friendshipRepositoryProvider));
 }
 
+@riverpod
+GetFriendsWorkouts getFriendsWorkouts(GetFriendsWorkoutsRef ref) {
+  return GetFriendsWorkouts(
+    friendshipRepository: ref.watch(friendshipRepositoryProvider),
+    workoutRepository: ref.watch(workoutRepositoryProvider),
+  );
+}
+
 // ============================================================================
 // UI State Providers
 // ============================================================================
@@ -121,5 +133,20 @@ Future<List<Friendship>> pendingRequestsList(
   return result.fold(
     (failure) => throw Exception(failure.userMessage),
     (requests) => requests,
+  );
+}
+
+/// Fetch recent workouts from friends
+@riverpod
+Future<List<WorkoutSession>> friendsWorkoutsFeed(
+  FriendsWorkoutsFeedRef ref,
+  String userId,
+) async {
+  final useCase = ref.watch(getFriendsWorkoutsProvider);
+  final result = await useCase(userId: userId);
+
+  return result.fold(
+    (failure) => throw Exception(failure.userMessage),
+    (workouts) => workouts,
   );
 }

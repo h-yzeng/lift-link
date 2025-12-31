@@ -270,11 +270,23 @@ supabase status
   - Sets table with RPE color coding
   - Navigation from home page
 
-### Phase 3 (Social)
+### Phase 3 (Social) - ✅ COMPLETED (2025-12-30)
 
-- Friend requests
-- Activity feed
-- Shared workouts
+- ✅ Friend requests (COMPLETED 2025-12-30)
+  - User search with real-time filtering
+  - Send/accept/reject friend requests
+  - View pending requests (received and sent)
+  - Friends list management
+  - Remove friendships
+- ✅ Activity feed (COMPLETED 2025-12-30)
+  - View friends' recent workouts
+  - Workout details with stats and PR indicators
+  - Pull-to-refresh functionality
+  - Navigation to workout details
+- ✅ Shared workouts visibility (COMPLETED 2025-12-30)
+  - RLS policies enable viewing friends' workouts
+  - Friends can view each other's workout history
+  - Complete privacy controls via friendships
 
 ### Phase 4 (Analytics)
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/profile/presentation/pages/settings_page.dart';
+import 'package:liftlink/features/social/presentation/pages/social_hub_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/active_workout_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/workout_history_page.dart';
@@ -260,6 +261,19 @@ class HomePage extends ConsumerWidget {
                                 },
                                 icon: const Icon(Icons.history),
                                 label: const Text('View Workout History'),
+                              ),
+                              const SizedBox(height: 8),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SocialHubPage(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.people),
+                                label: const Text('Friends & Social'),
                               ),
                             ],
                           ),

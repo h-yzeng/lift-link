@@ -70,7 +70,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-                'Enter your email address and we\'ll send you a password reset link.'),
+                'Enter your email address and we\'ll send you a password reset link.',),
             const SizedBox(height: 16),
             TextField(
               controller: emailController,

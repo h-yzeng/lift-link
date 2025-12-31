@@ -51,7 +51,7 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
         exerciseId: exercise['id']!,
         exerciseName: exercise['name']!,
         sets: sets,
-      ));
+      ),);
     });
   }
 

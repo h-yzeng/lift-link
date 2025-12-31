@@ -1,12 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liftlink/core/preferences/rest_timer_preference.dart';
+import 'package:liftlink/core/theme/theme_provider.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/profile/domain/usecases/update_profile.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/workout/presentation/pages/export_data_page.dart';
+import 'package:liftlink/shared/widgets/sync_status_widget.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
+
+  void _showThemeSelector(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Select Theme',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            ...ThemeMode.values.map((mode) => ListTile(
+                  leading: Icon(mode.icon),
+                  title: Text(mode.displayName),
+                  trailing: ref.watch(themeModeProvider) == mode
+                      ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
+                      : null,
+                  onTap: () {
+                    ref.read(themeModeProvider.notifier).setThemeMode(mode);
+                    Navigator.pop(context);
+                  },
+                ),),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showRestTimerSelector(BuildContext context, WidgetRef ref) {
+    final currentValue = ref.read(defaultRestTimerSecondsProvider);
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Default Rest Timer',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            ...RestTimerPresets.values.map((seconds) => ListTile(
+                  leading: const Icon(Icons.timer),
+                  title: Text(RestTimerPresets.formatDuration(seconds)),
+                  trailing: currentValue == seconds
+                      ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
+                      : null,
+                  onTap: () {
+                    ref.read(defaultRestTimerSecondsProvider.notifier).setDuration(seconds);
+                    Navigator.pop(context);
+                  },
+                ),),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
 
   Future<void> _editUsername(BuildContext context, WidgetRef ref, String? currentUsername, String userId) async {
     final controller = TextEditingController(text: currentUsername);
@@ -295,6 +364,17 @@ class SettingsPage extends ConsumerWidget {
 
           return ListView(
             children: [
+              // Appearance Section
+              _buildSectionHeader('Appearance'),
+              ListTile(
+                leading: Icon(ref.watch(themeModeProvider).icon),
+                title: const Text('Theme'),
+                subtitle: Text(ref.watch(themeModeProvider).displayName),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _showThemeSelector(context, ref),
+              ),
+              const Divider(),
+
               // Unit Preference Section
               _buildSectionHeader('Preferences'),
               SwitchListTile(
@@ -326,6 +406,17 @@ class SettingsPage extends ConsumerWidget {
                     error: (_, __) {},
                   );
                 },
+              ),
+              ListTile(
+                leading: const Icon(Icons.timer),
+                title: const Text('Default Rest Timer'),
+                subtitle: Text(
+                  RestTimerPresets.formatDuration(
+                    ref.watch(defaultRestTimerSecondsProvider),
+                  ),
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _showRestTimerSelector(context, ref),
               ),
               const Divider(),
 
@@ -384,6 +475,10 @@ class SettingsPage extends ConsumerWidget {
 
               // Data Section
               _buildSectionHeader('Data'),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: SyncStatusCard(),
+              ),
               ListTile(
                 leading: const Icon(Icons.download),
                 title: const Text('Export Workout Data'),

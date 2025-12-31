@@ -11,6 +11,7 @@ import 'package:liftlink/features/workout/domain/repositories/workout_repository
 import 'package:liftlink/features/workout/domain/usecases/add_exercise_to_workout.dart';
 import 'package:liftlink/features/workout/domain/usecases/add_set_to_exercise.dart';
 import 'package:liftlink/features/workout/domain/usecases/complete_workout.dart';
+import 'package:liftlink/features/workout/domain/usecases/delete_set.dart';
 import 'package:liftlink/features/workout/domain/usecases/get_active_workout.dart';
 import 'package:liftlink/features/workout/domain/usecases/get_workout_history.dart';
 import 'package:liftlink/features/workout/domain/usecases/start_workout.dart';
@@ -82,6 +83,11 @@ GetWorkoutHistory getWorkoutHistoryUseCase(Ref ref) {
 @riverpod
 UpdateSet updateSetUseCase(Ref ref) {
   return UpdateSet(ref.watch(workoutRepositoryProvider));
+}
+
+@riverpod
+DeleteSet deleteSetUseCase(Ref ref) {
+  return DeleteSet(ref.watch(workoutRepositoryProvider));
 }
 
 // Active workout provider - streams the current active workout

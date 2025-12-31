@@ -37,7 +37,7 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
 
       if (existing != null) {
         return const Left(
-            Failure.validation(message: 'Friendship already exists'));
+            Failure.validation(message: 'Friendship already exists'),);
       }
 
       // Create new friendship
@@ -97,13 +97,13 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       // Validate that current user is the addressee
       if (friendship.addresseeId != currentUserId) {
         return const Left(Failure.validation(
-            message: 'Cannot accept request you did not receive'));
+            message: 'Cannot accept request you did not receive',),);
       }
 
       // Validate that the friendship is pending
       if (!friendship.isPending) {
         return const Left(
-            Failure.validation(message: 'Friendship is not pending'));
+            Failure.validation(message: 'Friendship is not pending',),);
       }
 
       // Update the friendship status
@@ -162,13 +162,13 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       // Validate that current user is the addressee
       if (friendship.addresseeId != currentUserId) {
         return const Left(Failure.validation(
-            message: 'Cannot reject request you did not receive'));
+            message: 'Cannot reject request you did not receive',),);
       }
 
       // Validate that the friendship is pending
       if (!friendship.isPending) {
         return const Left(
-            Failure.validation(message: 'Friendship is not pending'));
+            Failure.validation(message: 'Friendship is not pending',),);
       }
 
       // Update the friendship status
@@ -228,7 +228,7 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       if (friendship.requesterId != currentUserId &&
           friendship.addresseeId != currentUserId) {
         return const Left(Failure.validation(
-            message: 'Cannot remove friendship you are not part of'));
+            message: 'Cannot remove friendship you are not part of',),);
       }
 
       // Delete locally first
@@ -389,7 +389,7 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       if (friendship.requesterId != currentUserId &&
           friendship.addresseeId != currentUserId) {
         return const Left(Failure.validation(
-            message: 'Cannot update friendship you are not part of'));
+            message: 'Cannot update friendship you are not part of',),);
       }
 
       // Determine which nickname to update based on current user's role

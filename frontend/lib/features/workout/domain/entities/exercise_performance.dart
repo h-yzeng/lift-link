@@ -49,11 +49,9 @@ class ExercisePerformance with _$ExercisePerformance {
     return '${max.toStringAsFixed(1)} kg';
   }
 
-  /// Total volume (sum of sets × reps × weight) excluding warmups.
+  /// Total volume (sum of sets × reps × weight) including warmups.
   double get totalVolume {
-    return sets
-        .where((set) => !set.isWarmup)
-        .fold(0.0, (sum, set) => sum + set.volume);
+    return sets.fold(0.0, (sum, set) => sum + set.volume);
   }
 
   /// Number of working sets (excluding warmups)

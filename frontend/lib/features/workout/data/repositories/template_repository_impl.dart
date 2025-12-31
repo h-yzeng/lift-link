@@ -18,7 +18,7 @@ class TemplateRepositoryImpl implements TemplateRepository {
     } catch (e) {
       return Left(CacheFailure(
         message: 'Failed to load templates: $e',
-      ));
+      ),);
     }
   }
 
@@ -30,7 +30,7 @@ class TemplateRepositoryImpl implements TemplateRepository {
     } catch (e) {
       return Left(CacheFailure(
         message: 'Failed to load template: $e',
-      ));
+      ),);
     }
   }
 
@@ -42,7 +42,7 @@ class TemplateRepositoryImpl implements TemplateRepository {
     } catch (e) {
       return Left(CacheFailure(
         message: 'Failed to create template: $e',
-      ));
+      ),);
     }
   }
 
@@ -54,7 +54,7 @@ class TemplateRepositoryImpl implements TemplateRepository {
     } catch (e) {
       return Left(CacheFailure(
         message: 'Failed to update template: $e',
-      ));
+      ),);
     }
   }
 
@@ -66,7 +66,7 @@ class TemplateRepositoryImpl implements TemplateRepository {
     } catch (e) {
       return Left(CacheFailure(
         message: 'Failed to delete template: $e',
-      ));
+      ),);
     }
   }
 }

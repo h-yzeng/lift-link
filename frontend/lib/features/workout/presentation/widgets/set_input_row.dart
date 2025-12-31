@@ -52,7 +52,12 @@ class _SetInputRowState extends State<SetInputRow> {
     _rpeController = TextEditingController(
       text: widget.existingSet?.rpe?.toString() ?? '',
     );
-    _isEditing = widget.existingSet == null;
+
+    // Start in edit mode if:
+    // 1. This is a new set (existingSet is null), OR
+    // 2. This is a freshly added set with no data (reps = 0 and weight = 0)
+    _isEditing = widget.existingSet == null ||
+        (widget.existingSet!.reps == 0 && widget.existingSet!.weightKg == 0.0);
   }
 
   @override
@@ -169,16 +174,19 @@ class _SetInputRowState extends State<SetInputRow> {
             ),
             const SizedBox(width: 8),
 
-            // Warmup checkbox
-            Checkbox(
-              value: _isWarmup,
-              onChanged: _isEditing
-                  ? (value) {
-                      setState(() {
-                        _isWarmup = value ?? false;
-                      });
-                    }
-                  : null,
+            // Warmup checkbox with tooltip
+            Tooltip(
+              message: 'Mark as warmup set (excluded from 1RM calculation)',
+              child: Checkbox(
+                value: _isWarmup,
+                onChanged: _isEditing
+                    ? (value) {
+                        setState(() {
+                          _isWarmup = value ?? false;
+                        });
+                      }
+                    : null,
+              ),
             ),
             const SizedBox(width: 8),
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liftlink/core/theme/theme_provider.dart';
 import 'package:liftlink/features/auth/presentation/pages/main_scaffold.dart';
 import 'package:liftlink/features/auth/presentation/pages/login_page.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
@@ -11,6 +12,8 @@ class LiftLinkApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch auth state changes
     final authStateAsync = ref.watch(authStateChangesProvider);
+    // Watch theme mode
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp(
       title: 'LiftLink',
@@ -25,7 +28,7 @@ class LiftLinkApp extends ConsumerWidget {
           brightness: Brightness.dark,
         ),
       ),
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
       home: authStateAsync.when(
         data: (user) {
           // If user is logged in, show main scaffold with bottom navigation

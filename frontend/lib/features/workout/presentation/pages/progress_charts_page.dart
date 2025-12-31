@@ -111,7 +111,7 @@ class _VolumeChartTab extends ConsumerWidget {
                           drawVerticalLine: true,
                           getDrawingHorizontalLine: (value) {
                             return FlLine(
-                              color: Colors.grey.withOpacity(0.2),
+                              color: Colors.grey.withValues(alpha: 0.2),
                               strokeWidth: 1,
                             );
                           },
@@ -172,7 +172,7 @@ class _VolumeChartTab extends ConsumerWidget {
                               color: Theme.of(context)
                                   .colorScheme
                                   .primary
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                             ),
                           ),
                         ],
@@ -313,7 +313,7 @@ class _OneRMChartTabState extends ConsumerState<_OneRMChartTab> {
                           drawVerticalLine: true,
                           getDrawingHorizontalLine: (value) {
                             return FlLine(
-                              color: Colors.grey.withOpacity(0.2),
+                              color: Colors.grey.withValues(alpha: 0.2),
                               strokeWidth: 1,
                             );
                           },
@@ -371,7 +371,7 @@ class _OneRMChartTabState extends ConsumerState<_OneRMChartTab> {
                             dotData: const FlDotData(show: true),
                             belowBarData: BarAreaData(
                               show: true,
-                              color: Colors.green.withOpacity(0.1),
+                              color: Colors.green.withValues(alpha: 0.1),
                             ),
                           ),
                         ],
@@ -531,7 +531,7 @@ class _FrequencyChartTab extends ConsumerWidget {
                       drawVerticalLine: false,
                       getDrawingHorizontalLine: (value) {
                         return FlLine(
-                          color: Colors.grey.withOpacity(0.2),
+                          color: Colors.grey.withValues(alpha: 0.2),
                           strokeWidth: 1,
                         );
                       },

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/profile/presentation/pages/settings_page.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/workout/presentation/pages/personal_records_page.dart';
@@ -12,7 +11,6 @@ class ProfilePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAsync = ref.watch(currentUserProvider);
     final profileAsync = ref.watch(currentProfileProvider);
     final theme = Theme.of(context);
 
@@ -82,7 +80,7 @@ class ProfilePage extends ConsumerWidget {
                           '@${profile.username}',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onPrimaryContainer
-                                .withOpacity(0.7),
+                                .withValues(alpha: 0.7),
                           ),
                         ),
                       if (profile.hasBio) ...[

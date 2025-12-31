@@ -305,27 +305,38 @@ supabase status
   - Training frequency by muscle group
   - Balance recommendations
 
-### Phase 5 (Advanced) - 🟡 IN PROGRESS (2025-12-31)
+### Phase 5 (Advanced) - ✅ COMPLETED (2025-12-31)
 
-- 🟡 Workout templates (In Progress)
-  - Template entity and repository created
-  - CRUD use cases implemented
-  - Templates page and create page built
-  - Needs integration testing with workout flow
-- 🟡 Rest timer (In Progress)
-  - RestTimer widget created
-  - Needs integration with active workout page
-- 🟡 Data export (In Progress)
-  - Export use case created
-  - Export page built
-  - Needs testing
-- ⬜ Exercise videos (Not Started)
+- ✅ Workout templates (COMPLETED)
+  - Template entity, repository, and use cases
+  - Templates page with list and create functionality
+  - Start workout from template support
+- ✅ Rest timer (COMPLETED)
+  - RestTimer widget with start/pause/resume/skip
+  - Integrated into active workout page
+  - Configurable default duration in settings
+- ✅ Data export (COMPLETED)
+  - JSON and CSV export formats
+  - Copy to clipboard, share, and save options
+  - Preview functionality
+- ✅ Sync service (COMPLETED)
+  - Background sync for offline data
+  - Manual sync trigger
+  - Sync status indicator in app bar
+- ✅ Dark mode support (COMPLETED)
+  - System/Light/Dark theme options
+  - Theme preference saved to device
+- ✅ Settings page enhancements (COMPLETED)
+  - Theme selector
+  - Default rest timer preference
+  - Data sync card with manual sync
+- ⬜ Exercise videos (Future)
 
 ---
 
 ## Recent Updates
 
-### 2025-12-31 - Phase 5 Advanced Features Started
+### 2025-12-31 - Phase 5 Advanced Features COMPLETED
 
 **Workout Templates:**
 
@@ -342,21 +353,51 @@ supabase status
 **Rest Timer:**
 
 - Created `rest_timer.dart` widget with countdown functionality
-- Configurable rest duration
-- Visual progress indicator
+- Integrated into active workout page app bar
+- Configurable default duration in settings
+- Visual progress indicator with haptic feedback
 
 **Data Export:**
 
 - Created `export_workout_data.dart` use case
-- CSV export format for workout history
-- Built `export_data_page.dart` for user interface
+- JSON and CSV export formats
+- Built `export_data_page.dart` with preview, copy, share, save
+
+**Sync Service:**
+
+- Created `sync_service.dart` for background data sync
+- Created `sync_provider.dart` with Riverpod integration
+- Created `sync_status_widget.dart` for UI feedback
+- Added sync status to home page app bar
+- Added sync card to settings page
+
+**Dark Mode & Preferences:**
+
+- Created `theme_provider.dart` with system/light/dark modes
+- Added theme selector to settings page
+- Created `rest_timer_preference.dart` for default timer duration
+- Updated `app.dart` to use theme provider
+
+**Files Added:**
+
+- `core/sync/sync_service.dart`
+- `core/sync/sync_provider.dart`
+- `core/theme/theme_provider.dart`
+- `core/preferences/rest_timer_preference.dart`
+- `shared/widgets/sync_status_widget.dart`
+
+**Files Modified:**
+
+- `app.dart` - Added theme mode support
+- `home_page.dart` - Added sync status widget
+- `settings_page.dart` - Added theme, rest timer, sync options
+- `active_workout_page.dart` - Uses default rest timer preference
 
 **Next Steps:**
 
-1. Integrate templates with workout start flow
-2. Add rest timer to active workout page
-3. Test data export functionality
-4. Add exercise videos feature
+1. Testing (unit tests, widget tests, integration tests)
+2. Platform expansion (iOS, Android releases)
+3. Exercise videos feature (future)
 
 ---
 
@@ -577,5 +618,5 @@ supabase status
 
 ---
 
-**Document Version**: 1.6
-**Last Updated**: 2025-12-31 (Phase 5 In Progress - Templates, Rest Timer, Export)
+**Document Version**: 1.7
+**Last Updated**: 2025-12-31 (Phase 5 Complete - All Advanced Features)

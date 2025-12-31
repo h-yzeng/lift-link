@@ -61,8 +61,8 @@ class ExportWorkoutData {
           'isWarmup': s.isWarmup,
           'rpe': s.rpe,
           'oneRepMax': s.calculated1RM,
-        }).toList(),
-      }).toList(),
+        },).toList(),
+      },).toList(),
     };
   }
 

@@ -276,11 +276,11 @@ Future<void> showRestTimerBottomSheet(
 
 /// A compact rest timer button that can be added to the workout page.
 class RestTimerButton extends StatelessWidget {
-  final int defaultSeconds;
+  final int? defaultSeconds;
 
   const RestTimerButton({
     super.key,
-    this.defaultSeconds = 90,
+    this.defaultSeconds,
   });
 
   @override
@@ -288,7 +288,7 @@ class RestTimerButton extends StatelessWidget {
     return FilledButton.tonalIcon(
       onPressed: () => showRestTimerBottomSheet(
         context,
-        initialSeconds: defaultSeconds,
+        initialSeconds: defaultSeconds ?? 90,
       ),
       icon: const Icon(Icons.timer),
       label: const Text('Rest Timer'),

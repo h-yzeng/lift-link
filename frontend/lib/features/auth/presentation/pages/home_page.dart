@@ -12,6 +12,7 @@ import 'package:liftlink/features/workout/presentation/pages/progress_charts_pag
 import 'package:liftlink/features/workout/presentation/pages/templates_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/workout_history_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
+import 'package:liftlink/shared/widgets/sync_status_widget.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -85,6 +86,9 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('LiftLink'),
+        actions: const [
+          SyncStatusWidget(),
+        ],
       ),
       body: SafeArea(
         child: profileAsync.when(

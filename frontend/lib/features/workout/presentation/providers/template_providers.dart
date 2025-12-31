@@ -8,7 +8,6 @@ import 'package:liftlink/features/workout/domain/repositories/template_repositor
 import 'package:liftlink/features/workout/domain/usecases/create_template.dart';
 import 'package:liftlink/features/workout/domain/usecases/delete_template.dart';
 import 'package:liftlink/features/workout/domain/usecases/get_templates.dart';
-import 'package:liftlink/shared/database/app_database.dart' as db;
 
 /// Provider for template local data source.
 final templateLocalDataSourceProvider = Provider<TemplateLocalDataSource>((ref) {

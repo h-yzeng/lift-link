@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/error/failures.dart';
+import 'package:liftlink/core/preferences/rest_timer_preference.dart';
 import 'package:liftlink/core/utils/unit_conversion.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_performance.dart';
@@ -197,10 +198,18 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
         title: Text(widget.workout.title),
         actions: [
           // Rest Timer button
-          IconButton(
-            icon: const Icon(Icons.timer),
-            onPressed: () => showRestTimerBottomSheet(context),
-            tooltip: 'Rest Timer',
+          Consumer(
+            builder: (context, ref, _) {
+              final defaultSeconds = ref.watch(defaultRestTimerSecondsProvider);
+              return IconButton(
+                icon: const Icon(Icons.timer),
+                onPressed: () => showRestTimerBottomSheet(
+                  context,
+                  initialSeconds: defaultSeconds,
+                ),
+                tooltip: 'Rest Timer (${RestTimerPresets.formatDuration(defaultSeconds)})',
+              );
+            },
           ),
           if (!_isLoading)
             Consumer(
@@ -391,6 +400,29 @@ class _ExerciseCard extends ConsumerWidget {
     );
   }
 
+  Future<void> _deleteSet(
+    WidgetRef ref,
+    BuildContext context,
+    String setId,
+  ) async {
+    final useCase = ref.read(deleteSetUseCaseProvider);
+    final result = await useCase(setId: setId);
+
+    result.fold(
+      (Failure failure) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(failure.userMessage)),
+          );
+        }
+      },
+      (_) {
+        // Refresh the workout to show updated values
+        ref.invalidate(activeWorkoutProvider);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
@@ -457,6 +489,9 @@ class _ExerciseCard extends ConsumerWidget {
                     isWarmup,
                     rpe,
                   );
+                },
+                onDelete: () {
+                  _deleteSet(ref, context, set.id);
                 },
               );
             }),

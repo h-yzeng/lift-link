@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise.dart';
+import 'package:liftlink/features/workout/presentation/pages/create_exercise_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/exercise_providers.dart';
 import 'package:liftlink/features/workout/presentation/widgets/exercise_card.dart';
 
@@ -219,9 +220,17 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
                         Text(
                           _isSearching
                               ? 'Try a different search term'
-                              : 'Pull down to sync exercises',
+                              : 'Pull down to sync or create a custom exercise',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
+                        if (!_isSearching) ...[
+                          const SizedBox(height: 16),
+                          FilledButton.icon(
+                            onPressed: () => _navigateToCreateExercise(context),
+                            icon: const Icon(Icons.add),
+                            label: const Text('Create Exercise'),
+                          ),
+                        ],
                       ],
                     ),
                   );
@@ -289,6 +298,28 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _navigateToCreateExercise(context),
+        icon: const Icon(Icons.add),
+        label: const Text('Create'),
+        tooltip: 'Create custom exercise',
+      ),
     );
+  }
+
+  Future<void> _navigateToCreateExercise(BuildContext context) async {
+    final result = await Navigator.push<Exercise>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CreateExercisePage(),
+      ),
+    );
+
+    if (result != null && widget.selectionMode && mounted) {
+      Navigator.pop(context, {
+        'id': result.id,
+        'name': result.name,
+      });
+    }
   }
 }

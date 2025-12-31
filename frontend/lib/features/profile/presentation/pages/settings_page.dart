@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liftlink/core/preferences/onboarding_preference.dart';
 import 'package:liftlink/core/preferences/rest_timer_preference.dart';
 import 'package:liftlink/core/theme/theme_provider.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
@@ -500,6 +501,48 @@ class SettingsPage extends ConsumerWidget {
                 leading: Icon(Icons.info_outline),
                 title: Text('App Version'),
                 subtitle: Text('1.0.0'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.play_circle_outline),
+                title: const Text('Replay Welcome Tour'),
+                subtitle: const Text('See the app introduction again'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Replay Welcome Tour'),
+                      content: const Text(
+                        'This will show the welcome tour next time you open the app.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        FilledButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Replay'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirmed == true && context.mounted) {
+                    await ref
+                        .read(onboardingCompletedProvider.notifier)
+                        .resetOnboarding();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Welcome tour will show on next app launch',
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.logout),

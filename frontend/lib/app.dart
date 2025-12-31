@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liftlink/core/preferences/onboarding_preference.dart';
 import 'package:liftlink/core/theme/theme_provider.dart';
 import 'package:liftlink/features/auth/presentation/pages/main_scaffold.dart';
 import 'package:liftlink/features/auth/presentation/pages/login_page.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
+import 'package:liftlink/features/onboarding/presentation/pages/onboarding_page.dart';
 
 class LiftLinkApp extends ConsumerWidget {
   const LiftLinkApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch onboarding state
+    final onboardingAsync = ref.watch(onboardingCompletedProvider);
     // Watch auth state changes
     final authStateAsync = ref.watch(authStateChangesProvider);
     // Watch theme mode
@@ -29,35 +33,55 @@ class LiftLinkApp extends ConsumerWidget {
         ),
       ),
       themeMode: themeMode,
-      home: authStateAsync.when(
-        data: (user) {
-          // If user is logged in, show main scaffold with bottom navigation
-          // Otherwise, show login page
-          return user != null ? const MainScaffold() : const LoginPage();
+      home: onboardingAsync.when(
+        data: (onboardingCompleted) {
+          // Show onboarding for new users
+          if (!onboardingCompleted) {
+            return const OnboardingPage();
+          }
+
+          // After onboarding, check auth state
+          return authStateAsync.when(
+            data: (user) {
+              // If user is logged in, show main scaffold with bottom navigation
+              // Otherwise, show login page
+              return user != null ? const MainScaffold() : const LoginPage();
+            },
+            loading: () => const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            error: (error, stack) => Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                    const SizedBox(height: 16),
+                    Text('Error: $error'),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Invalidate provider to retry
+                        ref.invalidate(authStateChangesProvider);
+                      },
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
         },
         loading: () => const Scaffold(
           body: Center(
             child: CircularProgressIndicator(),
           ),
         ),
-        error: (error, stack) => Scaffold(
+        error: (error, stack) => const Scaffold(
           body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                const SizedBox(height: 16),
-                Text('Error: $error'),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    // Invalidate provider to retry
-                    ref.invalidate(authStateChangesProvider);
-                  },
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
+            child: CircularProgressIndicator(),
           ),
         ),
       ),

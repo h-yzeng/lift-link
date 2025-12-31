@@ -23,18 +23,21 @@
 ## Phase 2: Core Features (✅ COMPLETED)
 
 ### Authentication
+
 - [x] User entity with email/password support
 - [x] Login and registration flows with Supabase Auth
 - [x] Auth state management with Riverpod
 - [x] Route protection based on auth state
 
 ### Exercise Library
+
 - [x] Search and filter by muscle group, equipment, custom-only
 - [x] Offline-first with background sync
 - [x] 20 seeded system exercises
 - [x] Custom exercise CRUD operations
 
 ### Active Workout Tracking
+
 - [x] Start/complete workout functionality
 - [x] Add exercises and sets with weight, reps, RPE
 - [x] Real-time 1RM calculation (Epley formula)
@@ -42,6 +45,7 @@
 - [x] Offline-first with background sync
 
 ### Workout History
+
 - [x] Workout summary cards with stats
 - [x] Date range filtering
 - [x] Detailed workout view with exercise breakdown
@@ -106,10 +110,12 @@
 ## Remaining Work
 
 ### Platform Expansion
+
 - [ ] iOS release testing and deployment
 - [ ] Android release testing and deployment
 
 ### Future Features
+
 - [ ] Exercise video demonstrations
 - [ ] Plate calculator for barbell loading
 - [ ] Apple Watch / Wear OS companion apps
@@ -119,16 +125,19 @@
 ## Technical Notes
 
 **1RM Calculation:**
+
 - Epley Formula: `weight × (1 + reps/30)`
 - Calculated client-side only, never stored
 
 **Offline-First Architecture:**
+
 - Drift (SQLite) is source of truth for UI
 - Supabase sync in background when online
 - `isPendingSync` flag tracks unsynced data
 - Last-write-wins conflict resolution
 
 **Code Generation:**
+
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
 ```

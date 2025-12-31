@@ -48,6 +48,7 @@ LiftLink follows **Clean Architecture** principles with strict separation of con
 **Read Operations:** Always read from Drift (local SQLite), background sync from Supabase.
 
 **Write Operations:**
+
 1. Write to Drift immediately (instant UI update)
 2. Mark as `isPendingSync: true`
 3. Sync to Supabase when online
@@ -61,16 +62,17 @@ LiftLink follows **Clean Architecture** principles with strict separation of con
 
 ### Database Schema (PostgreSQL via Supabase)
 
-| Table | Description |
-|-------|-------------|
-| `profiles` | User profiles (1:1 with auth.users) |
-| `exercises` | Exercise library (system + custom) |
-| `workout_sessions` | Individual workouts |
-| `exercise_performances` | Junction: workouts ↔ exercises |
-| `sets` | Individual sets with weight/reps/RPE |
-| `friendships` | Friend relationships |
+| Table                   | Description                          |
+| ----------------------- | ------------------------------------ |
+| `profiles`              | User profiles (1:1 with auth.users)  |
+| `exercises`             | Exercise library (system + custom)   |
+| `workout_sessions`      | Individual workouts                  |
+| `exercise_performances` | Junction: workouts ↔ exercises       |
+| `sets`                  | Individual sets with weight/reps/RPE |
+| `friendships`           | Friend relationships                 |
 
 **Important:**
+
 - 1RM is NEVER stored - calculated client-side using Epley Formula
 - All tables use UUID primary keys
 - Row Level Security (RLS) enabled on all tables
@@ -80,6 +82,7 @@ LiftLink follows **Clean Architecture** principles with strict separation of con
 ## Technology Stack
 
 ### Frontend
+
 - Flutter 3.38.5+
 - Riverpod (state management)
 - Drift (local SQLite)
@@ -87,6 +90,7 @@ LiftLink follows **Clean Architecture** principles with strict separation of con
 - Dartz (Either<Failure, Result>)
 
 ### Backend
+
 - Supabase (PostgreSQL + Auth)
 
 ---
@@ -111,6 +115,7 @@ LiftLink/
 ## Development Phases
 
 ### Phase 1: Foundation ✅
+
 - Project scaffolding
 - Database schema with RLS
 - Offline-first architecture
@@ -118,23 +123,27 @@ LiftLink/
 - Documentation
 
 ### Phase 2: Core Features ✅
+
 - Authentication (login, register, auth state)
 - Exercise Library Browser (search, filter, offline-first)
 - Active Workout Tracking (sets, reps, 1RM calculation)
 - Workout History (summary cards, detail view)
 
 ### Phase 3: Social Features ✅
+
 - User search and friend requests
 - Friends list management
 - Activity feed with friends' workouts
 - Shared workout visibility via RLS
 
 ### Phase 4: Analytics ✅
+
 - Personal records tracking
 - Progress charts (volume, 1RM, frequency)
 - Muscle frequency analysis
 
 ### Phase 5: Advanced Features ✅
+
 - Workout templates
 - Rest timer
 - Data export (JSON/CSV)
@@ -142,6 +151,7 @@ LiftLink/
 - Dark mode and settings
 
 ### Phase 6: Code Quality & UX Polish ✅
+
 - Onboarding flow
 - Custom exercise creation
 - Shared widget library
@@ -149,6 +159,7 @@ LiftLink/
 - Barrel exports for modules
 
 ### Phase 7: Testing & Quality Assurance ✅
+
 - Unit tests for domain entities
 - Unit tests for use cases with mocks
 - Widget tests for shared components

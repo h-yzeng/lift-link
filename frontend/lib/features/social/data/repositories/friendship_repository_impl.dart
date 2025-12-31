@@ -36,7 +36,8 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       );
 
       if (existing != null) {
-        return Left(const Failure.validation(message: 'Friendship already exists'));
+        return const Left(
+            Failure.validation(message: 'Friendship already exists'));
       }
 
       // Create new friendship
@@ -73,9 +74,9 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
 
       return Right(friendship);
     } on ServerException {
-      return Left(ServerFailure());
+      return const Left(ServerFailure());
     } on CacheException {
-      return Left(CacheFailure());
+      return const Left(CacheFailure());
     } catch (e) {
       return Left(Failure.unexpected(message: e.toString()));
     }
@@ -90,17 +91,19 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       // Get the friendship
       final friendship = await localDataSource.getFriendshipById(friendshipId);
       if (friendship == null) {
-        return Left(const Failure.notFound(message: 'Friendship not found'));
+        return const Left(Failure.notFound(message: 'Friendship not found'));
       }
 
       // Validate that current user is the addressee
       if (friendship.addresseeId != currentUserId) {
-        return Left(const Failure.validation(message: 'Cannot accept request you did not receive'));
+        return const Left(Failure.validation(
+            message: 'Cannot accept request you did not receive'));
       }
 
       // Validate that the friendship is pending
       if (!friendship.isPending) {
-        return Left(const Failure.validation(message: 'Friendship is not pending'));
+        return const Left(
+            Failure.validation(message: 'Friendship is not pending'));
       }
 
       // Update the friendship status
@@ -136,9 +139,9 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
 
       return Right(updatedFriendship);
     } on ServerException {
-      return Left(ServerFailure());
+      return const Left(ServerFailure());
     } on CacheException {
-      return Left(CacheFailure());
+      return const Left(CacheFailure());
     } catch (e) {
       return Left(Failure.unexpected(message: e.toString()));
     }
@@ -153,17 +156,19 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       // Get the friendship
       final friendship = await localDataSource.getFriendshipById(friendshipId);
       if (friendship == null) {
-        return Left(const Failure.notFound(message: 'Friendship not found'));
+        return const Left(Failure.notFound(message: 'Friendship not found'));
       }
 
       // Validate that current user is the addressee
       if (friendship.addresseeId != currentUserId) {
-        return Left(const Failure.validation(message: 'Cannot reject request you did not receive'));
+        return const Left(Failure.validation(
+            message: 'Cannot reject request you did not receive'));
       }
 
       // Validate that the friendship is pending
       if (!friendship.isPending) {
-        return Left(const Failure.validation(message: 'Friendship is not pending'));
+        return const Left(
+            Failure.validation(message: 'Friendship is not pending'));
       }
 
       // Update the friendship status
@@ -199,9 +204,9 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
 
       return Right(updatedFriendship);
     } on ServerException {
-      return Left(ServerFailure());
+      return const Left(ServerFailure());
     } on CacheException {
-      return Left(CacheFailure());
+      return const Left(CacheFailure());
     } catch (e) {
       return Left(Failure.unexpected(message: e.toString()));
     }
@@ -216,13 +221,14 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       // Get the friendship
       final friendship = await localDataSource.getFriendshipById(friendshipId);
       if (friendship == null) {
-        return Left(const Failure.notFound(message: 'Friendship not found'));
+        return const Left(Failure.notFound(message: 'Friendship not found'));
       }
 
       // Validate that current user is involved in the friendship
       if (friendship.requesterId != currentUserId &&
           friendship.addresseeId != currentUserId) {
-        return Left(const Failure.validation(message: 'Cannot remove friendship you are not part of'));
+        return const Left(Failure.validation(
+            message: 'Cannot remove friendship you are not part of'));
       }
 
       // Delete locally first
@@ -239,9 +245,9 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
 
       return const Right(null);
     } on ServerException {
-      return Left(ServerFailure());
+      return const Left(ServerFailure());
     } on CacheException {
-      return Left(CacheFailure());
+      return const Left(CacheFailure());
     } catch (e) {
       return Left(Failure.unexpected(message: e.toString()));
     }
@@ -254,7 +260,7 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       final friendships = await localDataSource.getFriends(userId);
       return Right(friendships);
     } on CacheException {
-      return Left(CacheFailure());
+      return const Left(CacheFailure());
     } catch (e) {
       return Left(Failure.unexpected(message: e.toString()));
     }
@@ -269,7 +275,7 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       final friendships = await localDataSource.getPendingRequests(userId);
       return Right(friendships);
     } on CacheException {
-      return Left(CacheFailure());
+      return const Left(CacheFailure());
     } catch (e) {
       return Left(Failure.unexpected(message: e.toString()));
     }
@@ -284,7 +290,7 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       final friendships = await localDataSource.getReceivedRequests(userId);
       return Right(friendships);
     } on CacheException {
-      return Left(CacheFailure());
+      return const Left(CacheFailure());
     } catch (e) {
       return Left(Failure.unexpected(message: e.toString()));
     }
@@ -299,7 +305,7 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       final friendships = await localDataSource.getSentRequests(userId);
       return Right(friendships);
     } on CacheException {
-      return Left(CacheFailure());
+      return const Left(CacheFailure());
     } catch (e) {
       return Left(Failure.unexpected(message: e.toString()));
     }
@@ -318,7 +324,7 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       );
       return Right(friendship);
     } on CacheException {
-      return Left(CacheFailure());
+      return const Left(CacheFailure());
     } catch (e) {
       return Left(Failure.unexpected(message: e.toString()));
     }
@@ -333,11 +339,12 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
   Future<Either<Failure, void>> syncFriendships(String userId) async {
     try {
       if (!await networkInfo.isConnected) {
-        return Left(NetworkFailure());
+        return const Left(NetworkFailure());
       }
 
       // Fetch friendships from remote
-      final remoteFriendships = await remoteDataSource.getAllFriendships(userId);
+      final remoteFriendships =
+          await remoteDataSource.getAllFriendships(userId);
 
       // Update local database
       for (final friendship in remoteFriendships) {
@@ -357,9 +364,9 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
 
       return const Right(null);
     } on ServerException {
-      return Left(ServerFailure());
+      return const Left(ServerFailure());
     } on CacheException {
-      return Left(CacheFailure());
+      return const Left(CacheFailure());
     } catch (e) {
       return Left(Failure.unexpected(message: e.toString()));
     }
@@ -375,13 +382,14 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       // Get the friendship
       final friendship = await localDataSource.getFriendshipById(friendshipId);
       if (friendship == null) {
-        return Left(const Failure.notFound(message: 'Friendship not found'));
+        return const Left(Failure.notFound(message: 'Friendship not found'));
       }
 
       // Validate that current user is involved in the friendship
       if (friendship.requesterId != currentUserId &&
           friendship.addresseeId != currentUserId) {
-        return Left(const Failure.validation(message: 'Cannot update friendship you are not part of'));
+        return const Left(Failure.validation(
+            message: 'Cannot update friendship you are not part of'));
       }
 
       // Determine which nickname to update based on current user's role
@@ -420,9 +428,9 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
 
       return Right(updatedFriendship);
     } on ServerException {
-      return Left(ServerFailure());
+      return const Left(ServerFailure());
     } on CacheException {
-      return Left(CacheFailure());
+      return const Left(CacheFailure());
     } catch (e) {
       return Left(Failure.unexpected(message: e.toString()));
     }

@@ -7,6 +7,9 @@ import 'package:liftlink/features/social/presentation/pages/social_hub_page.dart
 import 'package:liftlink/features/workout/presentation/pages/active_workout_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/workout_history_page.dart';
+import 'package:liftlink/features/workout/presentation/pages/personal_records_page.dart';
+import 'package:liftlink/features/workout/presentation/pages/progress_charts_page.dart';
+import 'package:liftlink/features/workout/presentation/pages/muscle_frequency_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 
 class HomePage extends ConsumerWidget {
@@ -102,10 +105,10 @@ class HomePage extends ConsumerWidget {
           }
 
           return Center(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   CircleAvatar(
                     radius: 50,
@@ -274,6 +277,45 @@ class HomePage extends ConsumerWidget {
                                 },
                                 icon: const Icon(Icons.people),
                                 label: const Text('Friends & Social'),
+                              ),
+                              const SizedBox(height: 8),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const PersonalRecordsPage(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.emoji_events),
+                                label: const Text('Personal Records'),
+                              ),
+                              const SizedBox(height: 8),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ProgressChartsPage(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.show_chart),
+                                label: const Text('Progress Charts'),
+                              ),
+                              const SizedBox(height: 8),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const MuscleFrequencyPage(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.pie_chart),
+                                label: const Text('Muscle Analysis'),
                               ),
                             ],
                           ),

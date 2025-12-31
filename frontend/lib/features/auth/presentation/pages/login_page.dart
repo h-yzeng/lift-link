@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/auth/presentation/pages/register_page.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 
@@ -60,7 +59,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Future<void> _handleForgotPassword() async {
-    final emailController = TextEditingController(text: _emailController.text.trim());
+    final emailController =
+        TextEditingController(text: _emailController.text.trim());
 
     final email = await showDialog<String>(
       context: context,
@@ -69,7 +69,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Enter your email address and we\'ll send you a password reset link.'),
+            const Text(
+                'Enter your email address and we\'ll send you a password reset link.'),
             const SizedBox(height: 16),
             TextField(
               controller: emailController,
@@ -89,7 +90,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(emailController.text.trim()),
+            onPressed: () =>
+                Navigator.of(context).pop(emailController.text.trim()),
             child: const Text('Send Reset Link'),
           ),
         ],
@@ -98,7 +100,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     if (email == null || email.isEmpty || !mounted) return;
 
-    final resetPasswordUseCase = await ref.read(resetPasswordUseCaseProvider.future);
+    final resetPasswordUseCase =
+        await ref.read(resetPasswordUseCaseProvider.future);
     final result = await resetPasswordUseCase(email);
 
     if (!mounted) return;

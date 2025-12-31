@@ -28,7 +28,8 @@ class FriendProfilePage extends ConsumerWidget {
       ),
       builder: (context, snapshot) {
         final profile = snapshot.data;
-        final displayName = nickname ?? profile?.displayNameOrUsername ?? 'User';
+        final displayName =
+            nickname ?? profile?.displayNameOrUsername ?? 'User';
 
         return Scaffold(
           appBar: AppBar(
@@ -126,7 +127,8 @@ class _FriendWorkoutsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(currentProfileProvider);
-    final useImperialUnits = profileAsync.valueOrNull?.usesImperialUnits ?? true;
+    final useImperialUnits =
+        profileAsync.valueOrNull?.usesImperialUnits ?? true;
 
     // Get friend's workout history
     final workoutsAsync = ref.watch(
@@ -138,7 +140,6 @@ class _FriendWorkoutsList extends ConsumerWidget {
 
     return workoutsAsync.when(
       data: (friendWorkouts) {
-
         if (friendWorkouts.isEmpty) {
           return Center(
             child: Column(
@@ -192,7 +193,7 @@ class _FriendWorkoutsList extends ConsumerWidget {
           children: [
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
-            Text('Error loading workouts'),
+            const Text('Error loading workouts'),
             const SizedBox(height: 8),
             TextButton(
               onPressed: () => ref.invalidate(userWorkoutHistoryProvider),

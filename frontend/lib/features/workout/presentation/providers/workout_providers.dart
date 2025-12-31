@@ -15,6 +15,9 @@ import 'package:liftlink/features/workout/domain/usecases/get_active_workout.dar
 import 'package:liftlink/features/workout/domain/usecases/get_workout_history.dart';
 import 'package:liftlink/features/workout/domain/usecases/start_workout.dart';
 import 'package:liftlink/features/workout/domain/usecases/update_set.dart';
+import 'package:liftlink/features/workout/domain/usecases/get_personal_records.dart';
+import 'package:liftlink/features/workout/domain/usecases/get_exercise_pr.dart';
+import 'package:liftlink/features/workout/domain/entities/personal_record.dart';
 import 'package:liftlink/features/workout/presentation/providers/exercise_providers.dart'
     hide networkInfoProvider;
 
@@ -141,5 +144,52 @@ Future<List<WorkoutSession>> userWorkoutHistory(
   return result.fold(
     (failure) => throw Exception(failure.userMessage),
     (workouts) => workouts,
+  );
+}
+
+// Personal Records use case providers
+@riverpod
+GetPersonalRecords getPersonalRecordsUseCase(Ref ref) {
+  return GetPersonalRecords(ref.watch(workoutRepositoryProvider));
+}
+
+@riverpod
+GetExercisePR getExercisePRUseCase(Ref ref) {
+  return GetExercisePR(ref.watch(getPersonalRecordsUseCaseProvider));
+}
+
+// Personal records provider - gets all PRs for current user
+@riverpod
+Future<List<PersonalRecord>> personalRecords(Ref ref) async {
+  final user = await ref.watch(currentUserProvider.future);
+  if (user == null) return [];
+
+  final useCase = ref.watch(getPersonalRecordsUseCaseProvider);
+  final result = await useCase(userId: user.id);
+
+  return result.fold(
+    (failure) => throw Exception(failure.userMessage),
+    (records) => records,
+  );
+}
+
+// Exercise PR provider - gets PR for a specific exercise
+@riverpod
+Future<PersonalRecord?> exercisePR(
+  Ref ref,
+  String exerciseId,
+) async {
+  final user = await ref.watch(currentUserProvider.future);
+  if (user == null) return null;
+
+  final useCase = ref.watch(getExercisePRUseCaseProvider);
+  final result = await useCase(
+    userId: user.id,
+    exerciseId: exerciseId,
+  );
+
+  return result.fold(
+    (failure) => throw Exception(failure.userMessage),
+    (record) => record,
   );
 }

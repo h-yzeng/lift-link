@@ -12,8 +12,9 @@ class FriendshipLocalDataSource {
   /// Get all friendships for a user (where they are either requester or addressee)
   Future<List<Friendship>> getAllFriendships(String userId) async {
     final query = database.select(database.friendships)
-      ..where((f) =>
-          f.requesterId.equals(userId) | f.addresseeId.equals(userId));
+      ..where(
+        (f) => f.requesterId.equals(userId) | f.addresseeId.equals(userId),
+      );
 
     final entities = await query.get();
     return entities.map(FriendshipModel.fromDrift).toList();
@@ -22,9 +23,11 @@ class FriendshipLocalDataSource {
   /// Get all accepted friends for a user
   Future<List<Friendship>> getFriends(String userId) async {
     final query = database.select(database.friendships)
-      ..where((f) =>
-          (f.requesterId.equals(userId) | f.addresseeId.equals(userId)) &
-          f.status.equals('accepted'));
+      ..where(
+        (f) =>
+            (f.requesterId.equals(userId) | f.addresseeId.equals(userId)) &
+            f.status.equals('accepted'),
+      );
 
     final entities = await query.get();
     return entities.map(FriendshipModel.fromDrift).toList();
@@ -33,9 +36,11 @@ class FriendshipLocalDataSource {
   /// Get all pending friend requests (both sent and received)
   Future<List<Friendship>> getPendingRequests(String userId) async {
     final query = database.select(database.friendships)
-      ..where((f) =>
-          (f.requesterId.equals(userId) | f.addresseeId.equals(userId)) &
-          f.status.equals('pending'));
+      ..where(
+        (f) =>
+            (f.requesterId.equals(userId) | f.addresseeId.equals(userId)) &
+            f.status.equals('pending'),
+      );
 
     final entities = await query.get();
     return entities.map(FriendshipModel.fromDrift).toList();
@@ -45,7 +50,8 @@ class FriendshipLocalDataSource {
   Future<List<Friendship>> getReceivedRequests(String userId) async {
     final query = database.select(database.friendships)
       ..where(
-          (f) => f.addresseeId.equals(userId) & f.status.equals('pending'));
+        (f) => f.addresseeId.equals(userId) & f.status.equals('pending'),
+      );
 
     final entities = await query.get();
     return entities.map(FriendshipModel.fromDrift).toList();
@@ -55,7 +61,8 @@ class FriendshipLocalDataSource {
   Future<List<Friendship>> getSentRequests(String userId) async {
     final query = database.select(database.friendships)
       ..where(
-          (f) => f.requesterId.equals(userId) & f.status.equals('pending'));
+        (f) => f.requesterId.equals(userId) & f.status.equals('pending'),
+      );
 
     final entities = await query.get();
     return entities.map(FriendshipModel.fromDrift).toList();
@@ -76,9 +83,11 @@ class FriendshipLocalDataSource {
     required String userId2,
   }) async {
     final query = database.select(database.friendships)
-      ..where((f) =>
-          (f.requesterId.equals(userId1) & f.addresseeId.equals(userId2)) |
-          (f.requesterId.equals(userId2) & f.addresseeId.equals(userId1)));
+      ..where(
+        (f) =>
+            (f.requesterId.equals(userId1) & f.addresseeId.equals(userId2)) |
+            (f.requesterId.equals(userId2) & f.addresseeId.equals(userId1)),
+      );
 
     final entity = await query.getSingleOrNull();
     return entity != null ? FriendshipModel.fromDrift(entity) : null;
@@ -111,9 +120,11 @@ class FriendshipLocalDataSource {
   Future<void> markAsSynced(String friendshipId) async {
     await (database.update(database.friendships)
           ..where((f) => f.id.equals(friendshipId)))
-        .write(FriendshipsCompanion(
-      syncedAt: Value(DateTime.now()),
-    ));
+        .write(
+      FriendshipsCompanion(
+        syncedAt: Value(DateTime.now()),
+      ),
+    );
   }
 
   /// Clear all friendships (for testing)
@@ -124,10 +135,12 @@ class FriendshipLocalDataSource {
   /// Watch friendships for a user (real-time updates)
   Stream<List<Friendship>> watchFriendships(String userId) {
     final query = database.select(database.friendships)
-      ..where((f) =>
-          f.requesterId.equals(userId) | f.addresseeId.equals(userId));
+      ..where(
+        (f) => f.requesterId.equals(userId) | f.addresseeId.equals(userId),
+      );
 
-    return query.watch().map((entities) =>
-        entities.map(FriendshipModel.fromDrift).toList());
+    return query.watch().map(
+          (entities) => entities.map(FriendshipModel.fromDrift).toList(),
+        );
   }
 }

@@ -10,6 +10,7 @@ import 'package:liftlink/shared/database/tables/friendships_table.dart';
 import 'package:liftlink/shared/database/tables/profiles_table.dart';
 import 'package:liftlink/shared/database/tables/sets_table.dart';
 import 'package:liftlink/shared/database/tables/workout_sessions_table.dart';
+import 'package:liftlink/shared/database/tables/workout_templates_table.dart';
 
 part 'app_database.g.dart';
 
@@ -21,6 +22,7 @@ part 'app_database.g.dart';
     ExercisePerformances,
     Sets,
     Friendships,
+    WorkoutTemplates,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -30,7 +32,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -94,6 +96,11 @@ class AppDatabase extends _$AppDatabase {
             await customStatement(
               'ALTER TABLE friendships ADD COLUMN addressee_nickname TEXT',
             );
+          }
+
+          // Migration from v5 to v6: Add workout_templates table
+          if (from < 6) {
+            await m.createTable(workoutTemplates);
           }
         },
         beforeOpen: (details) async {

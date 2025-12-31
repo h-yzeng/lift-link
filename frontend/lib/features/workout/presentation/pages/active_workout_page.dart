@@ -7,6 +7,7 @@ import 'package:liftlink/features/workout/domain/entities/exercise_performance.d
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
+import 'package:liftlink/features/workout/presentation/widgets/rest_timer.dart';
 import 'package:liftlink/features/workout/presentation/widgets/set_input_row.dart';
 
 /// Page for active workout tracking
@@ -195,6 +196,12 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       appBar: AppBar(
         title: Text(widget.workout.title),
         actions: [
+          // Rest Timer button
+          IconButton(
+            icon: const Icon(Icons.timer),
+            onPressed: () => showRestTimerBottomSheet(context),
+            tooltip: 'Rest Timer',
+          ),
           if (!_isLoading)
             Consumer(
               builder: (context, ref, child) {

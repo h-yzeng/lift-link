@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
+import 'package:liftlink/features/profile/presentation/pages/settings_page.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
+import 'package:liftlink/features/social/presentation/pages/social_hub_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/active_workout_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
+import 'package:liftlink/features/workout/presentation/pages/muscle_frequency_page.dart';
+import 'package:liftlink/features/workout/presentation/pages/personal_records_page.dart';
+import 'package:liftlink/features/workout/presentation/pages/progress_charts_page.dart';
+import 'package:liftlink/features/workout/presentation/pages/templates_page.dart';
+import 'package:liftlink/features/workout/presentation/pages/workout_history_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 
 class HomePage extends ConsumerWidget {
@@ -450,10 +457,10 @@ class _QuickActionsGrid extends StatelessWidget {
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
+          crossAxisCount: 3,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
-          childAspectRatio: 1.3,
+          childAspectRatio: 0.95,
           children: [
             if (showStartWorkout)
               _QuickActionCard(
@@ -463,13 +470,97 @@ class _QuickActionsGrid extends StatelessWidget {
                 onTap: onStartNewWorkout,
               ),
             _QuickActionCard(
+              icon: Icons.history,
+              label: 'History',
+              color: Colors.orange,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const WorkoutHistoryPage(),
+                  ),
+                );
+              },
+            ),
+            _QuickActionCard(
+              icon: Icons.emoji_events,
+              label: 'PRs',
+              color: Colors.amber,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const PersonalRecordsPage(),
+                  ),
+                );
+              },
+            ),
+            _QuickActionCard(
+              icon: Icons.show_chart,
+              label: 'Progress',
+              color: Colors.purple,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const ProgressChartsPage(),
+                  ),
+                );
+              },
+            ),
+            _QuickActionCard(
+              icon: Icons.pie_chart,
+              label: 'Muscles',
+              color: Colors.teal,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const MuscleFrequencyPage(),
+                  ),
+                );
+              },
+            ),
+            _QuickActionCard(
+              icon: Icons.people,
+              label: 'Social',
+              color: Colors.indigo,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const SocialHubPage(),
+                  ),
+                );
+              },
+            ),
+            _QuickActionCard(
+              icon: Icons.folder_copy,
+              label: 'Templates',
+              color: Colors.deepOrange,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const TemplatesPage(),
+                  ),
+                );
+              },
+            ),
+            _QuickActionCard(
               icon: Icons.search,
-              label: 'Browse Exercises',
+              label: 'Exercises',
               color: Colors.blue,
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => const ExerciseListPage(),
+                  ),
+                );
+              },
+            ),
+            _QuickActionCard(
+              icon: Icons.settings,
+              label: 'Settings',
+              color: Colors.grey,
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsPage(),
                   ),
                 );
               },

@@ -28,14 +28,35 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
 
 ### Features
 
+#### Core Tracking
+
 - **Workout Tracking** - Log exercises, sets, reps, and weight
 - **Automatic 1RM Calculation** - Real-time estimated one-rep max using Epley Formula
-- **Social Features** - Connect with friends and share progress
+- **Exercise Library** - 20+ pre-loaded exercises with search functionality
+- **Workout History** - View all past workout sessions
+- **Workout Templates** - Create and reuse workout routines
+- **Rest Timer** - Built-in countdown timer with customizable intervals
+
+#### Analytics & Progress
+
+- **Personal Records** - Track PRs with automatic rank indicators (Bronze, Silver, Gold, Diamond)
+- **Progress Charts** - Visualize volume, 1RM, and muscle frequency over time
+- **Muscle Frequency Analysis** - Pie chart breakdown of muscle group training
+- **Data Export** - Export workout data in JSON or CSV format
+
+#### Social Features
+
+- **Friend System** - Send and accept friend requests
+- **Activity Feed** - See friends' recent workout activity
+- **User Search** - Find and connect with other users
+- **Profile Management** - Customizable username, display name, and bio
+
+#### Technical Features
+
 - **Offline-First** - Full functionality without internet connection
 - **Cloud Sync** - Automatic synchronization when online
-- **Exercise Library** - 20+ pre-loaded exercises + custom exercise creation
-- **Progress Tracking** - View workout history and personal records
 - **Secure** - Row-level security with Supabase
+- **Cross-Platform** - Windows, Android, and iOS support
 
 ### Screenshots
 
@@ -218,7 +239,7 @@ flutter test test/unit/workout_set_test.dart
 
 ## Roadmap
 
-### Phase 1: Foundation (Completed)
+### Phase 1: Foundation ✅ (Completed)
 
 - [x] Project scaffolding
 - [x] Database schema with RLS
@@ -226,34 +247,42 @@ flutter test test/unit/workout_set_test.dart
 - [x] Core domain entities
 - [x] Working Windows desktop app
 
-### Phase 2: Core Features (In Progress)
+### Phase 2: Core Features ✅ (Completed)
 
-- [ ] Authentication (login, register)
-- [ ] Exercise library browser
-- [ ] Active workout tracking
-- [ ] Workout history viewer
-- [ ] 1RM calculations and display
+- [x] Authentication (login, register, password reset)
+- [x] Exercise library browser with search
+- [x] Active workout tracking
+- [x] Workout history viewer
+- [x] 1RM calculations and display
+- [x] Profile management
 
-### Phase 3: Social
+### Phase 3: Social ✅ (Completed)
 
-- [ ] Friend request system
-- [ ] Activity feed
-- [ ] Shared workout viewing
+- [x] Friend request system
+- [x] Activity feed
+- [x] User search and profiles
+- [x] Nickname display in friendships
 
-### Phase 4: Analytics
+### Phase 4: Analytics ✅ (Completed)
 
-- [ ] Progress charts
-- [ ] Personal records tracking
-- [ ] Muscle group analysis
+- [x] Progress charts (Volume, 1RM, Frequency)
+- [x] Personal records tracking with rank indicators
+- [x] Muscle group frequency analysis
 
-### Future
+### Phase 5: Enhanced Features ✅ (Completed)
 
-- [ ] Workout templates
-- [ ] Rest timer
+- [x] Workout templates
+- [x] Rest timer with haptic feedback
+- [x] Data export (JSON/CSV)
+
+### Future Enhancements
+
+- [ ] Exercise videos and form tips
+- [ ] Workout notes and photos
+- [ ] Nutrition tracking integration
 - [ ] iOS & Android releases
 - [ ] Web version
-
-See [docs/task.md](docs/task.md) for detailed task breakdown.
+- [ ] Workout sharing and challenges
 
 ---
 

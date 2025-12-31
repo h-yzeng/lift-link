@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/profile/domain/usecases/update_profile.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
+import 'package:liftlink/features/workout/presentation/pages/export_data_page.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -378,6 +379,23 @@ class SettingsPage extends ConsumerWidget {
                 title: const Text('Change Password'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _changePassword(context, ref),
+              ),
+              const Divider(),
+
+              // Data Section
+              _buildSectionHeader('Data'),
+              ListTile(
+                leading: const Icon(Icons.download),
+                title: const Text('Export Workout Data'),
+                subtitle: const Text('Export your workouts as JSON or CSV'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const ExportDataPage(),
+                    ),
+                  );
+                },
               ),
               const Divider(),
 

@@ -305,16 +305,60 @@ supabase status
   - Training frequency by muscle group
   - Balance recommendations
 
-### Phase 5 (Advanced)
+### Phase 5 (Advanced) - 🟡 IN PROGRESS (2025-12-31)
 
-- Workout templates
-- Rest timer
-- Exercise videos
-- Data export
+- 🟡 Workout templates (In Progress)
+  - Template entity and repository created
+  - CRUD use cases implemented
+  - Templates page and create page built
+  - Needs integration testing with workout flow
+- 🟡 Rest timer (In Progress)
+  - RestTimer widget created
+  - Needs integration with active workout page
+- 🟡 Data export (In Progress)
+  - Export use case created
+  - Export page built
+  - Needs testing
+- ⬜ Exercise videos (Not Started)
 
 ---
 
 ## Recent Updates
+
+### 2025-12-31 - Phase 5 Advanced Features Started
+
+**Workout Templates:**
+
+- Created `workout_template.dart` entity with freezed
+- Created `template_repository.dart` interface
+- Implemented `template_local_data_source.dart` with Drift
+- Implemented `template_repository_impl.dart`
+- Created use cases: `create_template.dart`, `get_templates.dart`, `delete_template.dart`
+- Built `templates_page.dart` for viewing templates
+- Built `create_template_page.dart` for creating new templates
+- Created `template_providers.dart` with Riverpod
+- Added `workout_templates_table.dart` to database
+
+**Rest Timer:**
+
+- Created `rest_timer.dart` widget with countdown functionality
+- Configurable rest duration
+- Visual progress indicator
+
+**Data Export:**
+
+- Created `export_workout_data.dart` use case
+- CSV export format for workout history
+- Built `export_data_page.dart` for user interface
+
+**Next Steps:**
+
+1. Integrate templates with workout start flow
+2. Add rest timer to active workout page
+3. Test data export functionality
+4. Add exercise videos feature
+
+---
 
 ### 2025-12-30 - Workout History Complete (Phase 2 Complete)
 
@@ -533,5 +577,5 @@ supabase status
 
 ---
 
-**Document Version**: 1.5
-**Last Updated**: 2025-12-30 (Phase 4 Complete - Analytics added)
+**Document Version**: 1.6
+**Last Updated**: 2025-12-31 (Phase 5 In Progress - Templates, Rest Timer, Export)

@@ -364,4 +364,67 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       return Left(Failure.unexpected(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, Friendship>> updateFriendNickname({
+    required String currentUserId,
+    required String friendshipId,
+    required String nickname,
+  }) async {
+    try {
+      // Get the friendship
+      final friendship = await localDataSource.getFriendshipById(friendshipId);
+      if (friendship == null) {
+        return Left(const Failure.notFound(message: 'Friendship not found'));
+      }
+
+      // Validate that current user is involved in the friendship
+      if (friendship.requesterId != currentUserId &&
+          friendship.addresseeId != currentUserId) {
+        return Left(const Failure.validation(message: 'Cannot update friendship you are not part of'));
+      }
+
+      // Determine which nickname to update based on current user's role
+      final updatedFriendship = friendship.requesterId == currentUserId
+          ? friendship.copyWith(
+              requesterNickname: nickname.isEmpty ? null : nickname,
+              updatedAt: DateTime.now(),
+            )
+          : friendship.copyWith(
+              addresseeNickname: nickname.isEmpty ? null : nickname,
+              updatedAt: DateTime.now(),
+            );
+
+      // Save locally first
+      await localDataSource.updateFriendship(updatedFriendship);
+
+      // Try to sync to remote if online
+      if (await networkInfo.isConnected) {
+        try {
+          final remoteFriendship = await remoteDataSource.updateFriendNickname(
+            friendshipId: friendshipId,
+            requesterNickname: updatedFriendship.requesterNickname,
+            addresseeNickname: updatedFriendship.addresseeNickname,
+          );
+
+          // Update local with remote data and mark as synced
+          await localDataSource.updateFriendship(remoteFriendship);
+          await localDataSource.markAsSynced(remoteFriendship.id);
+
+          return Right(remoteFriendship);
+        } catch (e) {
+          // Remote failed but local succeeded, will sync later
+          return Right(updatedFriendship);
+        }
+      }
+
+      return Right(updatedFriendship);
+    } on ServerException {
+      return Left(ServerFailure());
+    } on CacheException {
+      return Left(CacheFailure());
+    } catch (e) {
+      return Left(Failure.unexpected(message: e.toString()));
+    }
+  }
 }

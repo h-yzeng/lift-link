@@ -30,7 +30,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -84,6 +84,16 @@ class AppDatabase extends _$AppDatabase {
 
             await customStatement('DROP TABLE profiles');
             await customStatement('ALTER TABLE profiles_new RENAME TO profiles');
+          }
+
+          // Migration from v4 to v5: Add nickname columns to friendships
+          if (from < 5) {
+            await customStatement(
+              'ALTER TABLE friendships ADD COLUMN requester_nickname TEXT',
+            );
+            await customStatement(
+              'ALTER TABLE friendships ADD COLUMN addressee_nickname TEXT',
+            );
           }
         },
         beforeOpen: (details) async {

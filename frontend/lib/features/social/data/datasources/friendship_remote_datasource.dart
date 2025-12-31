@@ -163,4 +163,26 @@ class FriendshipRemoteDataSource {
 
     return response != null ? FriendshipModel.fromSupabase(response) : null;
   }
+
+  /// Update friend nickname
+  Future<Friendship> updateFriendNickname({
+    required String friendshipId,
+    String? requesterNickname,
+    String? addresseeNickname,
+  }) async {
+    final data = {
+      'requester_nickname': requesterNickname,
+      'addressee_nickname': addresseeNickname,
+      'updated_at': DateTime.now().toIso8601String(),
+    };
+
+    final response = await client
+        .from('friendships')
+        .update(data)
+        .eq('id', friendshipId)
+        .select()
+        .single();
+
+    return FriendshipModel.fromSupabase(response);
+  }
 }

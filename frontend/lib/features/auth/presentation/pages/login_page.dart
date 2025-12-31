@@ -43,7 +43,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         (failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(failure.userMessage),
+              content: Text(failure.message ?? 'Login failed'),
               backgroundColor: Colors.red,
             ),
           );
@@ -57,6 +57,70 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         setState(() => _isLoading = false);
       }
     }
+  }
+
+  Future<void> _handleForgotPassword() async {
+    final emailController = TextEditingController(text: _emailController.text.trim());
+
+    final email = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Password'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Enter your email address and we\'ll send you a password reset link.'),
+            const SizedBox(height: 16),
+            TextField(
+              controller: emailController,
+              autofocus: true,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                hintText: 'Enter your email',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(null),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(emailController.text.trim()),
+            child: const Text('Send Reset Link'),
+          ),
+        ],
+      ),
+    );
+
+    if (email == null || email.isEmpty || !mounted) return;
+
+    final resetPasswordUseCase = await ref.read(resetPasswordUseCaseProvider.future);
+    final result = await resetPasswordUseCase(email);
+
+    if (!mounted) return;
+
+    result.fold(
+      (failure) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(failure.message ?? 'Failed to send reset email'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      },
+      (_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password reset email sent! Check your inbox.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -140,7 +204,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _isLoading ? null : _handleForgotPassword,
+                      child: const Text('Forgot Password?'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   FilledButton(
                     onPressed: _isLoading ? null : _handleLogin,
                     child: _isLoading

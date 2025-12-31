@@ -14,6 +14,7 @@ import 'package:liftlink/features/social/domain/usecases/reject_friend_request.d
 import 'package:liftlink/features/social/domain/usecases/remove_friendship.dart';
 import 'package:liftlink/features/social/domain/usecases/send_friend_request.dart';
 import 'package:liftlink/features/social/domain/usecases/get_friends_workouts.dart';
+import 'package:liftlink/features/social/domain/usecases/update_friend_nickname.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -93,6 +94,11 @@ GetFriendsWorkouts getFriendsWorkouts(GetFriendsWorkoutsRef ref) {
     friendshipRepository: ref.watch(friendshipRepositoryProvider),
     workoutRepository: ref.watch(workoutRepositoryProvider),
   );
+}
+
+@riverpod
+UpdateFriendNickname updateFriendNickname(UpdateFriendNicknameRef ref) {
+  return UpdateFriendNickname(ref.watch(friendshipRepositoryProvider));
 }
 
 // ============================================================================

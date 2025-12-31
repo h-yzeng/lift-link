@@ -5,6 +5,7 @@ import 'package:liftlink/features/auth/presentation/providers/auth_providers.dar
 import 'package:liftlink/features/profile/domain/entities/profile.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/social/domain/entities/friendship.dart';
+import 'package:liftlink/features/social/presentation/pages/friend_profile_page.dart';
 import 'package:liftlink/features/social/presentation/pages/user_search_page.dart';
 import 'package:liftlink/features/social/presentation/providers/friendship_providers.dart';
 
@@ -187,9 +188,84 @@ class _FriendListTile extends ConsumerWidget {
     );
   }
 
+  Future<void> _setNickname(BuildContext context, WidgetRef ref) async {
+    final currentNickname = friendship.getNicknameForOther(currentUserId);
+    final controller = TextEditingController(text: currentNickname);
+
+    final nickname = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Set Nickname'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLength: 50,
+          decoration: const InputDecoration(
+            labelText: 'Nickname',
+            hintText: 'Enter a nickname for your friend',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(null),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+
+    if (nickname == null || !context.mounted) return;
+
+    final updateUseCase = ref.read(updateFriendNicknameProvider);
+    final result = await updateUseCase(
+      currentUserId: currentUserId,
+      friendshipId: friendship.id,
+      nickname: nickname,
+    );
+
+    if (!context.mounted) return;
+
+    result.fold(
+      (failure) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(failure.userMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
+      },
+      (_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              nickname.isEmpty ? 'Nickname removed' : 'Nickname updated',
+            ),
+          ),
+        );
+        ref.invalidate(friendsListProvider);
+      },
+    );
+  }
+
+  void _navigateToFriendProfile(BuildContext context, String friendId, String? nickname) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => FriendProfilePage(
+          friendId: friendId,
+          nickname: nickname,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final friendId = friendship.getOtherUserId(currentUserId);
+    final nickname = friendship.getNicknameForOther(currentUserId);
     final profileAsync = ref.watch(getProfileProvider);
 
     return FutureBuilder<Profile?>(
@@ -198,6 +274,7 @@ class _FriendListTile extends ConsumerWidget {
       ),
       builder: (context, snapshot) {
         final profile = snapshot.data;
+        final displayName = nickname ?? profile?.displayNameOrUsername ?? 'Loading...';
 
         return ListTile(
           leading: CircleAvatar(
@@ -216,28 +293,57 @@ class _FriendListTile extends ConsumerWidget {
                   ),
           ),
           title: Text(
-            profile?.displayNameOrUsername ?? 'Loading...',
+            displayName,
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
-          subtitle: profile?.hasUsername == true && profile?.hasCustomDisplayName == true
+          subtitle: profile?.hasUsername == true && (profile?.hasCustomDisplayName == true || nickname != null)
               ? Text('@${profile!.username}')
               : null,
           trailing: PopupMenuButton<String>(
             onSelected: (value) {
-              if (value == 'remove') {
+              if (value == 'view_workouts') {
+                _navigateToFriendProfile(context, friendId, nickname);
+              } else if (value == 'set_nickname') {
+                _setNickname(context, ref);
+              } else if (value == 'remove') {
                 _removeFriend(context, ref);
               }
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
+                value: 'view_workouts',
+                child: Row(
+                  children: [
+                    Icon(Icons.fitness_center, size: 20),
+                    SizedBox(width: 12),
+                    Text('View Workouts'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'set_nickname',
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, size: 20),
+                    SizedBox(width: 12),
+                    Text('Set Nickname'),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem(
                 value: 'remove',
-                child: Text('Remove Friend'),
+                child: Row(
+                  children: [
+                    Icon(Icons.person_remove, size: 20, color: Colors.red),
+                    SizedBox(width: 12),
+                    Text('Remove Friend', style: TextStyle(color: Colors.red)),
+                  ],
+                ),
               ),
             ],
           ),
-          onTap: () {
-            // TODO: Navigate to friend's profile page
-          },
+          onTap: () => _navigateToFriendProfile(context, friendId, nickname),
         );
       },
     );

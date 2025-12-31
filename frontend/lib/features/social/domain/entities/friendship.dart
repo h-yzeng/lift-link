@@ -23,6 +23,8 @@ class Friendship with _$Friendship {
     required String requesterId,
     required String addresseeId,
     required FriendshipStatus status,
+    String? requesterNickname, // Nickname given by requester to addressee
+    String? addresseeNickname, // Nickname given by addressee to requester
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _Friendship;
@@ -54,4 +56,10 @@ class Friendship with _$Friendship {
   /// Whether the given user can accept/reject this friendship
   bool canRespond(String userId) =>
       isPending && isAddressee(userId);
+
+  /// Get the nickname that the current user has given to the other user
+  String? getNicknameForOther(String currentUserId) {
+    if (requesterId == currentUserId) return requesterNickname;
+    return addresseeNickname;
+  }
 }

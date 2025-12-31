@@ -51,4 +51,11 @@ abstract class FriendshipRepository {
 
   /// Sync friendships from remote
   Future<Either<Failure, void>> syncFriendships(String userId);
+
+  /// Update nickname for a friend
+  Future<Either<Failure, Friendship>> updateFriendNickname({
+    required String currentUserId,
+    required String friendshipId,
+    required String nickname,
+  });
 }

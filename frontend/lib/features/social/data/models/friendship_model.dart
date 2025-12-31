@@ -11,6 +11,8 @@ class FriendshipModel {
       requesterId: entity.requesterId,
       addresseeId: entity.addresseeId,
       status: _statusFromString(entity.status),
+      requesterNickname: entity.requesterNickname,
+      addresseeNickname: entity.addresseeNickname,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     );
@@ -26,6 +28,8 @@ class FriendshipModel {
       requesterId: friendship.requesterId,
       addresseeId: friendship.addresseeId,
       status: _statusToString(friendship.status),
+      requesterNickname: Value(friendship.requesterNickname),
+      addresseeNickname: Value(friendship.addresseeNickname),
       createdAt: friendship.createdAt,
       updatedAt: friendship.updatedAt,
       syncedAt: const Value(null), // Will be set on successful sync
@@ -39,6 +43,8 @@ class FriendshipModel {
       requesterId: json['requester_id'] as String,
       addresseeId: json['addressee_id'] as String,
       status: _statusFromString(json['status'] as String),
+      requesterNickname: json['requester_nickname'] as String?,
+      addresseeNickname: json['addressee_nickname'] as String?,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
     );
@@ -53,6 +59,8 @@ class FriendshipModel {
       'requester_id': friendship.requesterId,
       'addressee_id': friendship.addresseeId,
       'status': _statusToString(friendship.status),
+      'requester_nickname': friendship.requesterNickname,
+      'addressee_nickname': friendship.addresseeNickname,
     };
 
     if (!forUpdate) {

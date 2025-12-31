@@ -120,3 +120,26 @@ Future<List<WorkoutSession>> workoutHistory(
     (workouts) => workouts,
   );
 }
+
+// User workout history provider - fetches workouts for a specific user
+@riverpod
+Future<List<WorkoutSession>> userWorkoutHistory(
+  Ref ref,
+  String userId, {
+  int? limit,
+  DateTime? startDate,
+  DateTime? endDate,
+}) async {
+  final useCase = ref.watch(getWorkoutHistoryUseCaseProvider);
+  final result = await useCase(
+    userId: userId,
+    limit: limit,
+    startDate: startDate,
+    endDate: endDate,
+  );
+
+  return result.fold(
+    (failure) => throw Exception(failure.userMessage),
+    (workouts) => workouts,
+  );
+}

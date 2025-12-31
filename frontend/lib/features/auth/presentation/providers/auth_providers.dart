@@ -14,6 +14,8 @@ import 'package:liftlink/features/auth/domain/usecases/get_current_user.dart';
 import 'package:liftlink/features/auth/domain/usecases/login_with_email.dart';
 import 'package:liftlink/features/auth/domain/usecases/logout.dart';
 import 'package:liftlink/features/auth/domain/usecases/register_with_email.dart';
+import 'package:liftlink/features/auth/domain/usecases/reset_password.dart';
+import 'package:liftlink/features/auth/domain/usecases/update_password.dart';
 
 part 'auth_providers.g.dart';
 
@@ -81,6 +83,18 @@ Future<RegisterWithEmail> registerWithEmailUseCase(Ref ref) async {
 Future<Logout> logoutUseCase(Ref ref) async {
   final repository = await ref.watch(authRepositoryProvider.future);
   return Logout(repository);
+}
+
+@riverpod
+Future<UpdatePassword> updatePasswordUseCase(Ref ref) async {
+  final repository = await ref.watch(authRepositoryProvider.future);
+  return UpdatePassword(repository);
+}
+
+@riverpod
+Future<ResetPassword> resetPasswordUseCase(Ref ref) async {
+  final repository = await ref.watch(authRepositoryProvider.future);
+  return ResetPassword(repository);
 }
 
 // Auth state provider - Stream of current user

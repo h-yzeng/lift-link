@@ -7,6 +7,7 @@ import 'package:liftlink/features/workout/presentation/pages/create_template_pag
 import 'package:liftlink/features/workout/presentation/pages/active_workout_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/template_providers.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
+import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 
 /// Page for viewing and managing workout templates.
 class TemplatesPage extends ConsumerWidget {
@@ -55,20 +56,25 @@ class TemplatesPage extends ConsumerWidget {
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: templates.length,
-            itemBuilder: (context, index) {
-              final template = templates[index];
-              return _TemplateCard(
-                template: template,
-                onStartWorkout: () => _startWorkoutFromTemplate(context, ref, template),
-                onDelete: () => _deleteTemplate(context, ref, template.id),
-              );
+          return RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(templatesProvider);
             },
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: templates.length,
+              itemBuilder: (context, index) {
+                final template = templates[index];
+                return _TemplateCard(
+                  template: template,
+                  onStartWorkout: () => _startWorkoutFromTemplate(context, ref, template),
+                  onDelete: () => _deleteTemplate(context, ref, template.id),
+                );
+              },
+            ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const TemplatesListSkeleton(),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

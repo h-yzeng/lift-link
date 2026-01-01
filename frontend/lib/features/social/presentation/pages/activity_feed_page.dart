@@ -7,6 +7,7 @@ import 'package:liftlink/features/profile/presentation/providers/profile_provide
 import 'package:liftlink/features/social/presentation/providers/friendship_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/pages/workout_detail_page.dart';
+import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 
 /// Simple relative time formatter
 String _formatRelativeTime(DateTime dateTime) {
@@ -95,7 +96,7 @@ class ActivityFeedPage extends ConsumerWidget {
                 ),
               );
             },
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const ActivityFeedSkeleton(),
             error: (error, stack) => Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +122,7 @@ class ActivityFeedPage extends ConsumerWidget {
         );
       },
       loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+        body: ActivityFeedSkeleton(),
       ),
       error: (error, stack) => Scaffold(
         body: Center(child: Text('Error: $error')),

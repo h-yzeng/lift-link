@@ -5,6 +5,7 @@ import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/pages/workout_detail_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 import 'package:liftlink/features/workout/presentation/widgets/workout_summary_card.dart';
+import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 
 /// Page displaying workout history with filtering options
 class WorkoutHistoryPage extends ConsumerStatefulWidget {
@@ -53,7 +54,7 @@ class _WorkoutHistoryPageState extends ConsumerState<WorkoutHistoryPage> {
         },
         child: historyAsync.when(
           data: (workouts) => _buildWorkoutList(workouts, useImperialUnits),
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const WorkoutHistorySkeleton(),
           error: (error, stack) => _buildErrorState(error, theme),
         ),
       ),

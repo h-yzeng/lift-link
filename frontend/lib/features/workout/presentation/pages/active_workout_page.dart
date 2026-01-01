@@ -10,6 +10,8 @@ import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 import 'package:liftlink/features/workout/presentation/widgets/rest_timer.dart';
 import 'package:liftlink/features/workout/presentation/widgets/set_input_row.dart';
+import 'package:liftlink/shared/utils/haptic_service.dart';
+import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 
 /// Page for active workout tracking
 class ActiveWorkoutPage extends ConsumerStatefulWidget {
@@ -51,6 +53,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
 
       result.fold(
         (failure) {
+          HapticService.error();
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(failure.userMessage)),
@@ -58,6 +61,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
           }
         },
         (_) {
+          HapticService.success();
           // Refresh the workout
           ref.invalidate(activeWorkoutProvider);
         },
@@ -90,6 +94,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
 
       result.fold(
         (failure) {
+          HapticService.error();
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(failure.userMessage)),
@@ -97,6 +102,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
           }
         },
         (_) {
+          HapticService.lightTap();
           ref.invalidate(activeWorkoutProvider);
         },
       );
@@ -142,6 +148,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
 
       result.fold(
         (failure) {
+          HapticService.error();
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -152,6 +159,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
           }
         },
         (completedWorkout) {
+          HapticService.success();
           if (mounted) {
             ref.invalidate(activeWorkoutProvider);
             Navigator.pop(context);
@@ -203,10 +211,13 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
               final defaultSeconds = ref.watch(defaultRestTimerSecondsProvider);
               return IconButton(
                 icon: const Icon(Icons.timer),
-                onPressed: () => showRestTimerBottomSheet(
-                  context,
-                  initialSeconds: defaultSeconds,
-                ),
+                onPressed: () {
+                  HapticService.selection();
+                  showRestTimerBottomSheet(
+                    context,
+                    initialSeconds: defaultSeconds,
+                  );
+                },
                 tooltip: 'Rest Timer (${RestTimerPresets.formatDuration(defaultSeconds)})',
               );
             },
@@ -310,7 +321,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const WorkoutHistorySkeleton(itemCount: 2),
         error: (error, stack) => Center(
           child: Text('Error: ${error.toString()}'),
         ),
@@ -318,7 +329,10 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       floatingActionButton: _isLoading
           ? null
           : FloatingActionButton.extended(
-              onPressed: _addExercise,
+              onPressed: () {
+                HapticService.mediumTap();
+                _addExercise();
+              },
               icon: const Icon(Icons.add),
               label: const Text('Add Exercise'),
             ),
@@ -387,6 +401,7 @@ class _ExerciseCard extends ConsumerWidget {
 
     result.fold(
       (Failure failure) {
+        HapticService.error();
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(failure.userMessage)),
@@ -394,6 +409,7 @@ class _ExerciseCard extends ConsumerWidget {
         }
       },
       (_) {
+        HapticService.lightTap();
         // Refresh the workout to show updated values
         ref.invalidate(activeWorkoutProvider);
       },
@@ -410,6 +426,7 @@ class _ExerciseCard extends ConsumerWidget {
 
     result.fold(
       (Failure failure) {
+        HapticService.error();
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(failure.userMessage)),
@@ -417,6 +434,7 @@ class _ExerciseCard extends ConsumerWidget {
         }
       },
       (_) {
+        HapticService.warning();
         // Refresh the workout to show updated values
         ref.invalidate(activeWorkoutProvider);
       },
@@ -501,7 +519,10 @@ class _ExerciseCard extends ConsumerWidget {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: onAddSet,
+                onPressed: () {
+                  HapticService.lightTap();
+                  onAddSet();
+                },
                 icon: const Icon(Icons.add),
                 label: const Text('Add Set'),
               ),

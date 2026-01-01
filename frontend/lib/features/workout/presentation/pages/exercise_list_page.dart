@@ -4,6 +4,7 @@ import 'package:liftlink/features/workout/domain/entities/exercise.dart';
 import 'package:liftlink/features/workout/presentation/pages/create_exercise_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/exercise_providers.dart';
 import 'package:liftlink/features/workout/presentation/widgets/exercise_card.dart';
+import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 
 class ExerciseListPage extends ConsumerStatefulWidget {
   final bool selectionMode;
@@ -265,9 +266,7 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
                   ),
                 );
               },
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
+              loading: () => const ExerciseListSkeleton(),
               error: (error, stack) => Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

@@ -8,6 +8,7 @@ import 'package:liftlink/features/social/domain/entities/friendship.dart';
 import 'package:liftlink/features/social/presentation/pages/friend_profile_page.dart';
 import 'package:liftlink/features/social/presentation/pages/user_search_page.dart';
 import 'package:liftlink/features/social/presentation/providers/friendship_providers.dart';
+import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 
 /// Page for viewing the user's friends list (standalone with AppBar)
 class FriendsListPage extends ConsumerWidget {
@@ -95,18 +96,23 @@ class FriendsListContent extends ConsumerWidget {
               );
             }
 
-            return ListView.builder(
-              itemCount: friends.length,
-              itemBuilder: (context, index) {
-                final friendship = friends[index];
-                return _FriendListTile(
-                  friendship: friendship,
-                  currentUserId: user.id,
-                );
+            return RefreshIndicator(
+              onRefresh: () async {
+                ref.invalidate(friendsListProvider(user.id));
               },
+              child: ListView.builder(
+                itemCount: friends.length,
+                itemBuilder: (context, index) {
+                  final friendship = friends[index];
+                  return _FriendListTile(
+                    friendship: friendship,
+                    currentUserId: user.id,
+                  );
+                },
+              ),
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const FriendsListSkeleton(),
           error: (error, stack) => Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -123,7 +129,7 @@ class FriendsListContent extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const FriendsListSkeleton(),
       error: (error, stack) => Center(child: Text('Error: $error')),
     );
   }

@@ -12,6 +12,7 @@ import 'package:liftlink/features/workout/presentation/pages/progress_charts_pag
 import 'package:liftlink/features/workout/presentation/pages/templates_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/workout_history_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
+import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 import 'package:liftlink/shared/widgets/sync_status_widget.dart';
 
 class HomePage extends ConsumerWidget {
@@ -170,9 +171,7 @@ class HomePage extends ConsumerWidget {
                         ),
                       );
                     },
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    loading: () => const _HomePageSkeleton(),
                     error: (_, __) => Center(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -188,7 +187,7 @@ class HomePage extends ConsumerWidget {
               ],
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const _HomePageSkeleton(),
           error: (_, __) => Center(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -225,31 +224,36 @@ class _ActiveWorkoutCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
-      elevation: 4,
-      color: theme.colorScheme.primaryContainer,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary,
-                      borderRadius: BorderRadius.circular(8),
+    return Semantics(
+      label: 'Active workout: ${workout.title}. ${workout.exerciseCount} exercises, ${workout.totalSets} sets, ${workout.formattedDuration} duration. Tap to continue.',
+      button: true,
+      child: Card(
+        elevation: 4,
+        color: theme.colorScheme.primaryContainer,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    ExcludeSemantics(
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primary,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.play_circle,
+                          color: theme.colorScheme.onPrimary,
+                          size: 24,
+                        ),
+                      ),
                     ),
-                    child: Icon(
-                      Icons.play_circle,
-                      color: theme.colorScheme.onPrimary,
-                      size: 24,
-                    ),
-                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -299,14 +303,16 @@ class _ActiveWorkoutCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              FilledButton(
-                onPressed: onTap,
-                style: FilledButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  minimumSize: const Size(double.infinity, 48),
+              ExcludeSemantics(
+                child: FilledButton(
+                  onPressed: onTap,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                  child: const Text('Continue Workout'),
                 ),
-                child: const Text('Continue Workout'),
               ),
             ],
           ),
@@ -332,28 +338,33 @@ class _WorkoutStat extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Expanded(
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            size: 20,
-            color: theme.colorScheme.onPrimaryContainer,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onPrimaryContainer,
-              fontWeight: FontWeight.bold,
+      child: Semantics(
+        label: '$subtitle: $label',
+        child: Column(
+          children: [
+            ExcludeSemantics(
+              child: Icon(
+                icon,
+                size: 20,
+                color: theme.colorScheme.onPrimaryContainer,
+              ),
             ),
-          ),
-          Text(
-            subtitle,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-        ],
+            Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -388,16 +399,18 @@ class _StartWorkoutHero extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.fitness_center,
-                size: 48,
-                color: theme.colorScheme.onPrimary,
+            ExcludeSemantics(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.fitness_center,
+                  size: 48,
+                  color: theme.colorScheme.onPrimary,
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -593,38 +606,104 @@ class _QuickActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+    return Semantics(
+      button: true,
+      label: label,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ExcludeSemantics(
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      icon,
+                      size: 32,
+                      color: color,
+                    ),
+                  ),
                 ),
-                child: Icon(
-                  icon,
-                  size: 32,
-                  color: color,
+                const SizedBox(height: 12),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Skeleton loader for home page
+class _HomePageSkeleton extends StatelessWidget {
+  const _HomePageSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Hero card skeleton
+          ShimmerLoading(
+            child: Container(
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          // Quick actions title skeleton
+          ShimmerLoading(
+            child: Container(
+              width: 120,
+              height: 20,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Grid skeleton
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 0.95,
+            children: List.generate(
+              6,
+              (index) => ShimmerLoading(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

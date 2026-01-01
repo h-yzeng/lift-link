@@ -119,6 +119,7 @@ Future<WorkoutSession?> activeWorkout(Ref ref) async {
 Future<List<WorkoutSession>> workoutHistory(
   Ref ref, {
   int? limit,
+  int? offset,
   DateTime? startDate,
   DateTime? endDate,
 }) async {
@@ -129,6 +130,7 @@ Future<List<WorkoutSession>> workoutHistory(
   final result = await useCase(
     userId: user.id,
     limit: limit,
+    offset: offset,
     startDate: startDate,
     endDate: endDate,
   );

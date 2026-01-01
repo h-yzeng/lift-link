@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/pages/workout_detail_page.dart';
-import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
+import 'package:liftlink/features/workout/presentation/providers/paginated_workout_history_provider.dart';
 import 'package:liftlink/features/workout/presentation/widgets/workout_summary_card.dart';
 import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 
@@ -17,7 +17,14 @@ class WorkoutHistoryPage extends ConsumerStatefulWidget {
 
 class _WorkoutHistoryPageState extends ConsumerState<WorkoutHistoryPage> {
   DateTimeRange? _selectedDateRange;
-  final int _pageSize = 20;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(paginatedWorkoutHistoryProvider.notifier).loadFirstPage();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +32,7 @@ class _WorkoutHistoryPageState extends ConsumerState<WorkoutHistoryPage> {
     final profileAsync = ref.watch(currentProfileProvider);
     final useImperialUnits = profileAsync.valueOrNull?.usesImperialUnits ?? true;
 
-    final historyAsync = ref.watch(
-      workoutHistoryProvider(
-        limit: _pageSize,
-        startDate: _selectedDateRange?.start,
-        endDate: _selectedDateRange?.end,
-      ),
-    );
+    final paginatedState = ref.watch(paginatedWorkoutHistoryProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -50,31 +51,66 @@ class _WorkoutHistoryPageState extends ConsumerState<WorkoutHistoryPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.invalidate(workoutHistoryProvider);
+          await ref.read(paginatedWorkoutHistoryProvider.notifier).refresh();
         },
-        child: historyAsync.when(
-          data: (workouts) => _buildWorkoutList(workouts, useImperialUnits),
-          loading: () => const WorkoutHistorySkeleton(),
-          error: (error, stack) => _buildErrorState(error, theme),
-        ),
+        child: _buildBody(paginatedState, useImperialUnits, theme),
       ),
     );
   }
 
-  Widget _buildWorkoutList(List<WorkoutSession> workouts, bool useImperialUnits) {
-    if (workouts.isEmpty) {
+  Widget _buildBody(
+    PaginatedWorkoutHistoryState state,
+    bool useImperialUnits,
+    ThemeData theme,
+  ) {
+    if (state.workouts.isEmpty && state.isLoading) {
+      return const WorkoutHistorySkeleton();
+    }
+
+    if (state.workouts.isEmpty && state.error != null) {
+      return _buildErrorState(state.error!, theme);
+    }
+
+    if (state.workouts.isEmpty) {
       return _buildEmptyState();
     }
 
+    return _buildWorkoutList(state, useImperialUnits);
+  }
+
+  Widget _buildWorkoutList(
+    PaginatedWorkoutHistoryState state,
+    bool useImperialUnits,
+  ) {
+    final workouts = state.workouts;
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: workouts.length,
+      itemCount: workouts.length + (state.hasMore ? 1 : 0),
       itemBuilder: (context, index) {
-        final workout = workouts[index];
-        return WorkoutSummaryCard(
-          workout: workout,
-          useImperialUnits: useImperialUnits,
-          onTap: () => _navigateToWorkoutDetail(workout),
+        // Show workout cards
+        if (index < workouts.length) {
+          final workout = workouts[index];
+          return WorkoutSummaryCard(
+            workout: workout,
+            useImperialUnits: useImperialUnits,
+            onTap: () => _navigateToWorkoutDetail(workout),
+          );
+        }
+
+        // Show "Load More" button at the end
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: state.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : FilledButton(
+                  onPressed: () {
+                    ref
+                        .read(paginatedWorkoutHistoryProvider.notifier)
+                        .loadNextPage();
+                  },
+                  child: const Text('Load More'),
+                ),
         );
       },
     );
@@ -191,6 +227,11 @@ class _WorkoutHistoryPageState extends ConsumerState<WorkoutHistoryPage> {
       setState(() {
         _selectedDateRange = result;
       });
+      // Reload with new date filter
+      ref.read(paginatedWorkoutHistoryProvider.notifier).loadFirstPage(
+            startDate: result.start,
+            endDate: result.end,
+          );
     }
   }
 
@@ -198,6 +239,8 @@ class _WorkoutHistoryPageState extends ConsumerState<WorkoutHistoryPage> {
     setState(() {
       _selectedDateRange = null;
     });
+    // Reload without date filter
+    ref.read(paginatedWorkoutHistoryProvider.notifier).loadFirstPage();
   }
 
   void _navigateToWorkoutDetail(WorkoutSession workout) {

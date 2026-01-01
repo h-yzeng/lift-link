@@ -12,6 +12,7 @@ class GetWorkoutHistory {
   Future<Either<Failure, List<WorkoutSession>>> call({
     required String userId,
     int? limit,
+    int? offset,
     DateTime? startDate,
     DateTime? endDate,
   }) {
@@ -32,6 +33,7 @@ class GetWorkoutHistory {
     return repository.getWorkoutHistory(
       userId: userId,
       limit: limit,
+      offset: offset,
       startDate: startDate,
       endDate: endDate,
     );

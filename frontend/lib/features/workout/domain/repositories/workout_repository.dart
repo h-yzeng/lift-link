@@ -67,9 +67,17 @@ abstract class WorkoutRepository {
   Future<Either<Failure, WorkoutSession>> getWorkoutById(String id);
 
   /// Get workout history for a user
+  ///
+  /// Parameters:
+  /// - [userId]: The ID of the user
+  /// - [limit]: Maximum number of workouts to return
+  /// - [offset]: Number of workouts to skip (for pagination)
+  /// - [startDate]: Filter workouts after this date
+  /// - [endDate]: Filter workouts before this date
   Future<Either<Failure, List<WorkoutSession>>> getWorkoutHistory({
     required String userId,
     int? limit,
+    int? offset,
     DateTime? startDate,
     DateTime? endDate,
   });

@@ -46,6 +46,7 @@ abstract class WorkoutLocalDataSource {
   Future<List<WorkoutSession>> getWorkoutHistory({
     required String userId,
     int? limit,
+    int? offset,
     DateTime? startDate,
     DateTime? endDate,
   });
@@ -275,6 +276,7 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
   Future<List<WorkoutSession>> getWorkoutHistory({
     required String userId,
     int? limit,
+    int? offset,
     DateTime? startDate,
     DateTime? endDate,
   }) async {
@@ -293,7 +295,7 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
       query.orderBy([(ws) => OrderingTerm.desc(ws.startedAt)]);
 
       if (limit != null) {
-        query.limit(limit);
+        query.limit(limit, offset: offset);
       }
 
       final workoutEntities = await query.get();

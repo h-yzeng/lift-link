@@ -295,6 +295,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   Future<Either<Failure, List<WorkoutSession>>> getWorkoutHistory({
     required String userId,
     int? limit,
+    int? offset,
     DateTime? startDate,
     DateTime? endDate,
   }) async {
@@ -303,6 +304,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       final workouts = await localDataSource.getWorkoutHistory(
         userId: userId,
         limit: limit,
+        offset: offset,
         startDate: startDate,
         endDate: endDate,
       );

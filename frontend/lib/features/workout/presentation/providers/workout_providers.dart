@@ -23,6 +23,8 @@ import 'package:liftlink/features/workout/domain/entities/exercise_history.dart'
 import 'package:liftlink/features/workout/domain/entities/personal_record.dart';
 import 'package:liftlink/features/workout/presentation/providers/exercise_providers.dart'
     hide networkInfoProvider;
+import 'package:liftlink/core/providers/core_providers.dart';
+import 'package:liftlink/core/services/streak_service.dart';
 
 part 'workout_providers.g.dart';
 
@@ -230,4 +232,26 @@ Future<PersonalRecord?> exercisePR(
     (failure) => throw Exception(failure.userMessage),
     (record) => record,
   );
+}
+
+// Workout streak provider - calculates current and longest streaks
+@riverpod
+Future<StreakData> workoutStreak(Ref ref) async {
+  final user = await ref.watch(currentUserProvider.future);
+  if (user == null) {
+    return const StreakData(
+      currentStreak: 0,
+      longestStreak: 0,
+      lastWorkoutDate: null,
+    );
+  }
+
+  // Get all completed workouts
+  final workouts = await ref.watch(
+    workoutHistoryProvider(limit: 365), // Look back up to 1 year
+  );
+
+  // Use StreakService to calculate streak
+  final streakService = ref.watch(streakServiceProvider);
+  return streakService.calculateStreak(workouts);
 }

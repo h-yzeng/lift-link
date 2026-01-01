@@ -1,5 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:liftlink/core/services/notification_service.dart';
+import 'package:liftlink/core/services/streak_service.dart';
 
 part 'core_providers.g.dart';
 
@@ -15,4 +16,13 @@ NotificationService notificationService(NotificationServiceRef ref) {
   service.initialize();
 
   return service;
+}
+
+/// Provider for the streak service
+///
+/// This service calculates workout streaks and provides
+/// motivational messages based on streak progress.
+@riverpod
+StreakService streakService(StreakServiceRef ref) {
+  return StreakService();
 }

@@ -14,6 +14,7 @@ import 'package:liftlink/features/workout/presentation/pages/workout_history_pag
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 import 'package:liftlink/shared/widgets/sync_status_widget.dart';
+import 'package:liftlink/core/services/streak_service.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -120,6 +121,26 @@ class HomePage extends ConsumerWidget {
                       ),
                     ],
                   ),
+                ),
+
+                // Workout Streak Card
+                Consumer(
+                  builder: (context, ref, child) {
+                    final streakAsync = ref.watch(workoutStreakProvider);
+                    return streakAsync.when(
+                      data: (streakData) {
+                        if (streakData.currentStreak > 0 || streakData.longestStreak > 0) {
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                            child: _StreakCard(streakData: streakData),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, __) => const SizedBox.shrink(),
+                    );
+                  },
                 ),
 
                 // Main content
@@ -368,6 +389,125 @@ class _WorkoutStat extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _StreakCard extends StatelessWidget {
+  final StreakData streakData;
+
+  const _StreakCard({required this.streakData});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final currentStreak = streakData.currentStreak;
+    final longestStreak = streakData.longestStreak;
+
+    // Don't show if no meaningful data
+    if (currentStreak == 0 && longestStreak == 0) {
+      return const SizedBox.shrink();
+    }
+
+    // Get streak emoji and color
+    final streakEmoji = _getStreakEmoji(currentStreak);
+    final streakColor = _getStreakColor(currentStreak, theme);
+
+    return Card(
+      elevation: 2,
+      color: streakColor.withOpacity(0.1),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            // Emoji and current streak
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: streakColor.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    streakEmoji,
+                    style: const TextStyle(fontSize: 32),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '$currentStreak',
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: streakColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+
+            // Streak info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    currentStreak > 0 ? 'Day Streak!' : 'Longest Streak',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _getStreakMessage(currentStreak),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  if (longestStreak > currentStreak) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Best: $longestStreak days 🏆',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getStreakEmoji(int streak) {
+    if (streak == 0) return "💪";
+    if (streak < 7) return "🔥";
+    if (streak < 14) return "⚡";
+    if (streak < 30) return "🚀";
+    if (streak < 90) return "💎";
+    return "👑";
+  }
+
+  Color _getStreakColor(int streak, ThemeData theme) {
+    if (streak == 0) return theme.colorScheme.outline;
+    if (streak < 7) return Colors.orange;
+    if (streak < 14) return Colors.deepOrange;
+    if (streak < 30) return Colors.purple;
+    if (streak < 90) return Colors.blue;
+    return Colors.amber;
+  }
+
+  String _getStreakMessage(int streak) {
+    if (streak == 0) return "Start your streak today!";
+    if (streak == 1) return "Great start! Keep it going tomorrow.";
+    if (streak < 7) return "You're on fire!";
+    if (streak < 14) return "Incredible consistency!";
+    if (streak < 30) return "Unstoppable!";
+    if (streak < 90) return "Legendary dedication!";
+    return "Champion status!";
   }
 }
 

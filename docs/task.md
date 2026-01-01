@@ -3,8 +3,8 @@
 ## Project Status
 
 **Last Updated**: 2025-12-31
-**Current Phase**: Phase 9 Complete, Phase 10 Ready
-**Overall Progress**: ~75% Complete
+**Current Phase**: Phase 10 Complete, Phase 11 Ready
+**Overall Progress**: ~80% Complete
 **App Version**: 2.0.0
 
 ---
@@ -153,35 +153,39 @@
 
 ---
 
-## Phase 10: Core UX Improvements (⏳ PENDING)
+## Phase 10: Core UX Improvements (✅ COMPLETED)
 
-### Exercise History Per Exercise (HIGH PRIORITY)
-- [ ] Create exercise_history table in database
-- [ ] Add migration for exercise history
-- [ ] Create ExerciseHistory entity
-- [ ] Implement GetExerciseHistory use case
-- [ ] Add "Previous" section in active workout when adding sets
-- [ ] Show last 3 sessions for each exercise
+### Exercise History Per Exercise (✅ COMPLETED)
+- [x] Create exercise_history view in database
+- [x] Add migration for exercise history
+- [x] Create ExerciseHistory entity with freezed
+- [x] Implement GetExerciseHistory use case
+- [x] Add "Previous" section in active workout when adding sets
+- [x] Show last 3 sessions for each exercise
 
-### Local Notifications for Rest Timer
-- [ ] Add flutter_local_notifications dependency
-- [ ] Create NotificationService
-- [ ] Request notification permissions
-- [ ] Trigger notification when timer completes
-- [ ] Handle notification tap to return to app
+### Local Notifications for Rest Timer (✅ COMPLETED)
+- [x] Add flutter_local_notifications dependency
+- [x] Create NotificationService
+- [x] Request notification permissions on timer start
+- [x] Trigger notification when timer completes
+- [x] Handle notification tap to return to app
 
-### Database Performance
-- [ ] Add index on workout_sessions(user_id, created_at)
-- [ ] Add index on exercise_performances(workout_session_id)
-- [ ] Add index on sets(exercise_performance_id)
-- [ ] Add index on exercises(user_id, is_custom)
-- [ ] Add index on friendships(user_id, status)
+### Database Performance (✅ COMPLETED)
+- [x] Add index on workout_sessions(user_id, created_at)
+- [x] Add index on exercise_performances(workout_session_id)
+- [x] Add index on sets(exercise_performance_id)
+- [x] Add index on exercises(user_id, is_custom)
+- [x] Add index on friendships(user_id, status)
+- [x] Add additional composite indexes for activity feed and analytics
 
-### Workout Streak Tracking
-- [ ] Add streak fields to profiles table
-- [ ] Create StreakService to calculate streaks
-- [ ] Display streak on home page
-- [ ] Add streak milestone celebrations
+### Workout Streak Tracking (✅ COMPLETED)
+- [x] Add streak fields to profiles table (current_streak, longest_streak, last_workout_date)
+- [x] Create database functions for streak calculation
+- [x] Create trigger to auto-update streaks on workout completion
+- [x] Create StreakService to calculate streaks client-side
+- [x] Create workoutStreak provider
+- [x] Display streak card on home page with emoji and color coding
+- [x] Show motivational messages based on streak length
 
 ---
 

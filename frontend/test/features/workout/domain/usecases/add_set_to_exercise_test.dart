@@ -87,16 +87,18 @@ void main() {
 
     test('allows zero reps', () async {
       final set = createSet();
-      when(() => mockRepository.addSetToExercise(
-            exercisePerformanceId: any(named: 'exercisePerformanceId'),
-            setNumber: any(named: 'setNumber'),
-            reps: any(named: 'reps'),
-            weightKg: any(named: 'weightKg'),
-            isWarmup: any(named: 'isWarmup'),
-            isDropset: any(named: 'isDropset'),
-            rpe: any(named: 'rpe'),
-            notes: any(named: 'notes'),
-          )).thenAnswer((_) async => Right(set));
+      when(
+        () => mockRepository.addSetToExercise(
+          exercisePerformanceId: any(named: 'exercisePerformanceId'),
+          setNumber: any(named: 'setNumber'),
+          reps: any(named: 'reps'),
+          weightKg: any(named: 'weightKg'),
+          isWarmup: any(named: 'isWarmup'),
+          isDropset: any(named: 'isDropset'),
+          rpe: any(named: 'rpe'),
+          notes: any(named: 'notes'),
+        ),
+      ).thenAnswer((_) async => Right(set));
 
       final result = await useCase(
         exercisePerformanceId: 'perf-id',
@@ -128,16 +130,18 @@ void main() {
 
     test('allows zero weight (bodyweight exercises)', () async {
       final set = createSet();
-      when(() => mockRepository.addSetToExercise(
-            exercisePerformanceId: any(named: 'exercisePerformanceId'),
-            setNumber: any(named: 'setNumber'),
-            reps: any(named: 'reps'),
-            weightKg: any(named: 'weightKg'),
-            isWarmup: any(named: 'isWarmup'),
-            isDropset: any(named: 'isDropset'),
-            rpe: any(named: 'rpe'),
-            notes: any(named: 'notes'),
-          )).thenAnswer((_) async => Right(set));
+      when(
+        () => mockRepository.addSetToExercise(
+          exercisePerformanceId: any(named: 'exercisePerformanceId'),
+          setNumber: any(named: 'setNumber'),
+          reps: any(named: 'reps'),
+          weightKg: any(named: 'weightKg'),
+          isWarmup: any(named: 'isWarmup'),
+          isDropset: any(named: 'isDropset'),
+          rpe: any(named: 'rpe'),
+          notes: any(named: 'notes'),
+        ),
+      ).thenAnswer((_) async => Right(set));
 
       final result = await useCase(
         exercisePerformanceId: 'perf-id',
@@ -189,16 +193,18 @@ void main() {
 
     test('allows RPE at boundaries (0 and 10)', () async {
       final set = createSet();
-      when(() => mockRepository.addSetToExercise(
-            exercisePerformanceId: any(named: 'exercisePerformanceId'),
-            setNumber: any(named: 'setNumber'),
-            reps: any(named: 'reps'),
-            weightKg: any(named: 'weightKg'),
-            isWarmup: any(named: 'isWarmup'),
-            isDropset: any(named: 'isDropset'),
-            rpe: any(named: 'rpe'),
-            notes: any(named: 'notes'),
-          )).thenAnswer((_) async => Right(set));
+      when(
+        () => mockRepository.addSetToExercise(
+          exercisePerformanceId: any(named: 'exercisePerformanceId'),
+          setNumber: any(named: 'setNumber'),
+          reps: any(named: 'reps'),
+          weightKg: any(named: 'weightKg'),
+          isWarmup: any(named: 'isWarmup'),
+          isDropset: any(named: 'isDropset'),
+          rpe: any(named: 'rpe'),
+          notes: any(named: 'notes'),
+        ),
+      ).thenAnswer((_) async => Right(set));
 
       // Test RPE = 0
       var result = await useCase(
@@ -225,16 +231,18 @@ void main() {
   group('AddSetToExercise success', () {
     test('calls repository with all parameters', () async {
       final set = createSet();
-      when(() => mockRepository.addSetToExercise(
-            exercisePerformanceId: any(named: 'exercisePerformanceId'),
-            setNumber: any(named: 'setNumber'),
-            reps: any(named: 'reps'),
-            weightKg: any(named: 'weightKg'),
-            isWarmup: any(named: 'isWarmup'),
-            isDropset: any(named: 'isDropset'),
-            rpe: any(named: 'rpe'),
-            notes: any(named: 'notes'),
-          )).thenAnswer((_) async => Right(set));
+      when(
+        () => mockRepository.addSetToExercise(
+          exercisePerformanceId: any(named: 'exercisePerformanceId'),
+          setNumber: any(named: 'setNumber'),
+          reps: any(named: 'reps'),
+          weightKg: any(named: 'weightKg'),
+          isWarmup: any(named: 'isWarmup'),
+          isDropset: any(named: 'isDropset'),
+          rpe: any(named: 'rpe'),
+          notes: any(named: 'notes'),
+        ),
+      ).thenAnswer((_) async => Right(set));
 
       await useCase(
         exercisePerformanceId: 'perf-123',
@@ -247,30 +255,34 @@ void main() {
         notes: 'Felt strong',
       );
 
-      verify(() => mockRepository.addSetToExercise(
-            exercisePerformanceId: 'perf-123',
-            setNumber: 3,
-            reps: 8,
-            weightKg: 120.0,
-            isWarmup: true,
-            isDropset: false,
-            rpe: 7.5,
-            notes: 'Felt strong',
-          )).called(1);
+      verify(
+        () => mockRepository.addSetToExercise(
+          exercisePerformanceId: 'perf-123',
+          setNumber: 3,
+          reps: 8,
+          weightKg: 120.0,
+          isWarmup: true,
+          isDropset: false,
+          rpe: 7.5,
+          notes: 'Felt strong',
+        ),
+      ).called(1);
     });
 
     test('returns WorkoutSet on success', () async {
       final set = createSet();
-      when(() => mockRepository.addSetToExercise(
-            exercisePerformanceId: any(named: 'exercisePerformanceId'),
-            setNumber: any(named: 'setNumber'),
-            reps: any(named: 'reps'),
-            weightKg: any(named: 'weightKg'),
-            isWarmup: any(named: 'isWarmup'),
-            isDropset: any(named: 'isDropset'),
-            rpe: any(named: 'rpe'),
-            notes: any(named: 'notes'),
-          )).thenAnswer((_) async => Right(set));
+      when(
+        () => mockRepository.addSetToExercise(
+          exercisePerformanceId: any(named: 'exercisePerformanceId'),
+          setNumber: any(named: 'setNumber'),
+          reps: any(named: 'reps'),
+          weightKg: any(named: 'weightKg'),
+          isWarmup: any(named: 'isWarmup'),
+          isDropset: any(named: 'isDropset'),
+          rpe: any(named: 'rpe'),
+          notes: any(named: 'notes'),
+        ),
+      ).thenAnswer((_) async => Right(set));
 
       final result = await useCase(
         exercisePerformanceId: 'perf-id',

@@ -500,7 +500,7 @@ class SettingsPage extends ConsumerWidget {
               const ListTile(
                 leading: Icon(Icons.info_outline),
                 title: Text('App Version'),
-                subtitle: Text('1.0.0'),
+                subtitle: Text('2.0.0'),
               ),
               ListTile(
                 leading: const Icon(Icons.play_circle_outline),

@@ -41,7 +41,7 @@ void main() {
           createSet(id: 's1', weightKg: 80.0, reps: 10), // 1RM: 106.67
           createSet(id: 's2', weightKg: 100.0, reps: 5), // 1RM: 116.67
           createSet(id: 's3', weightKg: 90.0, reps: 8), // 1RM: 114.0
-        ]);
+        ],);
 
         expect(performance.maxOneRM, closeTo(116.67, 0.01));
       });
@@ -50,7 +50,7 @@ void main() {
         final performance = createPerformance(sets: [
           createSet(id: 's1', weightKg: 50.0, reps: 10, isWarmup: true),
           createSet(id: 's2', weightKg: 100.0, reps: 5), // 1RM: 116.67
-        ]);
+        ],);
 
         expect(performance.maxOneRM, closeTo(116.67, 0.01));
       });
@@ -58,7 +58,7 @@ void main() {
       test('returns null when no working sets', () {
         final performance = createPerformance(sets: [
           createSet(id: 's1', weightKg: 50.0, reps: 10, isWarmup: true),
-        ]);
+        ],);
 
         expect(performance.maxOneRM, isNull);
       });
@@ -73,7 +73,7 @@ void main() {
       test('formats max 1RM with kg suffix', () {
         final performance = createPerformance(sets: [
           createSet(weightKg: 100.0, reps: 10),
-        ]);
+        ],);
 
         expect(performance.formattedMaxOneRM, equals('133.3 kg'));
       });
@@ -90,7 +90,7 @@ void main() {
           createSet(id: 's1', weightKg: 100.0, reps: 10), // 1000
           createSet(id: 's2', weightKg: 100.0, reps: 8), // 800
           createSet(id: 's3', weightKg: 100.0, reps: 6), // 600
-        ]);
+        ],);
 
         expect(performance.totalVolume, equals(2400.0));
       });
@@ -99,7 +99,7 @@ void main() {
         final performance = createPerformance(sets: [
           createSet(id: 's1', weightKg: 50.0, reps: 10, isWarmup: true), // 500
           createSet(id: 's2', weightKg: 100.0, reps: 10), // 1000
-        ]);
+        ],);
 
         expect(performance.totalVolume, equals(1500.0));
       });
@@ -118,7 +118,7 @@ void main() {
           createSet(id: 's3', isWarmup: false),
           createSet(id: 's4', isWarmup: false),
           createSet(id: 's5', isWarmup: false),
-        ]);
+        ],);
 
         expect(performance.workingSetsCount, equals(3));
       });
@@ -128,7 +128,7 @@ void main() {
           createSet(id: 's1', isWarmup: true),
           createSet(id: 's2', isWarmup: true),
           createSet(id: 's3', isWarmup: false),
-        ]);
+        ],);
 
         expect(performance.warmupSetsCount, equals(2));
       });
@@ -138,7 +138,7 @@ void main() {
           createSet(id: 's1', isWarmup: true),
           createSet(id: 's2', isWarmup: false),
           createSet(id: 's3', isWarmup: false),
-        ]);
+        ],);
 
         expect(performance.totalSetsCount, equals(3));
       });
@@ -151,7 +151,7 @@ void main() {
           createSet(id: 's2', reps: 10),
           createSet(id: 's3', reps: 8),
           createSet(id: 's4', reps: 6),
-        ]);
+        ],);
 
         expect(performance.totalReps, equals(24)); // 10 + 8 + 6
       });
@@ -159,7 +159,7 @@ void main() {
       test('returns zero when only warmup sets', () {
         final performance = createPerformance(sets: [
           createSet(id: 's1', reps: 10, isWarmup: true),
-        ]);
+        ],);
 
         expect(performance.totalReps, equals(0));
       });
@@ -171,7 +171,7 @@ void main() {
           createSet(id: 's1', weightKg: 100.0),
           createSet(id: 's2', weightKg: 110.0),
           createSet(id: 's3', weightKg: 120.0),
-        ]);
+        ],);
 
         expect(performance.averageWeight, equals(110.0));
       });
@@ -181,7 +181,7 @@ void main() {
           createSet(id: 's1', weightKg: 50.0, isWarmup: true),
           createSet(id: 's2', weightKg: 100.0),
           createSet(id: 's3', weightKg: 100.0),
-        ]);
+        ],);
 
         expect(performance.averageWeight, equals(100.0));
       });
@@ -189,7 +189,7 @@ void main() {
       test('returns null when no working sets', () {
         final performance = createPerformance(sets: [
           createSet(id: 's1', weightKg: 50.0, isWarmup: true),
-        ]);
+        ],);
 
         expect(performance.averageWeight, isNull);
       });
@@ -201,7 +201,7 @@ void main() {
           createSet(id: 's1', weightKg: 100.0),
           createSet(id: 's2', weightKg: 120.0),
           createSet(id: 's3', weightKg: 110.0),
-        ]);
+        ],);
 
         expect(performance.maxWeight, equals(120.0));
       });
@@ -210,7 +210,7 @@ void main() {
         final performance = createPerformance(sets: [
           createSet(id: 's1', weightKg: 200.0, isWarmup: true),
           createSet(id: 's2', weightKg: 100.0),
-        ]);
+        ],);
 
         expect(performance.maxWeight, equals(100.0));
       });

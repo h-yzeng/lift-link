@@ -316,6 +316,7 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
     );
 
     if (result != null && widget.selectionMode && mounted) {
+      if (!context.mounted) return;
       Navigator.pop(context, {
         'id': result.id,
         'name': result.name,

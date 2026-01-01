@@ -87,11 +87,13 @@ void main() {
 
     test('calls repository with correct parameters', () async {
       final session = createSession();
-      when(() => mockRepository.startWorkout(
-            userId: any(named: 'userId'),
-            title: any(named: 'title'),
-            notes: any(named: 'notes'),
-          )).thenAnswer((_) async => Right(session));
+      when(
+        () => mockRepository.startWorkout(
+          userId: any(named: 'userId'),
+          title: any(named: 'title'),
+          notes: any(named: 'notes'),
+        ),
+      ).thenAnswer((_) async => Right(session));
 
       await useCase(
         userId: 'user-123',
@@ -99,20 +101,24 @@ void main() {
         notes: 'Feeling good',
       );
 
-      verify(() => mockRepository.startWorkout(
-            userId: 'user-123',
-            title: 'Morning Workout',
-            notes: 'Feeling good',
-          )).called(1);
+      verify(
+        () => mockRepository.startWorkout(
+          userId: 'user-123',
+          title: 'Morning Workout',
+          notes: 'Feeling good',
+        ),
+      ).called(1);
     });
 
     test('returns WorkoutSession on success', () async {
       final session = createSession();
-      when(() => mockRepository.startWorkout(
-            userId: any(named: 'userId'),
-            title: any(named: 'title'),
-            notes: any(named: 'notes'),
-          )).thenAnswer((_) async => Right(session));
+      when(
+        () => mockRepository.startWorkout(
+          userId: any(named: 'userId'),
+          title: any(named: 'title'),
+          notes: any(named: 'notes'),
+        ),
+      ).thenAnswer((_) async => Right(session));
 
       final result = await useCase(
         userId: 'user-id',
@@ -127,11 +133,13 @@ void main() {
     });
 
     test('returns failure from repository on error', () async {
-      when(() => mockRepository.startWorkout(
-            userId: any(named: 'userId'),
-            title: any(named: 'title'),
-            notes: any(named: 'notes'),
-          )).thenAnswer(
+      when(
+        () => mockRepository.startWorkout(
+          userId: any(named: 'userId'),
+          title: any(named: 'title'),
+          notes: any(named: 'notes'),
+        ),
+      ).thenAnswer(
         (_) async => const Left(ServerFailure(message: 'Network error')),
       );
 

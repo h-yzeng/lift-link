@@ -111,7 +111,7 @@ void main() {
           createPerformance(id: 'p1'),
           createPerformance(id: 'p2'),
           createPerformance(id: 'p3'),
-        ]);
+        ],);
 
         expect(session.exerciseCount, equals(3));
       });
@@ -128,13 +128,13 @@ void main() {
           createPerformance(id: 'p1', sets: [
             createSet(id: 's1'),
             createSet(id: 's2'),
-          ]),
+          ],),
           createPerformance(id: 'p2', sets: [
             createSet(id: 's3'),
             createSet(id: 's4'),
             createSet(id: 's5'),
-          ]),
-        ]);
+          ],),
+        ],);
 
         expect(session.totalSets, equals(5));
       });
@@ -152,12 +152,12 @@ void main() {
             createSet(id: 's1', isWarmup: true),
             createSet(id: 's2', isWarmup: true),
             createSet(id: 's3'),
-          ]),
+          ],),
           createPerformance(id: 'p2', sets: [
             createSet(id: 's4'),
             createSet(id: 's5'),
-          ]),
-        ]);
+          ],),
+        ],);
 
         expect(session.totalWorkingSets, equals(3));
       });
@@ -168,11 +168,11 @@ void main() {
         final session = createSession(exercises: [
           createPerformance(id: 'p1', sets: [
             createSet(id: 's1', weightKg: 100.0, reps: 10), // 1000
-          ]),
+          ],),
           createPerformance(id: 'p2', sets: [
             createSet(id: 's2', weightKg: 50.0, reps: 20), // 1000
-          ]),
-        ]);
+          ],),
+        ],);
 
         expect(session.totalVolume, equals(2000.0));
       });
@@ -188,8 +188,8 @@ void main() {
         final session = createSession(exercises: [
           createPerformance(sets: [
             createSet(weightKg: 50.0, reps: 10), // 500
-          ]),
-        ]);
+          ],),
+        ],);
 
         expect(session.formattedTotalVolume, equals('500 kg'));
       });
@@ -198,8 +198,8 @@ void main() {
         final session = createSession(exercises: [
           createPerformance(sets: [
             createSet(weightKg: 100.0, reps: 50), // 5000
-          ]),
-        ]);
+          ],),
+        ],);
 
         expect(session.formattedTotalVolume, equals('5.0t'));
       });
@@ -211,11 +211,11 @@ void main() {
           createPerformance(id: 'p1', sets: [
             createSet(id: 's1', reps: 10),
             createSet(id: 's2', reps: 8),
-          ]),
+          ],),
           createPerformance(id: 'p2', sets: [
             createSet(id: 's3', reps: 12),
-          ]),
-        ]);
+          ],),
+        ],);
 
         expect(session.totalReps, equals(30));
       });
@@ -234,7 +234,7 @@ void main() {
             exerciseName: 'Squat',
             sets: [createSet(id: 's2', weightKg: 150.0, reps: 5)],
           ),
-        ]);
+        ],);
 
         final prs = session.personalRecords;
         expect(prs.length, equals(2));
@@ -249,7 +249,7 @@ void main() {
             exerciseName: 'Bench Press',
             sets: [createSet(id: 's1', isWarmup: true)],
           ),
-        ]);
+        ],);
 
         expect(session.personalRecords, isEmpty);
       });
@@ -260,11 +260,11 @@ void main() {
         final session = createSession(exercises: [
           createPerformance(id: 'p1', sets: [
             createSet(id: 's1', weightKg: 100.0, reps: 5), // 116.67
-          ]),
+          ],),
           createPerformance(id: 'p2', sets: [
             createSet(id: 's2', weightKg: 150.0, reps: 5), // 175.0
-          ]),
-        ]);
+          ],),
+        ],);
 
         expect(session.highestOneRM, closeTo(175.0, 0.01));
       });
@@ -280,14 +280,14 @@ void main() {
         final session = createSession(exercises: [
           createPerformance(id: 'p1', exerciseName: 'Bench', sets: [
             createSet(id: 's1', weightKg: 100.0, reps: 5),
-          ]),
+          ],),
           createPerformance(id: 'p2', exerciseName: 'Squat', sets: [
             createSet(id: 's2', weightKg: 150.0, reps: 5),
-          ]),
+          ],),
           createPerformance(id: 'p3', exerciseName: 'Warmup Only', sets: [
             createSet(id: 's3', isWarmup: true),
-          ]),
-        ]);
+          ],),
+        ],);
 
         expect(session.personalRecordsCount, equals(2));
       });

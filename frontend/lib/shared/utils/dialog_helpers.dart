@@ -118,15 +118,18 @@ Future<T?> showSelectionDialog<T>(
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
-          ...options.map((option) => ListTile(
-                leading: option.icon != null ? Icon(option.icon) : null,
-                title: Text(option.label),
-                subtitle: option.subtitle != null ? Text(option.subtitle!) : null,
-                trailing: selectedValue == option.value
-                    ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
-                    : null,
-                onTap: () => Navigator.pop(context, option.value),
-              )),
+          ...options.map(
+            (option) => ListTile(
+              leading: option.icon != null ? Icon(option.icon) : null,
+              title: Text(option.label),
+              subtitle:
+                  option.subtitle != null ? Text(option.subtitle!) : null,
+              trailing: selectedValue == option.value
+                  ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
+                  : null,
+              onTap: () => Navigator.pop(context, option.value),
+            ),
+          ),
           const SizedBox(height: 16),
         ],
       ),

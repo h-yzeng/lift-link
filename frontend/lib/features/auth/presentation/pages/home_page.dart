@@ -466,7 +466,7 @@ class _StreakCard extends StatelessWidget {
 
     return Card(
       elevation: 2,
-      color: streakColor.withOpacity(0.1),
+      color: streakColor.withValues(alpha: 0.1),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -475,7 +475,7 @@ class _StreakCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: streakColor.withOpacity(0.2),
+                color: streakColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
@@ -535,12 +535,12 @@ class _StreakCard extends StatelessWidget {
   }
 
   String _getStreakEmoji(int streak) {
-    if (streak == 0) return "💪";
-    if (streak < 7) return "🔥";
-    if (streak < 14) return "⚡";
-    if (streak < 30) return "🚀";
-    if (streak < 90) return "💎";
-    return "👑";
+    if (streak == 0) return '💪';
+    if (streak < 7) return '🔥';
+    if (streak < 14) return '⚡';
+    if (streak < 30) return '🚀';
+    if (streak < 90) return '💎';
+    return '👑';
   }
 
   Color _getStreakColor(int streak, ThemeData theme) {
@@ -553,13 +553,13 @@ class _StreakCard extends StatelessWidget {
   }
 
   String _getStreakMessage(int streak) {
-    if (streak == 0) return "Start your streak today!";
-    if (streak == 1) return "Great start! Keep it going tomorrow.";
-    if (streak < 7) return "You're on fire!";
-    if (streak < 14) return "Incredible consistency!";
-    if (streak < 30) return "Unstoppable!";
-    if (streak < 90) return "Legendary dedication!";
-    return "Champion status!";
+    if (streak == 0) return 'Start your streak today!';
+    if (streak == 1) return 'Great start! Keep it going tomorrow.';
+    if (streak < 7) return 'You\'re on fire!';
+    if (streak < 14) return 'Incredible consistency!';
+    if (streak < 30) return 'Unstoppable!';
+    if (streak < 90) return 'Legendary dedication!';
+    return 'Champion status!';
   }
 }
 

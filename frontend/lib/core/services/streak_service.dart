@@ -10,7 +10,7 @@ class StreakService {
   /// Returns a record with (currentStreak, longestStreak, lastWorkoutDate)
   StreakData calculateStreak(List<WorkoutSession> completedWorkouts) {
     if (completedWorkouts.isEmpty) {
-      return StreakData(
+      return const StreakData(
         currentStreak: 0,
         longestStreak: 0,
         lastWorkoutDate: null,
@@ -26,7 +26,7 @@ class StreakService {
       ..sort((a, b) => b.compareTo(a)); // Sort descending (most recent first)
 
     if (workoutDates.isEmpty) {
-      return StreakData(
+      return const StreakData(
         currentStreak: 0,
         longestStreak: 0,
         lastWorkoutDate: null,
@@ -98,53 +98,54 @@ class StreakService {
 
   /// Check if a milestone was reached
   ///
-  /// Returns the milestone number if one was reached, null otherwise.
+  /// Returns the highest milestone number if one was reached, null otherwise.
   /// Milestones are at: 3, 7, 14, 30, 60, 90, 180, 365 days
   int? checkMilestone(int oldStreak, int newStreak) {
     const milestones = [3, 7, 14, 30, 60, 90, 180, 365];
 
+    int? highestMilestone;
     for (final milestone in milestones) {
       if (oldStreak < milestone && newStreak >= milestone) {
-        return milestone;
+        highestMilestone = milestone;
       }
     }
 
-    return null;
+    return highestMilestone;
   }
 
   /// Get motivational message based on current streak
   String getStreakMessage(int streak) {
     if (streak == 0) {
-      return "Start your streak today!";
+      return 'Start your streak today!';
     } else if (streak == 1) {
-      return "Great start! Keep it going tomorrow.";
+      return 'Great start! Keep it going tomorrow.';
     } else if (streak < 7) {
-      return "You're on fire! $streak days strong!";
+      return 'You\'re on fire! $streak days strong!';
     } else if (streak < 14) {
-      return "Incredible! $streak days in a row!";
+      return 'Incredible! $streak days in a row!';
     } else if (streak < 30) {
-      return "Unstoppable! $streak day streak!";
+      return 'Unstoppable! $streak day streak!';
     } else if (streak < 90) {
-      return "Legendary! $streak days of dedication!";
+      return 'Legendary! $streak days of dedication!';
     } else {
-      return "Champion! $streak day streak!";
+      return 'Champion! $streak day streak!';
     }
   }
 
   /// Get emoji for current streak
   String getStreakEmoji(int streak) {
     if (streak == 0) {
-      return "💪";
+      return '💪';
     } else if (streak < 7) {
-      return "🔥";
+      return '🔥';
     } else if (streak < 14) {
-      return "⚡";
+      return '⚡';
     } else if (streak < 30) {
-      return "🚀";
+      return '🚀';
     } else if (streak < 90) {
-      return "💎";
+      return '💎';
     } else {
-      return "👑";
+      return '👑';
     }
   }
 

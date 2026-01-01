@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
@@ -40,11 +41,13 @@ class PaginatedWorkoutHistoryState {
 class PaginatedWorkoutHistoryNotifier
     extends StateNotifier<PaginatedWorkoutHistoryState> {
   PaginatedWorkoutHistoryNotifier(this.ref)
-      : super(const PaginatedWorkoutHistoryState(
-          workouts: [],
-          isLoading: false,
-          hasMore: true,
-        ));
+      : super(
+          const PaginatedWorkoutHistoryState(
+            workouts: [],
+            isLoading: false,
+            hasMore: true,
+          ),
+        );
 
   final Ref ref;
   static const int _pageSize = 20;

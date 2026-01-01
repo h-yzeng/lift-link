@@ -191,7 +191,8 @@ class _WorkoutHistoryPageState extends ConsumerState<WorkoutHistoryPage> {
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
-              onPressed: () => ref.invalidate(workoutHistoryProvider),
+              onPressed: () =>
+                  ref.read(paginatedWorkoutHistoryProvider.notifier).refresh(),
               icon: const Icon(Icons.refresh),
               label: const Text('Retry'),
             ),

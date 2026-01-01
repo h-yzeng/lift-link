@@ -98,58 +98,59 @@ class HomePage extends ConsumerWidget {
             final greeting = _getGreeting();
             final displayName = profile?.displayNameOrUsername ?? 'there';
 
-            return Column(
-              children: [
-                // Greeting header
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '$greeting,',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+            return activeWorkoutAsync.when(
+              data: (activeWorkout) {
+                if (activeWorkout != null) {
+                  // Active workout view
+                  return SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Greeting header
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$greeting,',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              Text(
+                                displayName,
+                                style: theme.textTheme.headlineMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Text(
-                        displayName,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+
+                        // Workout Streak Card
+                        Consumer(
+                          builder: (context, ref, child) {
+                            final streakAsync = ref.watch(workoutStreakProvider);
+                            return streakAsync.when(
+                              data: (streakData) {
+                                if (streakData.currentStreak > 0 || streakData.longestStreak > 0) {
+                                  return Padding(
+                                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                                    child: _StreakCard(streakData: streakData),
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              },
+                              loading: () => const SizedBox.shrink(),
+                              error: (_, __) => const SizedBox.shrink(),
+                            );
+                          },
                         ),
-                      ),
-                    ],
-                  ),
-                ),
 
-                // Workout Streak Card
-                Consumer(
-                  builder: (context, ref, child) {
-                    final streakAsync = ref.watch(workoutStreakProvider);
-                    return streakAsync.when(
-                      data: (streakData) {
-                        if (streakData.currentStreak > 0 || streakData.longestStreak > 0) {
-                          return Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                            child: _StreakCard(streakData: streakData),
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                      loading: () => const SizedBox.shrink(),
-                      error: (_, __) => const SizedBox.shrink(),
-                    );
-                  },
-                ),
-
-                // Main content
-                Expanded(
-                  child: activeWorkoutAsync.when(
-                    data: (activeWorkout) {
-                      if (activeWorkout != null) {
-                        // Active workout view
-                        return SingleChildScrollView(
+                        // Main content
+                        Padding(
                           padding: const EdgeInsets.all(16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -171,11 +172,62 @@ class HomePage extends ConsumerWidget {
                               ),
                             ],
                           ),
-                        );
-                      }
+                        ),
+                      ],
+                    ),
+                  );
+                }
 
-                      // No active workout view
-                      return SingleChildScrollView(
+                // No active workout view
+                return SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Greeting header
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '$greeting,',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            Text(
+                              displayName,
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Workout Streak Card
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final streakAsync = ref.watch(workoutStreakProvider);
+                          return streakAsync.when(
+                            data: (streakData) {
+                              if (streakData.currentStreak > 0 || streakData.longestStreak > 0) {
+                                return Padding(
+                                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                                  child: _StreakCard(streakData: streakData),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                            loading: () => const SizedBox.shrink(),
+                            error: (_, __) => const SizedBox.shrink(),
+                          );
+                        },
+                      ),
+
+                      // Main content
+                      Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -190,22 +242,22 @@ class HomePage extends ConsumerWidget {
                             ),
                           ],
                         ),
-                      );
-                    },
-                    loading: () => const _HomePageSkeleton(),
-                    error: (_, __) => Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: FilledButton.icon(
-                          onPressed: () => _startWorkout(context, ref),
-                          icon: const Icon(Icons.play_arrow),
-                          label: const Text('Start Workout'),
-                        ),
                       ),
-                    ),
+                    ],
+                  ),
+                );
+              },
+              loading: () => const _HomePageSkeleton(),
+              error: (_, __) => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: FilledButton.icon(
+                    onPressed: () => _startWorkout(context, ref),
+                    icon: const Icon(Icons.play_arrow),
+                    label: const Text('Start Workout'),
                   ),
                 ),
-              ],
+              ),
             );
           },
           loading: () => const _HomePageSkeleton(),

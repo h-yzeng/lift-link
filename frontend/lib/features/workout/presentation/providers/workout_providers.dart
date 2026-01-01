@@ -13,11 +13,13 @@ import 'package:liftlink/features/workout/domain/usecases/add_set_to_exercise.da
 import 'package:liftlink/features/workout/domain/usecases/complete_workout.dart';
 import 'package:liftlink/features/workout/domain/usecases/delete_set.dart';
 import 'package:liftlink/features/workout/domain/usecases/get_active_workout.dart';
+import 'package:liftlink/features/workout/domain/usecases/get_exercise_history.dart';
 import 'package:liftlink/features/workout/domain/usecases/get_workout_history.dart';
 import 'package:liftlink/features/workout/domain/usecases/start_workout.dart';
 import 'package:liftlink/features/workout/domain/usecases/update_set.dart';
 import 'package:liftlink/features/workout/domain/usecases/get_personal_records.dart';
 import 'package:liftlink/features/workout/domain/usecases/get_exercise_pr.dart';
+import 'package:liftlink/features/workout/domain/entities/exercise_history.dart';
 import 'package:liftlink/features/workout/domain/entities/personal_record.dart';
 import 'package:liftlink/features/workout/presentation/providers/exercise_providers.dart'
     hide networkInfoProvider;
@@ -90,6 +92,11 @@ DeleteSet deleteSetUseCase(Ref ref) {
   return DeleteSet(ref.watch(workoutRepositoryProvider));
 }
 
+@riverpod
+GetExerciseHistory getExerciseHistoryUseCase(Ref ref) {
+  return GetExerciseHistory(ref.watch(workoutRepositoryProvider));
+}
+
 // Active workout provider - streams the current active workout
 @riverpod
 Future<WorkoutSession?> activeWorkout(Ref ref) async {
@@ -150,6 +157,31 @@ Future<List<WorkoutSession>> userWorkoutHistory(
   return result.fold(
     (failure) => throw Exception(failure.userMessage),
     (workouts) => workouts,
+  );
+}
+
+// Exercise history provider - gets history for a specific exercise
+@riverpod
+Future<ExerciseHistory> exerciseHistory(
+  Ref ref, {
+  required String exerciseId,
+  int limit = 3,
+}) async {
+  final user = await ref.watch(currentUserProvider.future);
+  if (user == null) {
+    return ExerciseHistory(exerciseId: exerciseId, userId: '', sessions: const []);
+  }
+
+  final useCase = ref.watch(getExerciseHistoryUseCaseProvider);
+  final result = await useCase(
+    userId: user.id,
+    exerciseId: exerciseId,
+    limit: limit,
+  );
+
+  return result.fold(
+    (failure) => throw Exception(failure.userMessage),
+    (history) => history,
   );
 }
 

@@ -1,29 +1,34 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liftlink/core/providers/core_providers.dart';
 
 /// A rest timer widget that counts down between sets.
-class RestTimer extends StatefulWidget {
+class RestTimer extends ConsumerStatefulWidget {
   final int initialSeconds;
   final VoidCallback? onComplete;
   final VoidCallback? onCancel;
+  final String? exerciseName;
 
   const RestTimer({
     super.key,
     this.initialSeconds = 90,
     this.onComplete,
     this.onCancel,
+    this.exerciseName,
   });
 
   @override
-  State<RestTimer> createState() => _RestTimerState();
+  ConsumerState<RestTimer> createState() => _RestTimerState();
 }
 
-class _RestTimerState extends State<RestTimer> {
+class _RestTimerState extends ConsumerState<RestTimer> {
   late int _remainingSeconds;
   Timer? _timer;
   bool _isRunning = false;
   bool _isPaused = false;
+  bool _permissionsRequested = false;
 
   @override
   void initState() {
@@ -43,6 +48,13 @@ class _RestTimerState extends State<RestTimer> {
       _isPaused = false;
     });
 
+    // Request notification permissions on first start
+    if (!_permissionsRequested) {
+      _permissionsRequested = true;
+      final notificationService = ref.read(notificationServiceProvider);
+      notificationService.requestPermissions();
+    }
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds > 0) {
         setState(() {
@@ -56,12 +68,27 @@ class _RestTimerState extends State<RestTimer> {
       } else {
         _timer?.cancel();
         HapticFeedback.heavyImpact();
+
+        // Show notification
+        _showCompletionNotification();
+
         widget.onComplete?.call();
         setState(() {
           _isRunning = false;
         });
       }
     });
+  }
+
+  /// Show notification when rest timer completes
+  void _showCompletionNotification() {
+    final notificationService = ref.read(notificationServiceProvider);
+    final exerciseName = widget.exerciseName ?? 'your exercise';
+
+    notificationService.showRestTimerNotification(
+      exerciseName: exerciseName,
+      restSeconds: widget.initialSeconds,
+    );
   }
 
   void _pauseTimer() {
@@ -249,6 +276,7 @@ class _RestTimerState extends State<RestTimer> {
 Future<void> showRestTimerBottomSheet(
   BuildContext context, {
   int initialSeconds = 90,
+  String? exerciseName,
 }) {
   return showModalBottomSheet(
     context: context,
@@ -258,6 +286,7 @@ Future<void> showRestTimerBottomSheet(
         padding: const EdgeInsets.all(16),
         child: RestTimer(
           initialSeconds: initialSeconds,
+          exerciseName: exerciseName,
           onComplete: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(

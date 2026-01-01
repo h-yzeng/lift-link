@@ -4,6 +4,7 @@ import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/core/preferences/rest_timer_preference.dart';
 import 'package:liftlink/core/utils/unit_conversion.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
+import 'package:liftlink/features/workout/domain/entities/exercise_history.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_performance.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
@@ -481,6 +482,12 @@ class _ExerciseCard extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
 
+            // Exercise history (previous sessions)
+            _ExerciseHistorySection(
+              exerciseId: exercise.exerciseId,
+              useImperialUnits: useImperialUnits,
+            ),
+
             // Sets header
             if (exercise.sets.isNotEmpty)
               Padding(
@@ -529,6 +536,232 @@ class _ExerciseCard extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Widget to display exercise history (previous sessions)
+class _ExerciseHistorySection extends ConsumerStatefulWidget {
+  final String exerciseId;
+  final bool useImperialUnits;
+
+  const _ExerciseHistorySection({
+    required this.exerciseId,
+    required this.useImperialUnits,
+  });
+
+  @override
+  ConsumerState<_ExerciseHistorySection> createState() =>
+      _ExerciseHistorySectionState();
+}
+
+class _ExerciseHistorySectionState
+    extends ConsumerState<_ExerciseHistorySection> {
+  bool _isExpanded = true;
+
+  @override
+  Widget build(BuildContext context) {
+    final historyAsync = ref.watch(
+      exerciseHistoryProvider(exerciseId: widget.exerciseId),
+    );
+
+    return historyAsync.when(
+      data: (history) {
+        if (!history.hasHistory) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with expand/collapse button
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Icon(
+                      _isExpanded
+                          ? Icons.expand_less
+                          : Icons.expand_more,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Previous',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        '${history.sessions.length}',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // History sessions (collapsible)
+            if (_isExpanded) ...[
+              const SizedBox(height: 8),
+              ...history.sessions.map((session) {
+                return _HistorySessionCard(
+                  session: session,
+                  useImperialUnits: widget.useImperialUnits,
+                );
+              }),
+              const SizedBox(height: 8),
+            ],
+          ],
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+}
+
+/// Card displaying a single previous workout session
+class _HistorySessionCard extends StatelessWidget {
+  final ExerciseHistorySession session;
+  final bool useImperialUnits;
+
+  const _HistorySessionCard({
+    required this.session,
+    required this.useImperialUnits,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Session header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  session.workoutTitle,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text(
+                session.formattedDate,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+
+          // Sets summary
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: session.sets.map((set) {
+              final formattedWeight = UnitConversion.formatWeight(
+                set.weightKg,
+                useImperialUnits,
+              );
+
+              return Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: set.isWarmup
+                      ? theme.colorScheme.secondaryContainer.withValues(alpha: 0.5)
+                      : theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '${set.reps} × $formattedWeight',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: set.isWarmup
+                        ? theme.colorScheme.onSecondaryContainer
+                        : theme.colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+
+          // Session stats
+          if (session.maxWeight != null || session.totalVolume > 0) ...[
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                if (session.maxWeight != null) ...[
+                  Icon(
+                    Icons.fitness_center,
+                    size: 12,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Max: ${UnitConversion.formatWeight(session.maxWeight!, useImperialUnits)}',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                ],
+                Icon(
+                  Icons.scale,
+                  size: 12,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Volume: ${UnitConversion.formatWeight(session.totalVolume, useImperialUnits)}',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
       ),
     );
   }

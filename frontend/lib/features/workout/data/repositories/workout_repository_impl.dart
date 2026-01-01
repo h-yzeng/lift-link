@@ -5,6 +5,7 @@ import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/core/network/network_info.dart';
 import 'package:liftlink/features/workout/data/datasources/workout_local_datasource.dart';
 import 'package:liftlink/features/workout/data/datasources/workout_remote_datasource.dart';
+import 'package:liftlink/features/workout/domain/entities/exercise_history.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_performance.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_set.dart';
@@ -314,6 +315,28 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       }
 
       return Right(workouts);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    } catch (e) {
+      return Left(CacheFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ExerciseHistory>> getExerciseHistory({
+    required String userId,
+    required String exerciseId,
+    int limit = 3,
+  }) async {
+    try {
+      // Always read from local (offline-first)
+      final history = await localDataSource.getExerciseHistory(
+        userId: userId,
+        exerciseId: exerciseId,
+        limit: limit,
+      );
+
+      return Right(history);
     } on CacheException catch (e) {
       return Left(CacheFailure(message: e.message));
     } catch (e) {

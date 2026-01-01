@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:liftlink/core/error/failures.dart';
+import 'package:liftlink/features/workout/domain/entities/exercise_history.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_performance.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_set.dart';
@@ -71,6 +72,14 @@ abstract class WorkoutRepository {
     int? limit,
     DateTime? startDate,
     DateTime? endDate,
+  });
+
+  /// Get exercise history for a specific exercise
+  /// Returns the last N sessions (default 3) with all sets
+  Future<Either<Failure, ExerciseHistory>> getExerciseHistory({
+    required String userId,
+    required String exerciseId,
+    int limit = 3,
   });
 
   /// Sync workouts with remote server

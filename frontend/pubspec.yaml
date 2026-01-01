@@ -47,6 +47,9 @@ dependencies:
   # Share
   share_plus: ^7.2.1
 
+  # Notifications
+  flutter_local_notifications: ^17.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

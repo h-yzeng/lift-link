@@ -3,6 +3,7 @@ import 'package:liftlink/core/error/exceptions.dart';
 import 'package:liftlink/features/workout/data/models/exercise_performance_model.dart';
 import 'package:liftlink/features/workout/data/models/workout_session_model.dart';
 import 'package:liftlink/features/workout/data/models/workout_set_model.dart';
+import 'package:liftlink/features/workout/domain/entities/exercise_history.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_performance.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_set.dart';
@@ -63,6 +64,14 @@ abstract class WorkoutLocalDataSource {
 
   /// Mark workout as synced
   Future<void> markWorkoutAsSynced(String workoutSessionId);
+
+  /// Get exercise history for a specific exercise
+  /// Returns the last N completed workout sessions with all sets
+  Future<ExerciseHistory> getExerciseHistory({
+    required String userId,
+    required String exerciseId,
+    int limit = 3,
+  });
 }
 
 class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
@@ -300,6 +309,94 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
     } catch (e) {
       throw CacheException(
         message: 'Failed to get workout history: ${e.toString()}',
+      );
+    }
+  }
+
+  @override
+  Future<ExerciseHistory> getExerciseHistory({
+    required String userId,
+    required String exerciseId,
+    int limit = 3,
+  }) async {
+    try {
+      // Query to get the last N completed workouts that included this exercise
+      final workoutQuery = database.select(database.workoutSessions).join([
+        innerJoin(
+          database.exercisePerformances,
+          database.exercisePerformances.workoutSessionId.equalsExp(database.workoutSessions.id),
+        ),
+      ])
+        ..where(
+          database.workoutSessions.userId.equals(userId) &
+              database.workoutSessions.completedAt.isNotNull() &
+              database.exercisePerformances.exerciseId.equals(exerciseId),
+        )
+        ..orderBy([OrderingTerm.desc(database.workoutSessions.completedAt)])
+        ..limit(limit);
+
+      final workoutResults = await workoutQuery.get();
+
+      // Group by workout session and build history sessions
+      final sessions = <ExerciseHistorySession>[];
+      final seenWorkouts = <String>{};
+
+      for (final row in workoutResults) {
+        final workoutEntity = row.readTable(database.workoutSessions);
+
+        // Skip if we've already processed this workout
+        if (seenWorkouts.contains(workoutEntity.id)) continue;
+        seenWorkouts.add(workoutEntity.id);
+
+        // Get all sets for this exercise in this workout
+        final exercisePerfQuery = database.select(database.exercisePerformances)
+          ..where((ep) =>
+            ep.workoutSessionId.equals(workoutEntity.id) &
+            ep.exerciseId.equals(exerciseId),
+          );
+
+        final exercisePerfs = await exercisePerfQuery.get();
+        if (exercisePerfs.isEmpty) continue;
+
+        final exercisePerfId = exercisePerfs.first.id;
+
+        // Get all sets for this exercise performance
+        final setsQuery = database.select(database.sets)
+          ..where((s) => s.exercisePerformanceId.equals(exercisePerfId))
+          ..orderBy([(s) => OrderingTerm.asc(s.setNumber)]);
+
+        final setEntities = await setsQuery.get();
+
+        // Convert to HistoricalSet entities
+        final historicalSets = setEntities.map((setEntity) {
+          return HistoricalSet(
+            setNumber: setEntity.setNumber,
+            reps: setEntity.reps,
+            weightKg: setEntity.weightKg,
+            isWarmup: setEntity.isWarmup,
+            rpe: setEntity.rpe,
+          );
+        }).toList();
+
+        // Create history session
+        sessions.add(
+          ExerciseHistorySession(
+            workoutSessionId: workoutEntity.id,
+            workoutTitle: workoutEntity.title,
+            completedAt: workoutEntity.completedAt!,
+            sets: historicalSets,
+          ),
+        );
+      }
+
+      return ExerciseHistory(
+        exerciseId: exerciseId,
+        userId: userId,
+        sessions: sessions,
+      );
+    } catch (e) {
+      throw CacheException(
+        message: 'Failed to get exercise history: ${e.toString()}',
       );
     }
   }

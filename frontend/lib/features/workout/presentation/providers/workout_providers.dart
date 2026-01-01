@@ -248,7 +248,7 @@ Future<StreakData> workoutStreak(Ref ref) async {
 
   // Get all completed workouts
   final workouts = await ref.watch(
-    workoutHistoryProvider(limit: 365), // Look back up to 1 year
+    workoutHistoryProvider(limit: 365).future, // Look back up to 1 year
   );
 
   // Use StreakService to calculate streak

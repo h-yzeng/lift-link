@@ -11,7 +11,7 @@ import 'package:liftlink/features/profile/domain/repositories/profile_repository
 import 'package:liftlink/features/profile/domain/usecases/get_profile.dart';
 import 'package:liftlink/features/profile/domain/usecases/search_users.dart';
 import 'package:liftlink/features/profile/domain/usecases/update_profile.dart';
-import 'package:liftlink/shared/database/app_database.dart';
+import 'package:liftlink/shared/database/database_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 part 'profile_providers.g.dart';
@@ -22,16 +22,11 @@ NetworkInfo profileNetworkInfo(Ref ref) {
   return NetworkInfoImpl(connectivity: Connectivity());
 }
 
-@riverpod
-AppDatabase profileDatabase(Ref ref) {
-  return AppDatabase();
-}
-
 // Data source providers
 @riverpod
 ProfileLocalDataSource profileLocalDataSource(Ref ref) {
   return ProfileLocalDataSourceImpl(
-    database: ref.watch(profileDatabaseProvider),
+    database: ref.watch(databaseProvider),
   );
 }
 

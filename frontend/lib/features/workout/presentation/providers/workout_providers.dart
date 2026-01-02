@@ -25,6 +25,7 @@ import 'package:liftlink/features/workout/presentation/providers/exercise_provid
     hide networkInfoProvider;
 import 'package:liftlink/core/providers/core_providers.dart';
 import 'package:liftlink/core/services/streak_service.dart';
+import 'package:liftlink/shared/database/database_provider.dart';
 
 part 'workout_providers.g.dart';
 
@@ -32,7 +33,7 @@ part 'workout_providers.g.dart';
 @riverpod
 WorkoutLocalDataSource workoutLocalDataSource(Ref ref) {
   return WorkoutLocalDataSourceImpl(
-    database: ref.watch(appDatabaseProvider),
+    database: ref.watch(databaseProvider),
   );
 }
 

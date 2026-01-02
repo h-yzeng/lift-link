@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
-import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/workout/data/datasources/template_local_data_source.dart';
 import 'package:liftlink/features/workout/data/repositories/template_repository_impl.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_template.dart';
@@ -8,10 +7,11 @@ import 'package:liftlink/features/workout/domain/repositories/template_repositor
 import 'package:liftlink/features/workout/domain/usecases/create_template.dart';
 import 'package:liftlink/features/workout/domain/usecases/delete_template.dart';
 import 'package:liftlink/features/workout/domain/usecases/get_templates.dart';
+import 'package:liftlink/shared/database/database_provider.dart';
 
 /// Provider for template local data source.
 final templateLocalDataSourceProvider = Provider<TemplateLocalDataSource>((ref) {
-  final database = ref.watch(profileDatabaseProvider);
+  final database = ref.watch(databaseProvider);
   return TemplateLocalDataSource(database);
 });
 

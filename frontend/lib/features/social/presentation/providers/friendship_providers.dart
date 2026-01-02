@@ -1,7 +1,5 @@
 import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
-import 'package:liftlink/features/workout/presentation/providers/exercise_providers.dart'
-    hide networkInfoProvider;
 import 'package:liftlink/features/social/data/datasources/friendship_local_datasource.dart';
 import 'package:liftlink/features/social/data/datasources/friendship_remote_datasource.dart';
 import 'package:liftlink/features/social/data/repositories/friendship_repository_impl.dart';
@@ -17,6 +15,7 @@ import 'package:liftlink/features/social/domain/usecases/get_friends_workouts.da
 import 'package:liftlink/features/social/domain/usecases/update_friend_nickname.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
+import 'package:liftlink/shared/database/database_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'friendship_providers.g.dart';
@@ -29,7 +28,7 @@ part 'friendship_providers.g.dart';
 FriendshipLocalDataSource friendshipLocalDataSource(
   FriendshipLocalDataSourceRef ref,
 ) {
-  final database = ref.watch(appDatabaseProvider);
+  final database = ref.watch(databaseProvider);
   return FriendshipLocalDataSource(database);
 }
 

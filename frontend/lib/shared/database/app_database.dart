@@ -107,12 +107,23 @@ class AppDatabase extends _$AppDatabase {
 
           // Migration from v6 to v7: Add sync_queue table
           if (from < 7) {
-            await m.createTable(syncQueue);
+            // Check if table already exists before creating
+            final result = await customSelect(
+              "SELECT name FROM sqlite_master WHERE type='table' AND name='sync_queue'",
+            ).getSingleOrNull();
+
+            if (result == null) {
+              await m.createTable(syncQueue);
+            }
           }
         },
         beforeOpen: (details) async {
+          // Enable WAL mode for better concurrency
+          await customStatement('PRAGMA journal_mode = WAL');
           // Enable foreign keys
           await customStatement('PRAGMA foreign_keys = ON');
+          // Set a reasonable busy timeout (10 seconds)
+          await customStatement('PRAGMA busy_timeout = 10000');
         },
       );
 

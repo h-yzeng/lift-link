@@ -13,7 +13,7 @@ import 'package:liftlink/features/workout/domain/repositories/exercise_repositor
 import 'package:liftlink/features/workout/domain/usecases/filter_exercises.dart';
 import 'package:liftlink/features/workout/domain/usecases/get_all_exercises.dart';
 import 'package:liftlink/features/workout/domain/usecases/search_exercises.dart';
-import 'package:liftlink/shared/database/app_database.dart';
+import 'package:liftlink/shared/database/database_provider.dart';
 
 part 'exercise_providers.g.dart';
 
@@ -23,17 +23,11 @@ NetworkInfo networkInfo(Ref ref) {
   return NetworkInfoImpl(connectivity: Connectivity());
 }
 
-// Database provider
-@riverpod
-AppDatabase appDatabase(Ref ref) {
-  return AppDatabase();
-}
-
 // Data source providers
 @riverpod
 ExerciseLocalDataSource exerciseLocalDataSource(Ref ref) {
   return ExerciseLocalDataSourceImpl(
-    database: ref.watch(appDatabaseProvider),
+    database: ref.watch(databaseProvider),
   );
 }
 

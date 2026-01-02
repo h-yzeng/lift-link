@@ -13,9 +13,10 @@ class ExerciseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: InkWell(
+    return RepaintBoundary(
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
@@ -125,6 +126,7 @@ class ExerciseCard extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 

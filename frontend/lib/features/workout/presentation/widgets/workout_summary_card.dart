@@ -48,9 +48,10 @@ class WorkoutSummaryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final duration = workout.duration;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: InkWell(
+    return RepaintBoundary(
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
@@ -168,6 +169,7 @@ class WorkoutSummaryCard extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

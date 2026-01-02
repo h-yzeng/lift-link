@@ -10,6 +10,7 @@ import 'package:liftlink/shared/database/tables/friendships_table.dart';
 import 'package:liftlink/shared/database/tables/profiles_table.dart';
 import 'package:liftlink/shared/database/tables/sets_table.dart';
 import 'package:liftlink/shared/database/tables/sync_queue_table.dart';
+import 'package:liftlink/shared/database/tables/weight_logs_table.dart';
 import 'package:liftlink/shared/database/tables/workout_sessions_table.dart';
 import 'package:liftlink/shared/database/tables/workout_templates_table.dart';
 
@@ -25,6 +26,7 @@ part 'app_database.g.dart';
     Friendships,
     WorkoutTemplates,
     SyncQueue,
+    WeightLogs,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -34,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -115,6 +117,11 @@ class AppDatabase extends _$AppDatabase {
             if (result == null) {
               await m.createTable(syncQueue);
             }
+          }
+
+          // Migration from v7 to v8: Add weight_logs table
+          if (from < 8) {
+            await m.createTable(weightLogs);
           }
         },
         beforeOpen: (details) async {
@@ -337,6 +344,83 @@ class AppDatabase extends _$AppDatabase {
                 s.updatedAt.isSmallerThanValue(sevenDaysAgo),
           ))
         .go();
+  }
+
+  // ============================================================================
+  // WEIGHT LOGS QUERIES
+  // ============================================================================
+
+  Future<List<WeightLogEntity>> getWeightLogs(
+    String userId, {
+    DateTime? startDate,
+    DateTime? endDate,
+    int? limit,
+  }) async {
+    var query = select(weightLogs)
+      ..where((w) => w.userId.equals(userId))
+      ..orderBy([(w) => OrderingTerm.desc(w.loggedAt)]);
+
+    if (startDate != null) {
+      query = query
+        ..where((w) => w.loggedAt.isBiggerOrEqualValue(startDate));
+    }
+
+    if (endDate != null) {
+      query = query..where((w) => w.loggedAt.isSmallerOrEqualValue(endDate));
+    }
+
+    if (limit != null) {
+      query = query..limit(limit);
+    }
+
+    return query.get();
+  }
+
+  Future<WeightLogEntity?> getLatestWeightLog(String userId) async {
+    return (select(weightLogs)
+          ..where((w) => w.userId.equals(userId))
+          ..orderBy([(w) => OrderingTerm.desc(w.loggedAt)])
+          ..limit(1))
+        .getSingleOrNull();
+  }
+
+  Future<WeightLogEntity?> getWeightLogById(String id) =>
+      (select(weightLogs)..where((w) => w.id.equals(id))).getSingleOrNull();
+
+  Future<int> insertWeightLog(WeightLogsCompanion weightLog) =>
+      into(weightLogs).insert(weightLog);
+
+  Future<bool> updateWeightLog(WeightLogsCompanion weightLog) =>
+      update(weightLogs).replace(weightLog);
+
+  Future<int> deleteWeightLog(String id) =>
+      (delete(weightLogs)..where((w) => w.id.equals(id))).go();
+
+  Stream<List<WeightLogEntity>> watchWeightLogs(
+    String userId, {
+    int? limit,
+  }) {
+    var query = select(weightLogs)
+      ..where((w) => w.userId.equals(userId))
+      ..orderBy([(w) => OrderingTerm.desc(w.loggedAt)]);
+
+    if (limit != null) {
+      query = query..limit(limit);
+    }
+
+    return query.watch();
+  }
+
+  Future<List<WeightLogEntity>> getPendingSyncWeightLogs() =>
+      (select(weightLogs)..where((w) => w.isPendingSync.equals(true))).get();
+
+  Future<void> markWeightLogSynced(String id) async {
+    await (update(weightLogs)..where((w) => w.id.equals(id))).write(
+      WeightLogsCompanion(
+        syncedAt: Value(DateTime.now()),
+        isPendingSync: const Value(false),
+      ),
+    );
   }
 
   // ============================================================================

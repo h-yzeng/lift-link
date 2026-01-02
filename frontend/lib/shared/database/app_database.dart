@@ -36,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -122,6 +122,13 @@ class AppDatabase extends _$AppDatabase {
           // Migration from v7 to v8: Add weight_logs table
           if (from < 8) {
             await m.createTable(weightLogs);
+          }
+
+          // Migration from v8 to v9: Add RIR column to sets table
+          if (from < 9) {
+            await customStatement(
+              'ALTER TABLE sets ADD COLUMN rir INTEGER CHECK (rir IS NULL OR (rir >= 0 AND rir <= 10))',
+            );
           }
         },
         beforeOpen: (details) async {

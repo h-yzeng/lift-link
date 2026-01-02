@@ -15,6 +15,7 @@ class UpdateSet {
     double? weightKg,
     bool? isWarmup,
     double? rpe,
+    int? rir,
   }) {
     // Validation
     if (setId.trim().isEmpty) {
@@ -47,12 +48,21 @@ class UpdateSet {
       );
     }
 
+    if (rir != null && (rir < 0 || rir > 10)) {
+      return Future.value(
+        const Left(
+          ValidationFailure(message: 'RIR must be between 0 and 10'),
+        ),
+      );
+    }
+
     return repository.updateSet(
       setId: setId,
       reps: reps,
       weightKg: weightKg,
       isWarmup: isWarmup,
       rpe: rpe,
+      rir: rir,
     );
   }
 }

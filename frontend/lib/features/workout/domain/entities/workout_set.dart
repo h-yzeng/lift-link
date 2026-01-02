@@ -20,6 +20,7 @@ class WorkoutSet with _$WorkoutSet {
     @Default(false) bool isWarmup,
     @Default(false) bool isDropset,
     double? rpe, // Rate of Perceived Exertion (0-10)
+    int? rir, // Reps in Reserve (0-10)
     String? notes,
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -64,5 +65,11 @@ class WorkoutSet with _$WorkoutSet {
   String? get formattedRpe {
     if (rpe == null) return null;
     return 'RPE ${rpe!.toStringAsFixed(1)}';
+  }
+
+  /// Formats RIR for display (e.g., "RIR 2")
+  String? get formattedRir {
+    if (rir == null) return null;
+    return 'RIR $rir';
   }
 }

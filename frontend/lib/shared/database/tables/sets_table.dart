@@ -10,6 +10,7 @@ class Sets extends Table {
   BoolColumn get isWarmup => boolean().withDefault(const Constant(false))();
   BoolColumn get isDropset => boolean().withDefault(const Constant(false))();
   RealColumn get rpe => real().nullable()(); // Rate of Perceived Exertion (0-10)
+  IntColumn get rir => integer().nullable()(); // Reps in Reserve (0-10)
   TextColumn get notes => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();

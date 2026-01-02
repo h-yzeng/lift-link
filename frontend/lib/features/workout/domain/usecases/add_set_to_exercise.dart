@@ -17,6 +17,7 @@ class AddSetToExercise {
     bool isWarmup = false,
     bool isDropset = false,
     double? rpe,
+    int? rir,
     String? notes,
   }) {
     // Validate inputs
@@ -50,6 +51,12 @@ class AddSetToExercise {
       );
     }
 
+    if (rir != null && (rir < 0 || rir > 10)) {
+      return Future.value(
+        const Left(ValidationFailure(message: 'RIR must be between 0 and 10')),
+      );
+    }
+
     return repository.addSetToExercise(
       exercisePerformanceId: exercisePerformanceId,
       setNumber: setNumber,
@@ -58,6 +65,7 @@ class AddSetToExercise {
       isWarmup: isWarmup,
       isDropset: isDropset,
       rpe: rpe,
+      rir: rir,
       notes: notes,
     );
   }

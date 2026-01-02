@@ -37,6 +37,7 @@ abstract class WorkoutRepository {
     bool isWarmup = false,
     bool isDropset = false,
     double? rpe,
+    int? rir,
     String? notes,
   });
 
@@ -48,6 +49,7 @@ abstract class WorkoutRepository {
     bool? isWarmup,
     bool? isDropset,
     double? rpe,
+    int? rir,
     String? notes,
   });
 

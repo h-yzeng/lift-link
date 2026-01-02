@@ -390,6 +390,7 @@ class _ExerciseCard extends ConsumerWidget {
     double weightKg,
     bool isWarmup,
     double? rpe,
+    int? rir,
   ) async {
     final useCase = ref.read(updateSetUseCaseProvider);
     final result = await useCase(
@@ -398,6 +399,7 @@ class _ExerciseCard extends ConsumerWidget {
       weightKg: weightKg,
       isWarmup: isWarmup,
       rpe: rpe,
+      rir: rir,
     );
 
     result.fold(
@@ -504,7 +506,7 @@ class _ExerciseCard extends ConsumerWidget {
                 setNumber: set.setNumber,
                 existingSet: set,
                 useImperialUnits: useImperialUnits,
-                onSave: (reps, weightKg, isWarmup, rpe) {
+                onSave: (reps, weightKg, isWarmup, rpe, rir) {
                   _updateSet(
                     ref,
                     context,
@@ -513,6 +515,7 @@ class _ExerciseCard extends ConsumerWidget {
                     weightKg,
                     isWarmup,
                     rpe,
+                    rir,
                   );
                 },
                 onDelete: () {
@@ -520,6 +523,38 @@ class _ExerciseCard extends ConsumerWidget {
                 },
               );
             }),
+
+            // Personal Record display
+            if (exercise.maxOneRM != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.emoji_events,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Personal Record: ${UnitConversion.formatWeight(exercise.maxOneRM!, useImperialUnits)}',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
 
             // Add set button
             const SizedBox(height: 8),

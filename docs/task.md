@@ -3,9 +3,9 @@
 ## Project Status
 
 **Last Updated**: 2026-01-01
-**Current Phase**: Phase 12 Complete
-**Overall Progress**: ~90% Complete
-**App Version**: 2.0.0
+**Current Phase**: Phase 13 In Progress
+**Overall Progress**: ~92% Complete
+**App Version**: 2.1.0
 
 ---
 
@@ -333,14 +333,32 @@
 
 ---
 
-## Phase 13: Future Features (⏳ BACKLOG)
+## Phase 13: Mobile Enhancement Features (🔄 IN PROGRESS)
 
-### Bodyweight Tracking
+### Workout Enhancements (✅ COMPLETED)
 
-- [ ] Create weight_logs table
-- [ ] Add WeightLog entity
-- [ ] Create weight logging UI
-- [ ] Add weight chart to analytics
+- [x] Add RIR (Reps in Reserve) field to workout sets
+  - [x] Database migration (20260101000016) to add RIR column
+  - [x] Updated Drift sets_table with RIR field (0-10 range)
+  - [x] Updated WorkoutSet entity with rir field and formattedRir getter
+  - [x] Added RIR input field to SetInputRow widget
+  - [x] Updated use cases (AddSetToExercise, UpdateSet) with RIR validation
+  - [x] Updated repository interface and implementation
+  - [x] Integrated RIR into active workout page
+- [x] Display PR (Personal Record) at bottom of exercise sets
+  - [x] Added visual PR display showing max 1RM during workout
+  - [x] Trophy icon with highlighted container
+  - [x] Displays below all sets, above "Add Set" button
+  - [x] Shows formatted weight in user's preferred units
+
+### Bodyweight Tracking (✅ COMPLETED)
+
+- [x] Create weight_logs table (migration 20260101000015)
+- [x] Add WeightLog entity with unit conversion (kg/lbs)
+- [x] Create weight logging UI with history and change tracking
+- [x] WeightLogPage with form, history list, delete functionality
+
+### Future Features (⏳ BACKLOG)
 
 ### Exercise Videos/GIFs
 

@@ -133,6 +133,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     bool isWarmup = false,
     bool isDropset = false,
     double? rpe,
+    int? rir,
     String? notes,
   }) async {
     try {
@@ -146,6 +147,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
         isWarmup: isWarmup,
         isDropset: isDropset,
         rpe: rpe,
+        rir: rir,
         notes: notes,
         createdAt: now,
         updatedAt: now,
@@ -177,6 +179,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     bool? isWarmup,
     bool? isDropset,
     double? rpe,
+    int? rir,
     String? notes,
   }) async {
     try {
@@ -193,6 +196,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
         isWarmup: isWarmup ?? currentSet.isWarmup,
         isDropset: isDropset ?? currentSet.isDropset,
         rpe: rpe ?? currentSet.rpe,
+        rir: rir ?? currentSet.rir,
         notes: notes ?? currentSet.notes,
         updatedAt: DateTime.now(),
       );

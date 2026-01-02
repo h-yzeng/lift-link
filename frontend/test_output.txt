@@ -1,0 +1,235 @@
+00:00 +0: loading C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart
+00:00 +0: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: calculateStreak should return zero streak for empty workout list
+00:00 +1: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: calculateStreak should calculate streak of 1 for single workout today
+00:00 +2: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: calculateStreak should calculate streak of 3 for consecutive days
+00:00 +3: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: calculateStreak should reset current streak when workout was 2+ days ago
+00:00 +4: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: calculateStreak should find longest streak among multiple streaks
+00:00 +5: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: calculateStreak should handle multiple workouts on same day
+00:00 +6: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: calculateStreak should accept workout from yesterday as current streak
+00:00 +7: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: checkMilestone should return null when no milestone crossed
+00:00 +8: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: checkMilestone should return 3 when crossing 3-day milestone
+00:00 +9: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: checkMilestone should return 7 when crossing 7-day milestone
+00:00 +10: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: checkMilestone should return highest milestone when crossing multiple
+00:00 +11: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: checkMilestone should return null when going backwards
+00:00 +12: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: getStreakMessage should return motivational message for 0 streak
+00:00 +13: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: getStreakMessage should return message for 1-day streak
+00:00 +14: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: getStreakMessage should return message for 5-day streak
+00:00 +15: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: getStreakMessage should return message for 10-day streak
+00:00 +16: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: getStreakMessage should return message for 100+ day streak
+00:00 +17: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: getStreakEmoji should return muscle emoji for 0 streak
+00:00 +18: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: getStreakEmoji should return fire emoji for 3-day streak
+00:00 +19: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: getStreakEmoji should return lightning emoji for 10-day streak
+00:00 +20: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: getStreakEmoji should return rocket emoji for 20-day streak
+00:00 +21: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: getStreakEmoji should return diamond emoji for 50-day streak
+00:00 +22: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: getStreakEmoji should return crown emoji for 100+ day streak
+00:00 +23: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: StreakData should format last workout as Today
+00:00 +24: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: StreakData should format last workout as Yesterday
+00:00 +25: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: StreakData should format last workout as days ago
+00:00 +26: C:/Users/tommy/LiftLink/frontend/test/core/services/streak_service_test.dart: StreakData should format null last workout as Never
+00:01 +27: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: (setUpAll)
+00:01 +27: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: getAllExercises should return exercises from local datasource when available
+00:01 +28: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: getAllExercises should sync from remote when local is empty and online
+00:01 +29: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: getAllExercises should return CacheFailure when local datasource throws
+00:01 +30: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: getExerciseById should return exercise from local datasource
+00:01 +31: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: getExerciseById should return CacheFailure when exercise not found
+00:01 +32: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: searchExercises should search exercises in local datasource
+00:01 +33: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: searchExercises should sync from remote when local is empty and online
+00:01 +34: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: searchExercises should return CacheFailure when search fails
+00:01 +35: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: getExercisesByMuscleGroup should filter exercises by muscle group
+00:01 +36: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: getExercisesByMuscleGroup should return CacheFailure when filtering fails
+00:01 +37: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: getExercisesByEquipment should filter exercises by equipment type
+00:01 +38: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: getExercisesByEquipment should return CacheFailure when filtering fails
+00:01 +39: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: filterExercises should filter exercises with multiple criteria
+00:01 +40: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: filterExercises should sync from remote when local is empty and online
+00:01 +41: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: filterExercises should return CacheFailure when filtering fails
+00:01 +42: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: createCustomExercise should create custom exercise remotely and save locally
+00:01 +43: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: createCustomExercise should return NetworkFailure when offline
+00:01 +44: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: createCustomExercise should return ServerFailure when creation fails
+00:01 +45: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: updateCustomExercise should update custom exercise remotely and save locally
+00:01 +46: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: updateCustomExercise should return NetworkFailure when offline
+00:01 +47: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: updateCustomExercise should return ServerFailure when update fails
+00:01 +48: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: deleteCustomExercise should delete custom exercise remotely and locally
+00:01 +49: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: deleteCustomExercise should return NetworkFailure when offline
+00:01 +50: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: deleteCustomExercise should return ServerFailure when deletion fails
+00:01 +51: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: syncExercises should fetch from remote and save to local
+00:01 +52: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: syncExercises should return NetworkFailure when offline
+00:01 +53: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: syncExercises should return ServerFailure when sync fails
+00:01 +54: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/exercise_repository_impl_test.dart: (tearDownAll)
+00:01 +54: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: (setUpAll)
+00:01 +54: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: startWorkout should save workout to local datasource and return it
+00:01 +55: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: startWorkout should sync to remote when online
+00:01 +56: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: startWorkout should return CacheFailure when local datasource throws CacheException
+00:01 +57: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: getWorkoutHistory should return workouts from local datasource
+00:01 +58: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: getWorkoutHistory should support offset for pagination
+00:01 +59: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: getWorkoutHistory should return CacheFailure when datasource throws
+00:01 +60: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: completeWorkout should complete workout locally and return it
+00:01 +61: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: completeWorkout should sync to remote when online
+00:01 +62: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: completeWorkout should return CacheFailure when completion fails
+00:01 +63: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: updateSet should update set locally and return updated set
+00:01 +64: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: updateSet should return CacheFailure when set not found
+00:01 +65: C:/Users/tommy/LiftLink/frontend/test/features/workout/data/repositories/workout_repository_impl_test.dart: (tearDownAll)
+00:01 +65: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance maxOneRM returns highest 1RM from working sets
+00:01 +66: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance maxOneRM excludes warmup sets from calculation
+00:01 +67: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance maxOneRM returns null when no working sets
+00:01 +68: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance maxOneRM returns null for empty sets list
+00:01 +69: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance formattedMaxOneRM formats max 1RM with kg suffix
+00:01 +70: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance formattedMaxOneRM returns N/A when no valid 1RM
+00:01 +71: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance totalVolume sums volume from all sets
+00:01 +72: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance totalVolume includes warmup sets in volume
+00:01 +73: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance totalVolume returns zero for empty sets
+00:01 +74: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance set counts workingSetsCount excludes warmups
+00:01 +75: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance set counts warmupSetsCount only counts warmups
+00:01 +76: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance set counts totalSetsCount counts all sets
+00:01 +77: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance totalReps sums reps from working sets only
+00:01 +78: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance totalReps returns zero when only warmup sets
+00:01 +79: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance averageWeight calculates average weight of working sets
+00:01 +80: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance averageWeight excludes warmup sets from average
+00:01 +81: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance averageWeight returns null when no working sets
+00:01 +82: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance maxWeight returns highest weight from working sets
+00:01 +83: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance maxWeight excludes warmup sets
+00:01 +84: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/exercise_performance_test.dart: ExercisePerformance maxWeight returns null when no working sets
+00:01 +85: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession isInProgress / isCompleted isInProgress is true when completedAt is null
+00:01 +86: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession isInProgress / isCompleted isCompleted is true when completedAt is set
+00:01 +87: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession actualDuration returns stored durationMinutes if available
+00:01 +88: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession actualDuration calculates from start to completed time
+00:01 +89: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession formattedDuration formats minutes only for < 60 min
+00:01 +90: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession formattedDuration formats hours and minutes for >= 60 min
+00:01 +91: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession formattedDuration formats whole hours correctly
+00:01 +92: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession exerciseCount returns number of exercises
+00:01 +93: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession exerciseCount returns zero for empty workout
+00:01 +94: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession totalSets sums sets across all exercises
+00:01 +95: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession totalSets returns zero for empty workout
+00:01 +96: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession totalWorkingSets excludes warmup sets
+00:01 +97: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession totalVolume sums volume from all exercises
+00:01 +98: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession totalVolume returns zero for empty workout
+00:01 +99: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession formattedTotalVolume formats in kg for < 1000 kg
+00:01 +100: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession formattedTotalVolume formats in tonnes for >= 1000 kg
+00:01 +101: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession totalReps sums reps from all exercises
+00:01 +102: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession personalRecords maps exercise names to max 1RM
+00:01 +103: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession personalRecords excludes exercises with no valid 1RM
+00:01 +104: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession highestOneRM returns highest 1RM across all exercises
+00:01 +105: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession highestOneRM returns null when no valid 1RMs
+00:01 +106: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession personalRecordsCount counts exercises with valid 1RM
+00:01 +107: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession duration returns Duration from durationMinutes
+00:01 +108: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_session_test.dart: WorkoutSession duration calculates from startedAt to completedAt
+00:01 +109: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet calculated1RM calculates 1RM using Epley formula
+00:01 +110: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet calculated1RM returns exact weight for 1 rep
+00:01 +111: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet calculated1RM returns null for warmup sets
+00:01 +112: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet calculated1RM returns null for zero weight
+00:01 +113: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet calculated1RM returns null for zero reps
+00:01 +114: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet calculated1RM returns null for negative weight
+00:01 +115: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet calculated1RM returns null for reps > 30 (unreliable range)
+00:01 +116: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet calculated1RM calculates correctly at boundary (30 reps)
+00:01 +117: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet formatted1RM formats 1RM with kg suffix
+00:01 +118: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet formatted1RM returns N/A for warmup sets
+00:01 +119: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet formatted1RM returns N/A for invalid data
+00:01 +120: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet isWorkingSet returns true for non-warmup sets
+00:01 +121: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet isWorkingSet returns false for warmup sets
+00:01 +122: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet volume calculates volume as weight × reps
+00:01 +123: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet volume handles zero reps
+00:01 +124: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet volume handles zero weight
+00:01 +125: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet formattedWeight formats weight with kg suffix
+00:01 +126: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet formattedWeight formats whole numbers correctly
+00:01 +127: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet formattedRpe formats RPE with prefix
+00:01 +128: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet formattedRpe returns null when RPE is not set
+00:01 +129: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/entities/workout_set_test.dart: WorkoutSet formattedRpe formats whole number RPE
+00:01 +130: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/add_set_to_exercise_test.dart: AddSetToExercise validation returns ValidationFailure when exercisePerformanceId is empty
+00:01 +131: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/add_set_to_exercise_test.dart: AddSetToExercise validation returns ValidationFailure when setNumber < 1
+00:01 +132: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/add_set_to_exercise_test.dart: AddSetToExercise validation returns ValidationFailure when reps is negative
+00:01 +133: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/add_set_to_exercise_test.dart: AddSetToExercise validation allows zero reps
+00:01 +134: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/add_set_to_exercise_test.dart: AddSetToExercise validation returns ValidationFailure when weight is negative
+00:01 +135: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/add_set_to_exercise_test.dart: AddSetToExercise validation allows zero weight (bodyweight exercises)
+00:01 +136: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/add_set_to_exercise_test.dart: AddSetToExercise validation returns ValidationFailure when RPE < 0
+00:01 +137: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/add_set_to_exercise_test.dart: AddSetToExercise validation returns ValidationFailure when RPE > 10
+00:01 +138: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/add_set_to_exercise_test.dart: AddSetToExercise validation allows RPE at boundaries (0 and 10)
+00:01 +139: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/add_set_to_exercise_test.dart: AddSetToExercise success calls repository with all parameters
+00:01 +140: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/add_set_to_exercise_test.dart: AddSetToExercise success returns WorkoutSet on success
+00:02 +141: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/start_workout_test.dart: StartWorkout returns ValidationFailure when userId is empty
+00:02 +142: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/start_workout_test.dart: StartWorkout returns ValidationFailure when userId is whitespace
+00:02 +143: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/start_workout_test.dart: StartWorkout returns ValidationFailure when title is empty
+00:02 +144: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/start_workout_test.dart: StartWorkout returns ValidationFailure when title is whitespace
+00:02 +145: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/start_workout_test.dart: StartWorkout calls repository with correct parameters
+00:02 +146: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/start_workout_test.dart: StartWorkout returns WorkoutSession on success
+00:02 +147: C:/Users/tommy/LiftLink/frontend/test/features/workout/domain/usecases/start_workout_test.dart: StartWorkout returns failure from repository on error
+00:02 +148: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseList provider should return all exercises when no filters applied
+00:02 +149: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseList provider should filter exercises by muscle group
+00:02 +150: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseList provider should filter exercises by equipment type
+00:02 +151: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseList provider should filter for custom exercises only
+00:02 +152: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseList provider should combine multiple filters
+00:02 +153: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseList provider should pass null userId when user is not authenticated
+00:02 +154: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseList provider should throw exception when use case fails
+00:02 +155: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseSearchResults provider should return search results for valid query
+00:02 +156: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseSearchResults provider should return empty list for empty query
+00:02 +157: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseSearchResults provider should return empty list for whitespace-only query
+00:02 +158: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseSearchResults provider should search with query trimmed
+00:02 +159: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseSearchResults provider should pass null userId when user is not authenticated
+00:02 +160: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseSearchResults provider should handle case-insensitive search
+00:02 +161: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseSearchResults provider should throw exception when use case fails
+00:02 +162: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseSearchResults provider should return multiple matching exercises
+00:02 +163: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/exercise_providers_test.dart: exerciseSearchResults provider should return empty list when no matches found
+00:02 +164: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should have correct initial state
+00:02 +165: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should load first page successfully
+00:02 +166: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should load first page with date filters
+00:02 +167: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should load next page successfully
+00:02 +168: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should set hasMore to false when receiving less than page size
+00:02 +169: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +170: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +171: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +172: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +173: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +174: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +175: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +176: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +177: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +178: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +179: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +180: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +181: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +182: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +183: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +184: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +185: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +186: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +187: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +188: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +189: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +190: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +191: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +192: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +193: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +194: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +195: C:/Users/tommy/LiftLink/frontend/test/features/workout/presentation/providers/paginated_workout_history_provider_test.dart: PaginatedWorkoutHistoryNotifier should not load next page when already loading
+00:02 +196: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:02 +197: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:02 +198: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:02 +199: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:02 +200: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:02 +201: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:02 +202: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:02 +203: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:02 +204: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:02 +205: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:02 +206: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:02 +207: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays icon with correct properties
+00:03 +208: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState displays error icon
+00:03 +209: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState displays error icon
+00:03 +210: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState displays error icon
+00:03 +211: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState displays error icon
+00:03 +212: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState displays error icon
+00:03 +213: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState displays action button when both label and callback provided
+00:03 +214: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState displays custom icon
+00:03 +215: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState hides action button when only label provided
+00:03 +216: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState displays error message
+00:03 +217: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/empty_state_test.dart: EmptyState uses custom icon color
+00:03 +218: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState displays retry button when onRetry provided
+00:03 +219: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState displays retry button when onRetry provided
+00:03 +220: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState hides retry button when onRetry is null
+00:03 +221: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState displays custom retry label
+00:03 +222: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState centers content
+00:03 +223: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState fromError factory creates widget with error toString
+00:03 +224: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState fromError factory includes onRetry
+00:03 +225: C:/Users/tommy/LiftLink/frontend/test/shared/widgets/error_state_test.dart: ErrorState uses error color from theme
+00:04 +226: C:/Users/tommy/LiftLink/frontend/test/widget_test.dart: App initializes without error
+00:04 +227: C:/Users/tommy/LiftLink/frontend/test/widget_test.dart: App uses Material 3
+00:04 +228: C:/Users/tommy/LiftLink/frontend/test/widget_test.dart: App has correct title
+00:04 +229: All tests passed!

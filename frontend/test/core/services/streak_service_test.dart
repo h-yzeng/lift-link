@@ -100,8 +100,8 @@ void main() {
       // Arrange
       final today = DateTime.now();
       final workouts = [
-        _createWorkout('1', today.add(const Duration(hours: 8))),
-        _createWorkout('2', today.add(const Duration(hours: 10))),
+        _createWorkout('1', today),
+        _createWorkout('2', today.add(const Duration(hours: 1))),
         _createWorkout('3', today.subtract(const Duration(days: 1))),
       ];
 

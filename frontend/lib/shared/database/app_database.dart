@@ -9,6 +9,7 @@ import 'package:liftlink/shared/database/tables/exercises_table.dart';
 import 'package:liftlink/shared/database/tables/friendships_table.dart';
 import 'package:liftlink/shared/database/tables/profiles_table.dart';
 import 'package:liftlink/shared/database/tables/sets_table.dart';
+import 'package:liftlink/shared/database/tables/sync_queue_table.dart';
 import 'package:liftlink/shared/database/tables/workout_sessions_table.dart';
 import 'package:liftlink/shared/database/tables/workout_templates_table.dart';
 
@@ -23,6 +24,7 @@ part 'app_database.g.dart';
     Sets,
     Friendships,
     WorkoutTemplates,
+    SyncQueue,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -32,7 +34,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -101,6 +103,11 @@ class AppDatabase extends _$AppDatabase {
           // Migration from v5 to v6: Add workout_templates table
           if (from < 6) {
             await m.createTable(workoutTemplates);
+          }
+
+          // Migration from v6 to v7: Add sync_queue table
+          if (from < 7) {
+            await m.createTable(syncQueue);
           }
         },
         beforeOpen: (details) async {
@@ -268,6 +275,58 @@ class AppDatabase extends _$AppDatabase {
                   f.requesterId.equals(userId) | f.addresseeId.equals(userId),
             ))
           .watch();
+
+  // ============================================================================
+  // SYNC QUEUE QUERIES
+  // ============================================================================
+
+  Future<int> insertSyncQueueItem(SyncQueueCompanion item) =>
+      into(syncQueue).insert(item);
+
+  Future<bool> updateSyncQueueItem(SyncQueueCompanion item) =>
+      update(syncQueue).replace(item);
+
+  Future<int> deleteSyncQueueItem(String id) =>
+      (delete(syncQueue)..where((s) => s.id.equals(id))).go();
+
+  Future<List<SyncQueueEntity>> getPendingSyncQueueItems(String userId) async {
+    final now = DateTime.now();
+    return (select(syncQueue)
+          ..where(
+            (s) =>
+                s.userId.equals(userId) &
+                s.retryCount.isSmallerThan(s.maxRetries) &
+                (s.nextRetryAt.isNull() | s.nextRetryAt.isSmallerOrEqualValue(now)),
+          )
+          ..orderBy([(s) => OrderingTerm.asc(s.createdAt)]))
+        .get();
+  }
+
+  Future<SyncQueueEntity?> getSyncQueueItemById(String id) =>
+      (select(syncQueue)..where((s) => s.id.equals(id))).getSingleOrNull();
+
+  Future<int> getSyncQueueCount(String userId) async {
+    final query = selectOnly(syncQueue)
+      ..addColumns([syncQueue.id.count()])
+      ..where(
+        syncQueue.userId.equals(userId) &
+            syncQueue.retryCount.isSmallerThan(syncQueue.maxRetries),
+      );
+    final result = await query.getSingle();
+    return result.read(syncQueue.id.count()) ?? 0;
+  }
+
+  Future<void> clearOldFailedSyncItems(String userId) async {
+    final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7));
+    await (delete(syncQueue)
+          ..where(
+            (s) =>
+                s.userId.equals(userId) &
+                s.retryCount.isBiggerOrEqual(s.maxRetries) &
+                s.updatedAt.isSmallerThanValue(sevenDaysAgo),
+          ))
+        .go();
+  }
 
   // ============================================================================
   // UTILITY METHODS

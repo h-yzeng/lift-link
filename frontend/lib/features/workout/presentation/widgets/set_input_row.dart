@@ -97,7 +97,6 @@ class _SetInputRowState extends State<SetInputRow> {
 
   @override
   Widget build(BuildContext context) {
-    final oneRM = widget.existingSet?.calculated1RM;
     final theme = Theme.of(context);
 
     return Card(
@@ -146,41 +145,6 @@ class _SetInputRowState extends State<SetInputRow> {
                   ),
 
                 const Spacer(),
-
-                // 1RM display (compact)
-                if (oneRM != null && !_isWarmup)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.tertiaryContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.emoji_events,
-                          size: 14,
-                          color: theme.colorScheme.onTertiaryContainer,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          UnitConversion.formatWeight(
-                            oneRM,
-                            widget.useImperialUnits,
-                          ),
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onTertiaryContainer,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                const SizedBox(width: 8),
 
                 // Action buttons
                 if (_isEditing)

@@ -472,10 +472,10 @@ class _ExerciseCard extends ConsumerWidget {
                     ],
                   ),
                 ),
-                if (exercise.maxOneRM != null)
+                if (exercise.maxWeight != null)
                   Chip(
                     label: Text(
-                      'Max: ${UnitConversion.formatWeight(exercise.maxOneRM!, useImperialUnits)}',
+                      'PR: ${UnitConversion.formatWeight(exercise.maxWeight!, useImperialUnits)}',
                     ),
                     backgroundColor:
                         Theme.of(context).colorScheme.primaryContainer,
@@ -525,7 +525,7 @@ class _ExerciseCard extends ConsumerWidget {
             }),
 
             // Personal Record display
-            if (exercise.maxOneRM != null) ...[
+            if (exercise.maxWeight != null) ...[
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -545,7 +545,7 @@ class _ExerciseCard extends ConsumerWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Personal Record: ${UnitConversion.formatWeight(exercise.maxOneRM!, useImperialUnits)}',
+                      'Personal Record: ${UnitConversion.formatWeight(exercise.maxWeight!, useImperialUnits)}',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             color: Theme.of(context).colorScheme.onSurface,
                             fontWeight: FontWeight.bold,

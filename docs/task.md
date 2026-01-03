@@ -580,8 +580,9 @@
 4. **Dialog Counters**: Use local ValueNotifier for ephemeral state ✅
 
 **Remaining Work (Acceptable as-is or low-priority)**:
+
 - Form validation states in auth pages (login, register) - 7 setState calls
-- Simple toggle states (password visibility, page index) - 4 setState calls  
+- Simple toggle states (password visibility, page index) - 4 setState calls
 - Single-use filter/loading states - 8 setState calls
 
 **Decision**: Remaining setState calls are acceptable for form-based pages and ephemeral UI state. Migration complete for complex state management needs.

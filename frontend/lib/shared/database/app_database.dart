@@ -36,7 +36,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -89,7 +89,8 @@ class AppDatabase extends _$AppDatabase {
             );
 
             await customStatement('DROP TABLE profiles');
-            await customStatement('ALTER TABLE profiles_new RENAME TO profiles');
+            await customStatement(
+                'ALTER TABLE profiles_new RENAME TO profiles');
           }
 
           // Migration from v4 to v5: Add nickname columns to friendships
@@ -128,6 +129,16 @@ class AppDatabase extends _$AppDatabase {
           if (from < 9) {
             await customStatement(
               'ALTER TABLE sets ADD COLUMN rir INTEGER CHECK (rir IS NULL OR (rir >= 0 AND rir <= 10))',
+            );
+          }
+
+          // Migration from v9 to v10: Add usage tracking to exercises table
+          if (from < 10) {
+            await customStatement(
+              'ALTER TABLE exercises ADD COLUMN last_used_at INTEGER',
+            );
+            await customStatement(
+              'ALTER TABLE exercises ADD COLUMN usage_count INTEGER NOT NULL DEFAULT 0',
             );
           }
         },
@@ -321,7 +332,8 @@ class AppDatabase extends _$AppDatabase {
             (s) =>
                 s.userId.equals(userId) &
                 s.retryCount.isSmallerThan(s.maxRetries) &
-                (s.nextRetryAt.isNull() | s.nextRetryAt.isSmallerOrEqualValue(now)),
+                (s.nextRetryAt.isNull() |
+                    s.nextRetryAt.isSmallerOrEqualValue(now)),
           )
           ..orderBy([(s) => OrderingTerm.asc(s.createdAt)]))
         .get();
@@ -368,8 +380,7 @@ class AppDatabase extends _$AppDatabase {
       ..orderBy([(w) => OrderingTerm.desc(w.loggedAt)]);
 
     if (startDate != null) {
-      query = query
-        ..where((w) => w.loggedAt.isBiggerOrEqualValue(startDate));
+      query = query..where((w) => w.loggedAt.isBiggerOrEqualValue(startDate));
     }
 
     if (endDate != null) {

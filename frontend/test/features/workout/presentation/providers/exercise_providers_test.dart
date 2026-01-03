@@ -65,12 +65,14 @@ void main() {
   group('exerciseList provider', () {
     test('should return all exercises when no filters applied', () async {
       // Arrange
-      when(() => mockFilterExercises(
-            muscleGroup: null,
-            equipmentType: null,
-            customOnly: null,
-            userId: testUser.id,
-          ),).thenAnswer((_) async => Right(testExercises));
+      when(
+        () => mockFilterExercises(
+          muscleGroup: null,
+          equipmentType: null,
+          customOnly: null,
+          userId: testUser.id,
+        ),
+      ).thenAnswer((_) async => Right(testExercises));
 
       final container = ProviderContainer(
         overrides: [
@@ -83,13 +85,17 @@ void main() {
       final result = await container.read(exerciseListProvider().future);
 
       // Assert
-      expect(result, testExercises);
-      verify(() => mockFilterExercises(
-            muscleGroup: null,
-            equipmentType: null,
-            customOnly: null,
-            userId: testUser.id,
-          ),).called(1);
+      // Check that we got the right exercises (order may vary due to sorting)
+      expect(result.length, testExercises.length);
+      expect(result, containsAll(testExercises));
+      verify(
+        () => mockFilterExercises(
+          muscleGroup: null,
+          equipmentType: null,
+          customOnly: null,
+          userId: testUser.id,
+        ),
+      ).called(1);
 
       container.dispose();
     });
@@ -97,12 +103,14 @@ void main() {
     test('should filter exercises by muscle group', () async {
       // Arrange
       final chestExercises = [testExercises[0]];
-      when(() => mockFilterExercises(
-            muscleGroup: 'chest',
-            equipmentType: null,
-            customOnly: null,
-            userId: testUser.id,
-          ),).thenAnswer((_) async => Right(chestExercises));
+      when(
+        () => mockFilterExercises(
+          muscleGroup: 'chest',
+          equipmentType: null,
+          customOnly: null,
+          userId: testUser.id,
+        ),
+      ).thenAnswer((_) async => Right(chestExercises));
 
       final container = ProviderContainer(
         overrides: [
@@ -119,12 +127,14 @@ void main() {
       // Assert
       expect(result.length, 1);
       expect(result[0].muscleGroup, 'chest');
-      verify(() => mockFilterExercises(
-            muscleGroup: 'chest',
-            equipmentType: null,
-            customOnly: null,
-            userId: testUser.id,
-          ),).called(1);
+      verify(
+        () => mockFilterExercises(
+          muscleGroup: 'chest',
+          equipmentType: null,
+          customOnly: null,
+          userId: testUser.id,
+        ),
+      ).called(1);
 
       container.dispose();
     });
@@ -132,12 +142,14 @@ void main() {
     test('should filter exercises by equipment type', () async {
       // Arrange
       final barbellExercises = testExercises.sublist(0, 2);
-      when(() => mockFilterExercises(
-            muscleGroup: null,
-            equipmentType: 'barbell',
-            customOnly: null,
-            userId: testUser.id,
-          ),).thenAnswer((_) async => Right(barbellExercises));
+      when(
+        () => mockFilterExercises(
+          muscleGroup: null,
+          equipmentType: 'barbell',
+          customOnly: null,
+          userId: testUser.id,
+        ),
+      ).thenAnswer((_) async => Right(barbellExercises));
 
       final container = ProviderContainer(
         overrides: [
@@ -161,12 +173,14 @@ void main() {
     test('should filter for custom exercises only', () async {
       // Arrange
       final customExercises = [testExercises[2]];
-      when(() => mockFilterExercises(
-            muscleGroup: null,
-            equipmentType: null,
-            customOnly: true,
-            userId: testUser.id,
-          ),).thenAnswer((_) async => Right(customExercises));
+      when(
+        () => mockFilterExercises(
+          muscleGroup: null,
+          equipmentType: null,
+          customOnly: true,
+          userId: testUser.id,
+        ),
+      ).thenAnswer((_) async => Right(customExercises));
 
       final container = ProviderContainer(
         overrides: [
@@ -189,12 +203,14 @@ void main() {
 
     test('should combine multiple filters', () async {
       // Arrange
-      when(() => mockFilterExercises(
-            muscleGroup: 'chest',
-            equipmentType: 'barbell',
-            customOnly: false,
-            userId: testUser.id,
-          ),).thenAnswer((_) async => Right([testExercises[0]]));
+      when(
+        () => mockFilterExercises(
+          muscleGroup: 'chest',
+          equipmentType: 'barbell',
+          customOnly: false,
+          userId: testUser.id,
+        ),
+      ).thenAnswer((_) async => Right([testExercises[0]]));
 
       final container = ProviderContainer(
         overrides: [
@@ -218,12 +234,14 @@ void main() {
       expect(result[0].equipmentType, 'barbell');
       expect(result[0].isCustom, false);
 
-      verify(() => mockFilterExercises(
-            muscleGroup: 'chest',
-            equipmentType: 'barbell',
-            customOnly: false,
-            userId: testUser.id,
-          ),).called(1);
+      verify(
+        () => mockFilterExercises(
+          muscleGroup: 'chest',
+          equipmentType: 'barbell',
+          customOnly: false,
+          userId: testUser.id,
+        ),
+      ).called(1);
 
       container.dispose();
     });
@@ -231,12 +249,14 @@ void main() {
     test('should pass null userId when user is not authenticated', () async {
       // Arrange
       final systemExercises = testExercises.sublist(0, 2);
-      when(() => mockFilterExercises(
-            muscleGroup: null,
-            equipmentType: null,
-            customOnly: null,
-            userId: null,
-          ),).thenAnswer((_) async => Right(systemExercises));
+      when(
+        () => mockFilterExercises(
+          muscleGroup: null,
+          equipmentType: null,
+          customOnly: null,
+          userId: null,
+        ),
+      ).thenAnswer((_) async => Right(systemExercises));
 
       final container = ProviderContainer(
         overrides: [
@@ -250,24 +270,28 @@ void main() {
 
       // Assert
       expect(result.length, 2);
-      verify(() => mockFilterExercises(
-            muscleGroup: null,
-            equipmentType: null,
-            customOnly: null,
-            userId: null,
-          ),).called(1);
+      verify(
+        () => mockFilterExercises(
+          muscleGroup: null,
+          equipmentType: null,
+          customOnly: null,
+          userId: null,
+        ),
+      ).called(1);
 
       container.dispose();
     });
 
     test('should throw exception when use case fails', () async {
       // Arrange
-      when(() => mockFilterExercises(
-            muscleGroup: any(named: 'muscleGroup'),
-            equipmentType: any(named: 'equipmentType'),
-            customOnly: any(named: 'customOnly'),
-            userId: any(named: 'userId'),
-          ),).thenAnswer(
+      when(
+        () => mockFilterExercises(
+          muscleGroup: any(named: 'muscleGroup'),
+          equipmentType: any(named: 'equipmentType'),
+          customOnly: any(named: 'customOnly'),
+          userId: any(named: 'userId'),
+        ),
+      ).thenAnswer(
         (_) async => const Left(CacheFailure(message: 'Database error')),
       );
 
@@ -294,10 +318,12 @@ void main() {
       const query = 'bench';
       final searchResults = [testExercises[0]];
 
-      when(() => mockSearchExercises(
-            query: query,
-            userId: testUser.id,
-          ),).thenAnswer((_) async => Right(searchResults));
+      when(
+        () => mockSearchExercises(
+          query: query,
+          userId: testUser.id,
+        ),
+      ).thenAnswer((_) async => Right(searchResults));
 
       final container = ProviderContainer(
         overrides: [
@@ -313,10 +339,12 @@ void main() {
 
       // Assert
       expect(result, searchResults);
-      verify(() => mockSearchExercises(
-            query: query,
-            userId: testUser.id,
-          ),).called(1);
+      verify(
+        () => mockSearchExercises(
+          query: query,
+          userId: testUser.id,
+        ),
+      ).called(1);
 
       container.dispose();
     });
@@ -338,10 +366,12 @@ void main() {
 
       // Assert
       expect(result, isEmpty);
-      verifyNever(() => mockSearchExercises(
-            query: any(named: 'query'),
-            userId: any(named: 'userId'),
-          ),);
+      verifyNever(
+        () => mockSearchExercises(
+          query: any(named: 'query'),
+          userId: any(named: 'userId'),
+        ),
+      );
 
       container.dispose();
     });
@@ -363,10 +393,12 @@ void main() {
 
       // Assert
       expect(result, isEmpty);
-      verifyNever(() => mockSearchExercises(
-            query: any(named: 'query'),
-            userId: any(named: 'userId'),
-          ),);
+      verifyNever(
+        () => mockSearchExercises(
+          query: any(named: 'query'),
+          userId: any(named: 'userId'),
+        ),
+      );
 
       container.dispose();
     });
@@ -376,10 +408,12 @@ void main() {
       const query = '  squat  ';
       final searchResults = [testExercises[1]];
 
-      when(() => mockSearchExercises(
-            query: any(named: 'query'),
-            userId: testUser.id,
-          ),).thenAnswer((_) async => Right(searchResults));
+      when(
+        () => mockSearchExercises(
+          query: any(named: 'query'),
+          userId: testUser.id,
+        ),
+      ).thenAnswer((_) async => Right(searchResults));
 
       final container = ProviderContainer(
         overrides: [
@@ -396,10 +430,12 @@ void main() {
       // Assert
       expect(result, searchResults);
       // The query gets trimmed in the check, so actual call uses original
-      verify(() => mockSearchExercises(
-            query: query,
-            userId: testUser.id,
-          ),).called(1);
+      verify(
+        () => mockSearchExercises(
+          query: query,
+          userId: testUser.id,
+        ),
+      ).called(1);
 
       container.dispose();
     });
@@ -409,10 +445,12 @@ void main() {
       const query = 'exercise';
       final systemExercises = testExercises.sublist(0, 2);
 
-      when(() => mockSearchExercises(
-            query: query,
-            userId: null,
-          ),).thenAnswer((_) async => Right(systemExercises));
+      when(
+        () => mockSearchExercises(
+          query: query,
+          userId: null,
+        ),
+      ).thenAnswer((_) async => Right(systemExercises));
 
       final container = ProviderContainer(
         overrides: [
@@ -428,10 +466,12 @@ void main() {
 
       // Assert
       expect(result, systemExercises);
-      verify(() => mockSearchExercises(
-            query: query,
-            userId: null,
-          ),).called(1);
+      verify(
+        () => mockSearchExercises(
+          query: query,
+          userId: null,
+        ),
+      ).called(1);
 
       container.dispose();
     });
@@ -441,10 +481,12 @@ void main() {
       const query = 'BENCH';
       final searchResults = [testExercises[0]];
 
-      when(() => mockSearchExercises(
-            query: query,
-            userId: testUser.id,
-          ),).thenAnswer((_) async => Right(searchResults));
+      when(
+        () => mockSearchExercises(
+          query: query,
+          userId: testUser.id,
+        ),
+      ).thenAnswer((_) async => Right(searchResults));
 
       final container = ProviderContainer(
         overrides: [
@@ -467,10 +509,12 @@ void main() {
     test('should throw exception when use case fails', () async {
       // Arrange
       const query = 'test';
-      when(() => mockSearchExercises(
-            query: query,
-            userId: testUser.id,
-          ),).thenAnswer(
+      when(
+        () => mockSearchExercises(
+          query: query,
+          userId: testUser.id,
+        ),
+      ).thenAnswer(
         (_) async => const Left(CacheFailure(message: 'Search failed')),
       );
 
@@ -493,10 +537,12 @@ void main() {
     test('should return multiple matching exercises', () async {
       // Arrange
       const query = 'exercise';
-      when(() => mockSearchExercises(
-            query: query,
-            userId: testUser.id,
-          ),).thenAnswer((_) async => Right(testExercises));
+      when(
+        () => mockSearchExercises(
+          query: query,
+          userId: testUser.id,
+        ),
+      ).thenAnswer((_) async => Right(testExercises));
 
       final container = ProviderContainer(
         overrides: [
@@ -520,10 +566,12 @@ void main() {
     test('should return empty list when no matches found', () async {
       // Arrange
       const query = 'nonexistent';
-      when(() => mockSearchExercises(
-            query: query,
-            userId: testUser.id,
-          ),).thenAnswer((_) async => const Right([]));
+      when(
+        () => mockSearchExercises(
+          query: query,
+          userId: testUser.id,
+        ),
+      ).thenAnswer((_) async => const Right([]));
 
       final container = ProviderContainer(
         overrides: [

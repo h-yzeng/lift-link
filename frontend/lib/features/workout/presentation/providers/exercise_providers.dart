@@ -84,7 +84,25 @@ Future<List<Exercise>> exerciseList(
 
   return result.fold(
     (failure) => throw Exception(failure.userMessage),
-    (exercises) => exercises,
+    (exercises) {
+      // Sort by recent usage: recently used exercises first, then by name
+      final sorted = List<Exercise>.from(exercises);
+      sorted.sort((a, b) {
+        // If both have lastUsedAt, sort by most recent first
+        if (a.lastUsedAt != null && b.lastUsedAt != null) {
+          return b.lastUsedAt!.compareTo(a.lastUsedAt!);
+        }
+        // Recently used exercises come first
+        if (a.lastUsedAt != null) return -1;
+        if (b.lastUsedAt != null) return 1;
+        // If neither used recently, sort by usage count then name
+        if (a.usageCount != b.usageCount) {
+          return b.usageCount.compareTo(a.usageCount);
+        }
+        return a.name.compareTo(b.name);
+      });
+      return sorted;
+    },
   );
 }
 

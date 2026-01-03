@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/widgets/active_workout/workout_summary_section.dart';
@@ -23,11 +24,13 @@ void main() {
 
     testWidgets('displays workout title', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: WorkoutSummarySection(
-              workout: testWorkout,
-              useImperialUnits: true,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: WorkoutSummarySection(
+                workout: testWorkout,
+                useImperialUnits: true,
+              ),
             ),
           ),
         ),
@@ -43,11 +46,13 @@ void main() {
     testWidgets('displays workout duration when workout is ongoing',
         (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: WorkoutSummarySection(
-              workout: testWorkout,
-              useImperialUnits: true,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: WorkoutSummarySection(
+                workout: testWorkout,
+                useImperialUnits: true,
+              ),
             ),
           ),
         ),
@@ -59,11 +64,13 @@ void main() {
 
     testWidgets('displays exercise count', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: WorkoutSummarySection(
-              workout: testWorkout,
-              useImperialUnits: true,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: WorkoutSummarySection(
+                workout: testWorkout,
+                useImperialUnits: true,
+              ),
             ),
           ),
         ),
@@ -75,11 +82,13 @@ void main() {
 
     testWidgets('displays total sets count', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: WorkoutSummarySection(
-              workout: testWorkout,
-              useImperialUnits: true,
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: WorkoutSummarySection(
+                workout: testWorkout,
+                useImperialUnits: true,
+              ),
             ),
           ),
         ),

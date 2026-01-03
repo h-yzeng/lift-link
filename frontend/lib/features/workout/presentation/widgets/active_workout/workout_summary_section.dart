@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/utils/unit_conversion.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
+import 'package:liftlink/core/preferences/workout_duration_preference.dart';
 
 /// Displays workout statistics summary at the top of active workout page
 class WorkoutSummarySection extends ConsumerWidget {
@@ -17,35 +18,82 @@ class WorkoutSummarySection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final targetDuration = ref.watch(targetWorkoutDurationProvider);
+    final currentDuration = workout.actualDuration;
+    final progress = (currentDuration / targetDuration).clamp(0.0, 1.0);
 
     return Container(
       padding: const EdgeInsets.all(16),
       color: theme.colorScheme.surfaceContainerHighest,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Column(
         children: [
-          _StatItem(
-            icon: Icons.timer_outlined,
-            label: 'Duration',
-            value: workout.formattedDuration,
-          ),
-          _StatItem(
-            icon: Icons.fitness_center,
-            label: 'Exercises',
-            value: '${workout.exercises.length}',
-          ),
-          _StatItem(
-            icon: Icons.repeat,
-            label: 'Sets',
-            value: '${workout.totalSets}',
-          ),
-          _StatItem(
-            icon: Icons.scale,
-            label: 'Volume',
-            value: UnitConversion.formatWeight(
-              workout.totalVolume,
-              useImperialUnits,
+          // Duration progress bar
+          if (targetDuration > 0)
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Target: ${WorkoutDurationPresets.formatDuration(targetDuration)}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    Text(
+                      '${(progress * 100).toInt()}%',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 6,
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      progress >= 1.0
+                          ? theme.colorScheme.tertiary
+                          : theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
             ),
+          // Stats row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _StatItem(
+                icon: Icons.timer_outlined,
+                label: 'Duration',
+                value: workout.formattedDuration,
+              ),
+              _StatItem(
+                icon: Icons.fitness_center,
+                label: 'Exercises',
+                value: '${workout.exercises.length}',
+              ),
+              _StatItem(
+                icon: Icons.repeat,
+                label: 'Sets',
+                value: '${workout.totalSets}',
+              ),
+              _StatItem(
+                icon: Icons.scale,
+                label: 'Volume',
+                value: UnitConversion.formatWeight(
+                  workout.totalVolume,
+                  useImperialUnits,
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -21,6 +21,8 @@ import 'package:liftlink/features/workout/domain/usecases/get_personal_records.d
 import 'package:liftlink/features/workout/domain/usecases/get_exercise_pr.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_history.dart';
 import 'package:liftlink/features/workout/domain/entities/personal_record.dart';
+import 'package:liftlink/features/workout/presentation/providers/exercise_providers.dart'
+    as ex;
 import 'package:liftlink/core/providers/core_providers.dart';
 import 'package:liftlink/core/services/streak_service.dart';
 import 'package:liftlink/shared/database/database_provider.dart';
@@ -65,7 +67,10 @@ GetActiveWorkout getActiveWorkoutUseCase(Ref ref) {
 
 @riverpod
 AddExerciseToWorkout addExerciseToWorkoutUseCase(Ref ref) {
-  return AddExerciseToWorkout(ref.watch(workoutRepositoryProvider));
+  return AddExerciseToWorkout(
+    workoutRepository: ref.watch(workoutRepositoryProvider),
+    exerciseRepository: ref.watch(ex.exerciseRepositoryProvider),
+  );
 }
 
 @riverpod
@@ -172,7 +177,8 @@ Future<ExerciseHistory> exerciseHistory(
 }) async {
   final user = await ref.watch(currentUserProvider.future);
   if (user == null) {
-    return ExerciseHistory(exerciseId: exerciseId, userId: '', sessions: const []);
+    return ExerciseHistory(
+        exerciseId: exerciseId, userId: '', sessions: const []);
   }
 
   final useCase = ref.watch(getExerciseHistoryUseCaseProvider);

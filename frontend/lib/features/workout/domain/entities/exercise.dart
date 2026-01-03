@@ -19,6 +19,8 @@ class Exercise with _$Exercise {
     String? equipmentType,
     @Default(false) bool isCustom,
     String? createdBy, // User ID if custom exercise
+    DateTime? lastUsedAt, // Track when last used for recent sorting
+    @Default(0) int usageCount, // Track how many times used
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _Exercise;

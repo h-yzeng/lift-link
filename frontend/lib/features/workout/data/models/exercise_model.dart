@@ -13,6 +13,8 @@ extension ExerciseModelMapper on ExerciseEntity {
       equipmentType: equipmentType,
       isCustom: isCustom,
       createdBy: createdBy,
+      lastUsedAt: lastUsedAt,
+      usageCount: usageCount,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
@@ -30,6 +32,8 @@ extension ExerciseToDrift on Exercise {
       equipmentType: Value(equipmentType),
       isCustom: Value(isCustom),
       createdBy: Value(createdBy),
+      lastUsedAt: Value(lastUsedAt),
+      usageCount: Value(usageCount),
       createdAt: createdAt,
       updatedAt: updatedAt,
     );
@@ -46,6 +50,10 @@ Exercise exerciseFromJson(Map<String, dynamic> json) {
     equipmentType: json['equipment_type'] as String?,
     isCustom: json['is_custom'] as bool? ?? false,
     createdBy: json['created_by'] as String?,
+    lastUsedAt: json['last_used_at'] != null
+        ? DateTime.parse(json['last_used_at'] as String)
+        : null,
+    usageCount: json['usage_count'] as int? ?? 0,
     createdAt: DateTime.parse(json['created_at'] as String),
     updatedAt: DateTime.parse(json['updated_at'] as String),
   );

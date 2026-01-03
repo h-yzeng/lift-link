@@ -6,6 +6,7 @@ import 'package:liftlink/features/workout/domain/entities/exercise_performance.d
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 import 'package:liftlink/features/workout/presentation/widgets/set_input_row.dart';
+import 'package:liftlink/features/workout/presentation/utils/rest_timer_utils.dart';
 import 'package:liftlink/shared/utils/haptic_service.dart';
 
 /// Displays the list of exercises in the active workout
@@ -69,6 +70,7 @@ class ExerciseListSection extends ConsumerWidget {
           return _ExerciseCard(
             exercise: exercise,
             useImperialUnits: useImperialUnits,
+            context: context,
           );
         },
       ),
@@ -80,10 +82,12 @@ class ExerciseListSection extends ConsumerWidget {
 class _ExerciseCard extends ConsumerWidget {
   final ExercisePerformance exercise;
   final bool useImperialUnits;
+  final BuildContext context;
 
   const _ExerciseCard({
     required this.exercise,
     required this.useImperialUnits,
+    required this.context,
   });
 
   @override
@@ -113,7 +117,8 @@ class _ExerciseCard extends ConsumerWidget {
                 // PR badge if available
                 if (exercise.maxWeight != null)
                   Semantics(
-                    label: 'Personal record: ${UnitConversion.formatWeight(exercise.maxWeight!, useImperialUnits)}',
+                    label:
+                        'Personal record: ${UnitConversion.formatWeight(exercise.maxWeight!, useImperialUnits)}',
                     child: Chip(
                       avatar: const ExcludeSemantics(
                         child: Icon(Icons.emoji_events, size: 16),
@@ -153,8 +158,8 @@ class _ExerciseCard extends ConsumerWidget {
                     setNumber: index + 1,
                     existingSet: set,
                     useImperialUnits: useImperialUnits,
-                    onSave: (reps, weight, isWarmup, rpe, rir) =>
-                        _updateSet(ref, set.id, reps, weight, isWarmup, rpe, rir),
+                    onSave: (reps, weight, isWarmup, rpe, rir) => _updateSet(
+                        ref, set.id, reps, weight, isWarmup, rpe, rir),
                     onDelete: () => _deleteSet(ref, set.id),
                   ),
                 );
@@ -280,6 +285,10 @@ class _ExerciseCard extends ConsumerWidget {
       (_) {
         HapticService.success();
         ref.invalidate(activeWorkoutProvider);
+        // Auto-start rest timer if enabled (only for non-warmup sets)
+        if (!isWarmup && context.mounted) {
+          maybeAutoStartRestTimer(context: context, ref: ref);
+        }
       },
     );
   }

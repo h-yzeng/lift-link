@@ -33,7 +33,8 @@ class ExerciseRepositoryImpl implements ExerciseRepository {
 
         // If sync succeeded, read fresh data from local
         if (syncResult.isRight()) {
-          final freshExercises = await localDataSource.getAllExercises(userId: userId);
+          final freshExercises =
+              await localDataSource.getAllExercises(userId: userId);
           return Right(freshExercises);
         }
         // Sync failed, return empty list
@@ -72,7 +73,8 @@ class ExerciseRepositoryImpl implements ExerciseRepository {
   }) async {
     try {
       // First check if local database has any exercises at all
-      final allExercises = await localDataSource.getAllExercises(userId: userId);
+      final allExercises =
+          await localDataSource.getAllExercises(userId: userId);
 
       // If local is empty and we're online, perform initial sync and wait
       if (allExercises.isEmpty && await networkInfo.isConnected) {
@@ -154,7 +156,8 @@ class ExerciseRepositoryImpl implements ExerciseRepository {
   }) async {
     try {
       // First check if we have ANY exercises in the local database
-      final allExercises = await localDataSource.getAllExercises(userId: userId);
+      final allExercises =
+          await localDataSource.getAllExercises(userId: userId);
 
       // If local database is completely empty and we're online, perform initial sync
       if (allExercises.isEmpty && await networkInfo.isConnected) {
@@ -281,6 +284,19 @@ class ExerciseRepositoryImpl implements ExerciseRepository {
       return Left(ServerFailure(message: e.message));
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateExerciseUsage(String exerciseId) async {
+    try {
+      // Update local usage tracking immediately
+      await localDataSource.updateExerciseUsage(exerciseId);
+      return const Right(null);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    } catch (e) {
+      return Left(CacheFailure(message: e.toString()));
     }
   }
 

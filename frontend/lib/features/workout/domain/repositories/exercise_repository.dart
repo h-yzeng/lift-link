@@ -59,6 +59,9 @@ abstract class ExerciseRepository {
   /// Delete a custom exercise
   Future<Either<Failure, void>> deleteCustomExercise(String id);
 
+  /// Update exercise usage tracking (lastUsedAt and usageCount)
+  Future<Either<Failure, void>> updateExerciseUsage(String exerciseId);
+
   /// Sync exercises from remote to local
   Future<Either<Failure, void>> syncExercises({String? userId});
 }

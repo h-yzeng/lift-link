@@ -47,6 +47,9 @@ abstract class ExerciseLocalDataSource {
   /// Delete exercise
   Future<void> deleteExercise(String id);
 
+  /// Update exercise usage tracking
+  Future<void> updateExerciseUsage(String exerciseId);
+
   /// Clear all exercises (for resync)
   Future<void> clearExercises();
 }
@@ -267,6 +270,30 @@ class ExerciseLocalDataSourceImpl implements ExerciseLocalDataSource {
       await (database.delete(database.exercises)
             ..where((ex) => ex.id.equals(id)))
           .go();
+    } catch (e) {
+      throw CacheException(message: e.toString());
+    }
+  }
+
+  @override
+  Future<void> updateExerciseUsage(String exerciseId) async {
+    try {
+      final now = DateTime.now();
+      final query = database.select(database.exercises)
+        ..where((ex) => ex.id.equals(exerciseId));
+      final exercise = await query.getSingleOrNull();
+
+      if (exercise != null) {
+        await (database.update(database.exercises)
+              ..where((ex) => ex.id.equals(exerciseId)))
+            .write(
+          ExercisesCompanion(
+            lastUsedAt: Value(now),
+            usageCount: Value(exercise.usageCount + 1),
+            updatedAt: Value(now),
+          ),
+        );
+      }
     } catch (e) {
       throw CacheException(message: e.toString());
     }

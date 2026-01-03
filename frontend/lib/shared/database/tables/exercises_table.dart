@@ -9,6 +9,10 @@ class Exercises extends Table {
   TextColumn get equipmentType => text().nullable()();
   BoolColumn get isCustom => boolean().withDefault(const Constant(false))();
   TextColumn get createdBy => text().nullable()(); // User ID if custom
+  DateTimeColumn get lastUsedAt =>
+      dateTime().nullable()(); // Track recent usage
+  IntColumn get usageCount =>
+      integer().withDefault(const Constant(0))(); // Track popularity
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get syncedAt => dateTime().nullable()();

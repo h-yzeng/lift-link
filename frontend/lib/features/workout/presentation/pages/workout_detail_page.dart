@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/core/utils/unit_conversion.dart';
+import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_performance.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_set.dart';
+import 'package:liftlink/features/workout/presentation/pages/active_workout_page.dart';
+import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
+import 'package:liftlink/shared/utils/haptic_service.dart';
 
 /// Page displaying detailed view of a completed workout
 class WorkoutDetailPage extends ConsumerWidget {
@@ -24,14 +29,14 @@ class WorkoutDetailPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(workout.title),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Sharing coming soon')),
-              );
-            },
-            tooltip: 'Share workout',
+          Semantics(
+            label: 'Start new workout with same exercises',
+            button: true,
+            child: IconButton(
+              icon: const Icon(Icons.replay),
+              onPressed: () => _repeatWorkout(context, ref),
+              tooltip: 'Repeat this workout',
+            ),
           ),
         ],
       ),
@@ -50,6 +55,82 @@ class WorkoutDetailPage extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _repeatWorkout(BuildContext context, WidgetRef ref) async {
+    HapticService.lightTap();
+
+    final user = await ref.read(currentUserProvider.future);
+    if (user == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please log in to start a workout')),
+        );
+      }
+      return;
+    }
+
+    // Show loading indicator
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              SizedBox(width: 16),
+              Text('Starting workout...'),
+            ],
+          ),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+
+    final startWorkoutUseCase = ref.read(startWorkoutUseCaseProvider);
+    final addExerciseUseCase = ref.read(addExerciseToWorkoutUseCaseProvider);
+
+    // Start a new workout with the same title
+    final workoutResult = await startWorkoutUseCase(
+      userId: user.id,
+      title: workout.title,
+    );
+
+    await workoutResult.fold(
+      (failure) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(failure.userMessage)),
+          );
+        }
+      },
+      (newWorkout) async {
+        // Add all exercises from the previous workout
+        for (final exercise in workout.exercises) {
+          await addExerciseUseCase(
+            workoutSessionId: newWorkout.id,
+            exerciseId: exercise.exerciseId,
+            exerciseName: exercise.exerciseName,
+          );
+        }
+
+        // Invalidate active workout provider to refresh
+        ref.invalidate(activeWorkoutProvider);
+
+        if (context.mounted) {
+          // Navigate to active workout page
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ActiveWorkoutPage(workout: newWorkout),
+            ),
+          );
+        }
+      },
     );
   }
 

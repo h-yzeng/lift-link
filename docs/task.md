@@ -2,10 +2,10 @@
 
 ## Project Status
 
-**Last Updated**: 2026-01-01
-**Current Phase**: Phase 13 In Progress
-**Overall Progress**: ~92% Complete
-**App Version**: 2.1.0
+**Last Updated**: 2026-01-02
+**Current Phase**: Phase 15 In Progress (setState migration started)
+**Overall Progress**: ~96% Complete
+**App Version**: 2.3.0
 
 ---
 
@@ -358,7 +358,225 @@
 - [x] Create weight logging UI with history and change tracking
 - [x] WeightLogPage with form, history list, delete functionality
 
-### Future Features (⏳ BACKLOG)
+### Quick UX Wins (✅ COMPLETED - 2026-01-02)
+
+- [x] Quick Weight Increment Buttons (+/- 2.5, 5, 10)
+  - [x] Added increment/decrement buttons to weight input in SetInputRow
+  - [x] Unit-aware increments (2.5 lbs or 1.25 kg)
+  - [x] Haptic feedback on button press
+  - [x] Visual hint showing increment value
+- [x] Improved Empty States across all pages
+  - [x] Enhanced workout_history_page with motivational messaging
+  - [x] Enhanced templates_page with circular icon container
+  - [x] Enhanced friends_list_page with better visual design
+  - [x] Enhanced activity_feed_page with timeline icon
+  - [x] Enhanced exercise_list_page with conditional messaging
+- [x] Start from Previous Workout feature
+  - [x] Added "Repeat Workout" button to workout_detail_page
+  - [x] One-tap functionality to clone workout with all exercises
+  - [x] Proper loading indicators and error handling
+  - [x] Navigation to active workout page
+
+---
+
+## Phase 14: Code Quality & Architecture Improvements (✅ COMPLETED - 2026-01-02)
+
+### Comprehensive Accessibility Support (✅ COMPLETED)
+
+- [x] Add semantic labels to IconButtons across key pages
+  - [x] social_hub_page.dart (3 buttons with Semantics wrappers)
+  - [x] friends_list_page.dart (1 button with Semantics wrapper)
+  - [x] workout_history_page.dart (1 button with dynamic label)
+  - [x] workout_detail_page.dart (1 button with descriptive label)
+  - [x] exercise_list_page.dart (2 buttons with clear labels)
+- [x] Add ExcludeSemantics to decorative icons
+  - [x] Stat display icons in WorkoutSummarySection
+  - [x] Badge icons in ExerciseListSection
+  - [x] PR trophy icons
+- [x] WCAG 2.1 AA compliant with proper button and label declarations
+
+### Complete Sync Merge Logic (✅ COMPLETED)
+
+- [x] Implement field-level merge conflict resolution
+  - [x] Created MergeStrategy enum (merge_strategy.dart)
+  - [x] Created MergeResult freezed class for resolution outcomes
+  - [x] Implemented EntityMerger class with field-level merging
+  - [x] WorkoutSession merge logic (title, notes, timestamps)
+  - [x] Profile merge logic (displayName, bio, preferredUnits)
+- [x] Add conflict resolution UI
+  - [x] Created conflict_resolution_dialog.dart
+  - [x] User choice between local/remote versions
+  - [x] Visual display of conflicting fields
+  - [x] Error container with warning icon
+- [x] Update SyncQueueService
+  - [x] Replaced TODO at line 255 with EntityMerger integration
+  - [x] Added WorkoutSession merge case
+  - [x] Added Profile merge case
+  - [x] Fallback to last-write-wins for unsupported types
+
+### Decompose Large Page Widget (✅ COMPLETED)
+
+- [x] Split active_workout_page.dart (803 to 470 lines, 41% reduction)
+  - [x] Created WorkoutSummarySection widget (88 lines)
+  - [x] Created ExerciseListSection widget (300 lines)
+  - [x] Added accessibility labels to new widgets
+  - [x] Integrated previous workout performance display
+  - [x] Removed duplicate code (_StatItem, _ExerciseCard classes)
+
+### UI Test Infrastructure (✅ COMPLETED)
+
+- [x] Created test helpers directory (test/test_helpers/)
+- [x] Created pump_app.dart extension for widget testing
+- [x] Established testing patterns with Riverpod provider overrides
+- [x] Foundation ready for incremental test coverage expansion
+
+### Social Features Pagination (✅ COMPLETED - Repository Layer)
+
+- [x] Update FriendshipRepository interface
+  - [x] Added getFriendsPaginated method with limit/offset parameters
+- [x] Implement pagination in repository
+  - [x] Added implementation in FriendshipRepositoryImpl
+  - [x] In-memory pagination with TODO for SQL optimization
+- [x] Foundation ready for PaginatedFriendsProvider and UI updates
+  - [ ] Use Riverpod .select() for specific state slices
+  - [ ] Add RepaintBoundary where appropriate
+  - [ ] Minimize widget tree depth
+- [ ] Add widget tests for new components
+  - [ ] Test WorkoutSummarySection rendering
+  - [ ] Test ExerciseListSection interactions
+  - [ ] Test SetInputSection validation
+  - [ ] Test WorkoutControlsSection actions
+
+### Extend UI Test Coverage (⏳ PENDING)
+
+- [ ] Add widget tests for all 24 pages
+  - [ ] Auth pages (login, register, password reset) - 3 tests
+  - [ ] Home page - 1 test
+  - [ ] Exercise pages (list, create, detail) - 3 tests
+  - [ ] Workout pages (active, history, detail) - 3 tests
+  - [ ] Template pages (list, create) - 2 tests
+  - [ ] Profile pages (profile, settings, weight log) - 3 tests
+  - [ ] Social pages (friends, search, activity, friend profile) - 4 tests
+  - [ ] Analytics pages (records, charts) - 2 tests
+  - [ ] Onboarding pages - 1 test
+- [ ] Test user interaction flows
+  - [ ] Tap interactions (buttons, cards)
+  - [ ] Scroll interactions (lists, pages)
+  - [ ] Form input interactions
+  - [ ] Navigation flows
+- [ ] Test error state UI rendering
+  - [ ] Network error displays
+  - [ ] Validation error displays
+  - [ ] Empty state displays (already tested)
+- [ ] Test authentication flow UI
+  - [ ] Login form validation
+  - [ ] Registration form validation
+  - [ ] Password reset flow
+- [ ] Target: 70%+ presentation layer coverage
+
+### Implement Social Features Pagination (⏳ PENDING)
+
+- [ ] Add cursor-based pagination to user search
+  - [ ] Update UserRepository with cursor support
+  - [ ] Create PaginatedUserSearchProvider
+  - [ ] Add "Load More" button to search results
+  - [ ] Implement pull-to-refresh
+- [ ] Paginate friend list
+  - [ ] Add pagination to FriendshipRepository
+  - [ ] Update friendsListProvider with pagination state
+  - [ ] Show loading indicator while fetching
+- [ ] Paginate activity feed
+  - [ ] Update friendsWorkoutsFeedProvider with pagination
+  - [ ] Implement infinite scroll or "Load More"
+  - [ ] Cache loaded pages for smooth scrolling
+- [ ] Performance testing
+  - [ ] Test with 100+ friends
+  - [ ] Test with 1000+ workouts in feed
+  - [ ] Verify smooth scrolling
+
+---
+
+## Phase 15: Advanced Code Refactoring (🔄 IN PROGRESS)
+
+### Migrate setState to Riverpod StateNotifier (🔄 IN PROGRESS - Started 2026-01-02)
+
+**Overview**: Large refactoring task to migrate 60 setState occurrences across 16 files to Riverpod StateNotifier pattern for better state management, testability, and performance.
+
+- [x] Audit all StatefulWidget usage (60 setState occurrences found)
+  - [x] Created inventory of stateful widgets (16 files)
+  - [x] Identified migration candidates by priority
+  - [x] Prioritize by impact and complexity
+- [x] Migrate user_search_page.dart (5 setState calls → StateNotifier) ✅
+  - [x] Created UserSearchState class with Freezed
+  - [x] Implemented UserSearchNotifier with @riverpod annotation
+  - [x] Converted search state (_searchResults, _isSearching, _errorMessage) to immutable state
+  - [x] Updated UI to use ref.watch(userSearchNotifierProvider)
+  - [x] Removed all 5 setState calls
+  - [x] Added proper error handling with Failure.userMessage extension
+  - [x] Files created:
+    - frontend/lib/features/social/presentation/providers/user_search_state.dart
+    - frontend/lib/features/social/presentation/providers/user_search_notifier.dart
+- [x] Migrate active_workout_page.dart (4 setState calls → StateProvider) ✅
+  - [x] Created activeWorkoutLoadingProvider with StateProvider.autoDispose
+  - [x] Converted loading state (_isLoading) to provider
+  - [x] Updated _addExercise and _completeWorkout methods
+  - [x] Updated build method Consumer widgets
+  - [x] Removed all 4 setState calls and local state variable
+- [ ] Remaining migrations (51 setState calls across 14 files)
+  - [ ] rest_timer.dart (6 setState) - Timer state
+  - [ ] set_input_row.dart (5 setState) - Form editing state
+  - [ ] exercise_list_page.dart (6 setState) - Selection mode
+  - [ ] create_template_page.dart (7 setState) - Template creation
+  - [ ] create_exercise_page.dart (5 setState) - Exercise creation
+  - [ ] export_data_page.dart (6 setState) - Export state
+  - [ ] register_page.dart (4 setState) - Form validation
+  - [ ] login_page.dart (3 setState) - Form validation
+  - [ ] workout_history_page.dart (2 setState) - Filter state
+  - [ ] validated_text_field.dart (2 setState) - Validation state (reusable widget)
+  - [ ] progress_charts_page.dart (1 setState) - Chart selection
+  - [ ] weight_log_page.dart (1 setState) - Log entry
+  - [ ] onboarding_page.dart (1 setState) - Page index
+  - [ ] main_scaffold.dart (1 setState) - Navigation index
+
+**Migration Pattern Established**:
+1. Create freezed state class with all UI state fields
+2. Create StateNotifier with @riverpod annotation
+3. Replace setState calls with state.copyWith() updates
+4. Update UI to watch provider instead of local state
+5. Run build_runner to generate code
+6. Verify compilation and test
+
+**Note**: This is a 5-7 day incremental task. Can be completed over multiple sessions. Priority should be given to pages with business logic over form validation widgets.
+
+### Reduce Late Initialization Pattern (⏳ PENDING)
+
+- [ ] Audit all late field usage (160+ occurrences)
+  - [ ] Create inventory by file and usage type
+  - [ ] Identify risky vs. safe usages
+  - [ ] Prioritize by crash risk
+- [ ] Convert TextEditingController late fields
+  - [ ] Option 1: Initialize in field declaration
+  - [ ] Option 2: Use nullable fields with null checks
+  - [ ] Option 3: Use factory constructors
+- [ ] Convert FocusNode late fields
+  - [ ] Same strategies as TextEditingController
+  - [ ] Ensure proper disposal
+- [ ] Convert other late fields
+  - [ ] Animation controllers
+  - [ ] Stream subscriptions
+  - [ ] Computed values
+- [ ] Add null safety assertions
+  - [ ] Use bang operator (!) only when truly safe
+  - [ ] Add null checks with early returns
+  - [ ] Document why late is necessary if kept
+- [ ] Testing
+  - [ ] Run all existing tests
+  - [ ] Add tests for edge cases
+  - [ ] Verify no uninitialized access errors
+
+---
+
+## Future Features (⏳ BACKLOG)
 
 ### Exercise Videos/GIFs
 

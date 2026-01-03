@@ -61,10 +61,14 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
               _selectedEquipmentType != null ||
               _showCustomOnly ||
               _isSearching)
-            IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: _clearFilters,
-              tooltip: 'Clear filters',
+            Semantics(
+              label: 'Clear all filters and search',
+              button: true,
+              child: IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: _clearFilters,
+                tooltip: 'Clear filters',
+              ),
             ),
         ],
       ),
@@ -79,14 +83,18 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
                 hintText: 'Search exercises...',
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          setState(() {
-                            _searchController.clear();
-                            _isSearching = false;
-                          });
-                        },
+                    ? Semantics(
+                        label: 'Clear search text',
+                        button: true,
+                        child: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _searchController.clear();
+                              _isSearching = false;
+                            });
+                          },
+                        ),
                       )
                     : null,
                 border: OutlineInputBorder(
@@ -202,37 +210,53 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
               data: (exercises) {
                 if (exercises.isEmpty) {
                   return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.search_off,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          _isSearching
-                              ? 'No exercises found'
-                              : 'No exercises available',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _isSearching
-                              ? 'Try a different search term'
-                              : 'Pull down to sync or create a custom exercise',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        if (!_isSearching) ...[
-                          const SizedBox(height: 16),
-                          FilledButton.icon(
-                            onPressed: () => _navigateToCreateExercise(context),
-                            icon: const Icon(Icons.add),
-                            label: const Text('Create Exercise'),
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              _isSearching ? Icons.search_off : Icons.fitness_center,
+                              size: 64,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
                           ),
+                          const SizedBox(height: 24),
+                          Text(
+                            _isSearching
+                                ? 'No Exercises Found'
+                                : 'Build Your Exercise Library',
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            _isSearching
+                                ? 'Try adjusting your search term or filters to find what you\'re looking for.'
+                                : 'Create custom exercises or pull down to sync from the cloud. Every great workout starts with the right exercises.',
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
+                          if (!_isSearching) ...[
+                            const SizedBox(height: 32),
+                            FilledButton.icon(
+                              onPressed: () => _navigateToCreateExercise(context),
+                              icon: const Icon(Icons.add),
+                              label: const Text('Create Custom Exercise'),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   );
                 }

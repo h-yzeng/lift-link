@@ -274,6 +274,34 @@ flutter test test/unit/workout_set_test.dart
 - [x] Workout templates
 - [x] Rest timer with haptic feedback
 - [x] Data export (JSON/CSV)
+- [x] Dark mode with system/light/dark options
+- [x] Onboarding flow for new users
+
+### Phase 6-13: Completed ✅
+
+- [x] Code quality & UX polish
+- [x] Testing & quality assurance
+- [x] Static analysis & code cleanup
+- [x] Quick wins & core UX improvements
+- [x] Quality & reliability improvements
+- [x] Advanced improvements (RPE tracking, RIR, weight logging)
+- [x] Mobile enhancement features
+
+### Phase 14: Code Quality & Architecture ✅ (Completed)
+
+- [x] Comprehensive accessibility support (WCAG 2.1 AA)
+- [x] Field-level sync conflict resolution
+- [x] Widget decomposition (active_workout_page: 803→470 lines)
+- [x] UI test infrastructure with Riverpod helpers
+- [x] Social features pagination foundation
+
+### Phase 15: Advanced Refactoring 🔄 (In Progress)
+
+- [x] setState migration to StateNotifier (2/16 files complete, 9/60 calls)
+  - [x] user_search_page.dart migrated to StateNotifier (5 calls)
+  - [x] active_workout_page.dart migrated to StateProvider (4 calls)
+- [ ] Complete remaining 14 files (51 setState calls)
+- [ ] Reduce late initialization pattern usage
 
 ### Future Enhancements
 

@@ -435,4 +435,35 @@ class FriendshipRepositoryImpl implements FriendshipRepository {
       return Left(Failure.unexpected(message: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, List<Friendship>>> getFriendsPaginated({
+    required String userId,
+    required int limit,
+    required int offset,
+  }) async {
+    try {
+      // For now, get all friends and apply pagination in memory
+      // TODO: Optimize by adding LIMIT/OFFSET support to local data source
+      final allFriendships = await localDataSource.getFriends(userId);
+
+      final startIndex = offset;
+      final endIndex = offset + limit;
+
+      if (startIndex >= allFriendships.length) {
+        return const Right([]);
+      }
+
+      final paginatedFriendships = allFriendships.sublist(
+        startIndex,
+        endIndex > allFriendships.length ? allFriendships.length : endIndex,
+      );
+
+      return Right(paginatedFriendships);
+    } on CacheException {
+      return const Left(CacheFailure());
+    } catch (e) {
+      return Left(Failure.unexpected(message: e.toString()));
+    }
+  }
 }

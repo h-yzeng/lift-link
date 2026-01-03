@@ -3,6 +3,10 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:liftlink/core/network/network_info.dart';
 import 'package:liftlink/core/sync/sync_queue_item.dart';
+import 'package:liftlink/core/sync/entity_merger.dart';
+import 'package:liftlink/core/sync/merge_strategy.dart';
+import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
+import 'package:liftlink/features/profile/domain/entities/profile.dart';
 import 'package:liftlink/shared/database/app_database.dart';
 
 /// Service for managing the offline sync queue with exponential backoff
@@ -249,13 +253,58 @@ class ConflictResolver {
         );
 
       case ConflictResolutionStrategy.merge:
-        // TODO: Implement merge logic per entity type
-        // For now, default to last write wins
-        final useLocal = localUpdatedAt.isAfter(remoteUpdatedAt);
-        return ConflictResolution(
-          resolvedData: useLocal ? localData : remoteData,
-          strategy: ConflictResolutionStrategy.lastWriteWins,
-        );
+        // Field-level merge using EntityMerger
+        if (localData is WorkoutSession && remoteData is WorkoutSession) {
+          final result = EntityMerger.mergeWorkoutSession(
+            localData,
+            remoteData,
+            MergeStrategy.fieldLevel,
+          );
+
+          return result.when(
+            resolved: (merged) => ConflictResolution(
+              resolvedData: merged as T,
+              strategy: strategy,
+            ),
+            needsManualResolution: (local, remote, fields) {
+              // Fallback to last write wins if manual resolution needed
+              // In a real implementation, this would show a UI dialog
+              final useLocal = localUpdatedAt.isAfter(remoteUpdatedAt);
+              return ConflictResolution(
+                resolvedData: (useLocal ? local : remote) as T,
+                strategy: ConflictResolutionStrategy.lastWriteWins,
+              );
+            },
+          );
+        } else if (localData is Profile && remoteData is Profile) {
+          final result = EntityMerger.mergeProfile(
+            localData,
+            remoteData,
+            MergeStrategy.fieldLevel,
+          );
+
+          return result.when(
+            resolved: (merged) => ConflictResolution(
+              resolvedData: merged as T,
+              strategy: strategy,
+            ),
+            needsManualResolution: (local, remote, fields) {
+              // Fallback to last write wins if manual resolution needed
+              final useLocal = localUpdatedAt.isAfter(remoteUpdatedAt);
+              return ConflictResolution(
+                resolvedData: (useLocal ? local : remote) as T,
+                strategy: ConflictResolutionStrategy.lastWriteWins,
+              );
+            },
+          );
+        } else {
+          // For unsupported types, fall back to last write wins
+          final useLocal = localUpdatedAt.isAfter(remoteUpdatedAt);
+          return ConflictResolution(
+            resolvedData: useLocal ? localData : remoteData,
+            strategy: ConflictResolutionStrategy.lastWriteWins,
+          );
+        }
     }
   }
 }

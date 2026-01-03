@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:liftlink/core/utils/unit_conversion.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_set.dart';
+import 'package:liftlink/shared/utils/haptic_service.dart';
 
 /// Widget for inputting set data (weight, reps, RPE)
 class SetInputRow extends StatefulWidget {
@@ -191,6 +192,13 @@ class _SetInputRowState extends State<SetInputRow> {
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,1}')),
                     ],
+                    showIncrementButtons: _isEditing,
+                    incrementValue: widget.useImperialUnits ? 2.5 : 1.25,
+                    onIncrement: (value) {
+                      setState(() {
+                        _weightController.text = value.toStringAsFixed(1);
+                      });
+                    },
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -298,6 +306,9 @@ class _InputFieldWithLabel extends StatelessWidget {
   final TextInputType keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final bool isOptional;
+  final bool showIncrementButtons;
+  final double? incrementValue;
+  final Function(double)? onIncrement;
 
   const _InputFieldWithLabel({
     required this.controller,
@@ -306,7 +317,23 @@ class _InputFieldWithLabel extends StatelessWidget {
     required this.keyboardType,
     this.inputFormatters,
     this.isOptional = false,
+    this.showIncrementButtons = false,
+    this.incrementValue,
+    this.onIncrement,
   });
+
+  void _incrementWeight(bool isIncrement) {
+    if (onIncrement == null || incrementValue == null) return;
+
+    HapticService.lightTap();
+
+    final currentValue = double.tryParse(controller.text) ?? 0.0;
+    final newValue = isIncrement
+        ? currentValue + incrementValue!
+        : (currentValue - incrementValue!).clamp(0.0, double.infinity);
+
+    onIncrement!(newValue);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -316,60 +343,108 @@ class _InputFieldWithLabel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Input field
-        TextField(
-          controller: controller,
-          enabled: enabled,
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-          decoration: InputDecoration(
-            isDense: true,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 12,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color: theme.colorScheme.outline.withValues(alpha: 0.5),
+        // Input field with increment buttons
+        Row(
+          children: [
+            // Decrement button
+            if (showIncrementButtons && incrementValue != null)
+              SizedBox(
+                width: 32,
+                height: 32,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.remove_circle_outline, size: 20),
+                  onPressed: enabled ? () => _incrementWeight(false) : null,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+
+            // Input field
+            Expanded(
+              child: TextField(
+                controller: controller,
+                enabled: enabled,
+                keyboardType: keyboardType,
+                inputFormatters: inputFormatters,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: InputDecoration(
+                  isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 12,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.outline.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.primary,
+                      width: 2,
+                    ),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                      color: theme.colorScheme.outline.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  hintText: isOptional ? '—' : '0',
+                  hintStyle: TextStyle(
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                  ),
+                ),
               ),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color: theme.colorScheme.primary,
-                width: 2,
+
+            // Increment button
+            if (showIncrementButtons && incrementValue != null)
+              SizedBox(
+                width: 32,
+                height: 32,
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(Icons.add_circle_outline, size: 20),
+                  onPressed: enabled ? () => _incrementWeight(true) : null,
+                  color: theme.colorScheme.primary,
+                ),
               ),
-            ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                color: theme.colorScheme.outline.withValues(alpha: 0.2),
-              ),
-            ),
-            hintText: isOptional ? '—' : '0',
-            hintStyle: TextStyle(
-              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
-            ),
-          ),
+          ],
         ),
         const SizedBox(height: 4),
-        // Label underneath
-        Text(
-          label,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        // Label underneath with increment hint
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (showIncrementButtons && incrementValue != null) ...[
+              const SizedBox(width: 4),
+              Text(
+                '(±${incrementValue!.toStringAsFixed(1)})',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.7),
+                  fontSize: 10,
+                ),
+              ),
+            ],
+          ],
         ),
       ],
     );

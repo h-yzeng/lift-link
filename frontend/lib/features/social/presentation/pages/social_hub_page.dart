@@ -29,29 +29,37 @@ class SocialHubPage extends ConsumerWidget {
           appBar: AppBar(
             title: const Text('Social'),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.feed),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const ActivityFeedPage(),
-                    ),
-                  );
-                },
-                tooltip: 'Activity feed',
+              Semantics(
+                label: 'View activity feed',
+                button: true,
+                child: IconButton(
+                  icon: const Icon(Icons.feed),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ActivityFeedPage(),
+                      ),
+                    );
+                  },
+                  tooltip: 'Activity feed',
+                ),
               ),
               Stack(
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.notifications),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const FriendRequestsPage(),
-                        ),
-                      );
-                    },
-                    tooltip: 'Friend requests',
+                  Semantics(
+                    label: 'View friend requests',
+                    button: true,
+                    child: IconButton(
+                      icon: const Icon(Icons.notifications),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const FriendRequestsPage(),
+                          ),
+                        );
+                      },
+                      tooltip: 'Friend requests',
+                    ),
                   ),
                   pendingRequestsAsync.when(
                     data: (requests) {
@@ -93,16 +101,20 @@ class SocialHubPage extends ConsumerWidget {
                   ),
                 ],
               ),
-              IconButton(
-                icon: const Icon(Icons.person_add),
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const UserSearchPage(),
-                    ),
-                  );
-                },
-                tooltip: 'Find friends',
+              Semantics(
+                label: 'Search and add friends',
+                button: true,
+                child: IconButton(
+                  icon: const Icon(Icons.person_add),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const UserSearchPage(),
+                      ),
+                    );
+                  },
+                  tooltip: 'Find friends',
+                ),
               ),
             ],
           ),

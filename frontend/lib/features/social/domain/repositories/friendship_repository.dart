@@ -58,4 +58,11 @@ abstract class FriendshipRepository {
     required String friendshipId,
     required String nickname,
   });
+
+  /// Get friends with pagination support
+  Future<Either<Failure, List<Friendship>>> getFriendsPaginated({
+    required String userId,
+    required int limit,
+    required int offset,
+  });
 }

@@ -38,14 +38,20 @@ class _WorkoutHistoryPageState extends ConsumerState<WorkoutHistoryPage> {
       appBar: AppBar(
         title: const Text('Workout History'),
         actions: [
-          IconButton(
-            icon: Icon(
-              _selectedDateRange != null
-                  ? Icons.filter_alt
-                  : Icons.filter_alt_outlined,
+          Semantics(
+            label: _selectedDateRange != null
+                ? 'Change date filter'
+                : 'Filter workouts by date',
+            button: true,
+            child: IconButton(
+              icon: Icon(
+                _selectedDateRange != null
+                    ? Icons.filter_alt
+                    : Icons.filter_alt_outlined,
+              ),
+              onPressed: _showDateFilter,
+              tooltip: 'Filter by date',
             ),
-            onPressed: _showDateFilter,
-            tooltip: 'Filter by date',
           ),
         ],
       ),
@@ -123,39 +129,51 @@ class _WorkoutHistoryPageState extends ConsumerState<WorkoutHistoryPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.fitness_center,
-              size: 80,
-              color: Theme.of(context).colorScheme.outline,
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.fitness_center,
+                size: 64,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             Text(
               _selectedDateRange != null
-                  ? 'No workouts in selected date range'
-                  : 'No workouts yet',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  ? 'No workouts in this range'
+                  : 'Your fitness journey starts here!',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              _selectedDateRange != null
+                  ? 'Try selecting a different date range or clear the filter to see all your workouts.'
+                  : 'Track your progress, crush your goals, and become the strongest version of yourself.',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
-            Text(
-              _selectedDateRange != null
-                  ? 'Try adjusting your date filter'
-                  : 'Start a workout to see your history here',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            if (_selectedDateRange != null) ...[
-              const SizedBox(height: 16),
-              TextButton.icon(
+            const SizedBox(height: 32),
+            if (_selectedDateRange != null)
+              OutlinedButton.icon(
                 onPressed: _clearDateFilter,
                 icon: const Icon(Icons.clear),
-                label: const Text('Clear filter'),
+                label: const Text('Clear Filter'),
+              )
+            else
+              FilledButton.icon(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.add),
+                label: const Text('Start Your First Workout'),
               ),
-            ],
           ],
         ),
       ),

@@ -5,14 +5,17 @@ import 'package:liftlink/core/preferences/rest_timer_preference.dart';
 import 'package:liftlink/core/utils/unit_conversion.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_history.dart';
-import 'package:liftlink/features/workout/domain/entities/exercise_performance.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
+import 'package:liftlink/features/workout/presentation/widgets/active_workout/exercise_list_section.dart';
+import 'package:liftlink/features/workout/presentation/widgets/active_workout/workout_summary_section.dart';
 import 'package:liftlink/features/workout/presentation/widgets/rest_timer.dart';
-import 'package:liftlink/features/workout/presentation/widgets/set_input_row.dart';
 import 'package:liftlink/shared/utils/haptic_service.dart';
 import 'package:liftlink/shared/widgets/shimmer_loading.dart';
+
+/// Provider for active workout page loading state
+final activeWorkoutLoadingProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 /// Page for active workout tracking
 class ActiveWorkoutPage extends ConsumerStatefulWidget {
@@ -28,7 +31,6 @@ class ActiveWorkoutPage extends ConsumerStatefulWidget {
 }
 
 class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
-  bool _isLoading = false;
 
   Future<void> _addExercise() async {
     final exercise = await Navigator.push<Map<String, String>>(
@@ -40,9 +42,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
 
     if (exercise == null || !mounted) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    ref.read(activeWorkoutLoadingProvider.notifier).state = true;
 
     try {
       final useCase = ref.read(addExerciseToWorkoutUseCaseProvider);
@@ -69,49 +69,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       );
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _addSet(ExercisePerformance exercise) async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      final setNumber = exercise.sets.length + 1;
-      final useCase = ref.read(addSetToExerciseUseCaseProvider);
-
-      // For now, add an empty set that the user will fill in
-      final result = await useCase(
-        exercisePerformanceId: exercise.id,
-        setNumber: setNumber,
-        reps: 0,
-        weightKg: 0.0,
-      );
-
-      result.fold(
-        (failure) {
-          HapticService.error();
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(failure.userMessage)),
-            );
-          }
-        },
-        (_) {
-          HapticService.lightTap();
-          ref.invalidate(activeWorkoutProvider);
-        },
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        ref.read(activeWorkoutLoadingProvider.notifier).state = false;
       }
     }
   }
@@ -139,9 +97,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
 
     if (confirmed != true || !mounted) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    ref.read(activeWorkoutLoadingProvider.notifier).state = true;
 
     try {
       final useCase = ref.read(completeWorkoutUseCaseProvider);
@@ -184,9 +140,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       }
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        ref.read(activeWorkoutLoadingProvider.notifier).state = false;
       }
     }
   }
@@ -223,23 +177,25 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
               );
             },
           ),
-          if (!_isLoading)
-            Consumer(
-              builder: (context, ref, child) {
-                final workoutAsync = ref.watch(activeWorkoutProvider);
-                return workoutAsync.maybeWhen(
-                  data: (workout) {
-                    if (workout == null) return const SizedBox.shrink();
-                    return IconButton(
-                      icon: const Icon(Icons.check_circle),
-                      onPressed: () => _completeWorkout(workout),
-                      tooltip: 'Complete Workout',
-                    );
-                  },
-                  orElse: () => const SizedBox.shrink(),
-                );
-              },
-            ),
+          Consumer(
+            builder: (context, ref, child) {
+              final isLoading = ref.watch(activeWorkoutLoadingProvider);
+              if (isLoading) return const SizedBox.shrink();
+
+              final workoutAsync = ref.watch(activeWorkoutProvider);
+              return workoutAsync.maybeWhen(
+                data: (workout) {
+                  if (workout == null) return const SizedBox.shrink();
+                  return IconButton(
+                    icon: const Icon(Icons.check_circle),
+                    onPressed: () => _completeWorkout(workout),
+                    tooltip: 'Complete Workout',
+                  );
+                },
+                orElse: () => const SizedBox.shrink(),
+              );
+            },
+          ),
         ],
       ),
       body: workoutAsync.when(
@@ -253,71 +209,16 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
           return Column(
             children: [
               // Workout stats header
-              Container(
-                padding: const EdgeInsets.all(16),
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _StatItem(
-                      label: 'Duration',
-                      value: workout.formattedDuration,
-                    ),
-                    _StatItem(
-                      label: 'Exercises',
-                      value: '${workout.exerciseCount}',
-                    ),
-                    _StatItem(
-                      label: 'Sets',
-                      value: '${workout.totalSets}',
-                    ),
-                    _StatItem(
-                      label: 'Volume',
-                      value: UnitConversion.formatWeight(
-                        workout.totalVolume,
-                        useImperialUnits,
-                      ),
-                    ),
-                  ],
-                ),
+              WorkoutSummarySection(
+                workout: workout,
+                useImperialUnits: useImperialUnits,
               ),
 
               // Exercise list
-              Expanded(
-                child: workout.exercises.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.fitness_center,
-                              size: 64,
-                              color: Theme.of(context).colorScheme.outline,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No exercises yet',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Add an exercise to get started',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ],
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: workout.exercises.length,
-                        itemBuilder: (context, index) {
-                          final exercise = workout.exercises[index];
-                          return _ExerciseCard(
-                            exercise: exercise,
-                            useImperialUnits: useImperialUnits,
-                            onAddSet: () => _addSet(exercise),
-                          );
-                        },
-                      ),
+              ExerciseListSection(
+                workout: workout,
+                useImperialUnits: useImperialUnits,
+                onAddExercise: _addExercise,
               ),
             ],
           );
@@ -327,250 +228,20 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
           child: Text('Error: ${error.toString()}'),
         ),
       ),
-      floatingActionButton: _isLoading
-          ? null
-          : FloatingActionButton.extended(
-              onPressed: () {
-                HapticService.mediumTap();
-                _addExercise();
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('Add Exercise'),
-            ),
-    );
-  }
-}
+      floatingActionButton: Consumer(
+        builder: (context, ref, child) {
+          final isLoading = ref.watch(activeWorkoutLoadingProvider);
+          if (isLoading) return const SizedBox.shrink();
 
-class _StatItem extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _StatItem({
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          value,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.labelSmall,
-        ),
-      ],
-    );
-  }
-}
-
-class _ExerciseCard extends ConsumerWidget {
-  final ExercisePerformance exercise;
-  final bool useImperialUnits;
-  final VoidCallback onAddSet;
-
-  const _ExerciseCard({
-    required this.exercise,
-    required this.useImperialUnits,
-    required this.onAddSet,
-  });
-
-  Future<void> _updateSet(
-    WidgetRef ref,
-    BuildContext context,
-    String setId,
-    int reps,
-    double weightKg,
-    bool isWarmup,
-    double? rpe,
-    int? rir,
-  ) async {
-    final useCase = ref.read(updateSetUseCaseProvider);
-    final result = await useCase(
-      setId: setId,
-      reps: reps,
-      weightKg: weightKg,
-      isWarmup: isWarmup,
-      rpe: rpe,
-      rir: rir,
-    );
-
-    result.fold(
-      (Failure failure) {
-        HapticService.error();
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(failure.userMessage)),
+          return FloatingActionButton.extended(
+            onPressed: () {
+              HapticService.mediumTap();
+              _addExercise();
+            },
+            icon: const Icon(Icons.add),
+            label: const Text('Add Exercise'),
           );
-        }
-      },
-      (_) {
-        HapticService.lightTap();
-        // Refresh the workout to show updated values
-        ref.invalidate(activeWorkoutProvider);
-      },
-    );
-  }
-
-  Future<void> _deleteSet(
-    WidgetRef ref,
-    BuildContext context,
-    String setId,
-  ) async {
-    final useCase = ref.read(deleteSetUseCaseProvider);
-    final result = await useCase(setId: setId);
-
-    result.fold(
-      (Failure failure) {
-        HapticService.error();
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(failure.userMessage)),
-          );
-        }
-      },
-      (_) {
-        HapticService.warning();
-        // Refresh the workout to show updated values
-        ref.invalidate(activeWorkoutProvider);
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
-      margin: const EdgeInsets.all(16),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Exercise header
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        exercise.exerciseName,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '${exercise.totalSetsCount} sets • ${exercise.totalReps} reps • ${UnitConversion.formatWeight(exercise.totalVolume, useImperialUnits)}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-                if (exercise.maxWeight != null)
-                  Chip(
-                    label: Text(
-                      'PR: ${UnitConversion.formatWeight(exercise.maxWeight!, useImperialUnits)}',
-                    ),
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primaryContainer,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Exercise history (previous sessions)
-            _ExerciseHistorySection(
-              exerciseId: exercise.exerciseId,
-              useImperialUnits: useImperialUnits,
-            ),
-
-            // Sets header
-            if (exercise.sets.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  'Sets',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-              ),
-
-            // Sets list
-            ...exercise.sets.map((set) {
-              return SetInputRow(
-                setNumber: set.setNumber,
-                existingSet: set,
-                useImperialUnits: useImperialUnits,
-                onSave: (reps, weightKg, isWarmup, rpe, rir) {
-                  _updateSet(
-                    ref,
-                    context,
-                    set.id,
-                    reps,
-                    weightKg,
-                    isWarmup,
-                    rpe,
-                    rir,
-                  );
-                },
-                onDelete: () {
-                  _deleteSet(ref, context, set.id);
-                },
-              );
-            }),
-
-            // Personal Record display
-            if (exercise.maxWeight != null) ...[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.emoji_events,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Personal Record: ${UnitConversion.formatWeight(exercise.maxWeight!, useImperialUnits)}',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-
-            // Add set button
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: () {
-                  HapticService.lightTap();
-                  onAddSet();
-                },
-                icon: const Icon(Icons.add),
-                label: const Text('Add Set'),
-              ),
-            ),
-          ],
-        ),
+        },
       ),
     );
   }

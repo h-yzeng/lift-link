@@ -20,16 +20,20 @@ class FriendsListPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Friends'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.person_add),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const UserSearchPage(),
-                ),
-              );
-            },
-            tooltip: 'Add friends',
+          Semantics(
+            label: 'Search and add friends',
+            button: true,
+            child: IconButton(
+              icon: const Icon(Icons.person_add),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const UserSearchPage(),
+                  ),
+                );
+              },
+              tooltip: 'Add friends',
+            ),
           ),
         ],
       ),
@@ -58,40 +62,53 @@ class FriendsListContent extends ConsumerWidget {
           data: (friends) {
             if (friends.isEmpty) {
               return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.people_outline,
-                      size: 80,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'No friends yet',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.group,
+                          size: 64,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Add friends to see their workouts',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const UserSearchPage(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.person_add),
-                      label: const Text('Find Friends'),
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+                      Text(
+                        'Connect with Your Crew',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Add friends to share your fitness journey, motivate each other, and track your collective progress.',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 32),
+                      FilledButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const UserSearchPage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.person_add),
+                        label: const Text('Find Friends'),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }

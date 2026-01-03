@@ -201,9 +201,30 @@ LiftLink/
 - [x] Undo functionality with persistent stack
 - [x] Search improvements (fuzzy search, history, suggestions)
 
-### Phase 13: Future Features ⏳
+### Phase 13: Mobile Enhancement Features ✅
 
-- Bodyweight tracking
+- [x] RIR (Reps in Reserve) tracking in workout sets
+- [x] Display PR (Personal Record) during workouts
+- [x] Bodyweight tracking with WeightLog entity
+- [x] Quick weight increment buttons (+/- 2.5, 5, 10)
+- [x] Improved empty states across all pages
+- [x] Start from previous workout feature
+
+### Phase 14: Code Quality & Architecture Improvements 🔄
+
+- [ ] Comprehensive accessibility support (semantic labels, screen readers)
+- [ ] Complete sync merge logic (field-level conflict resolution)
+- [ ] Decompose large page widget (active_workout_page.dart - 803 lines)
+- [ ] Extend UI test coverage (target 70%+ presentation layer)
+- [ ] Implement social features pagination (user search, friends, activity feed)
+
+### Phase 15: Advanced Code Refactoring ⏳
+
+- [ ] Migrate setState to Riverpod StateNotifier (62 occurrences)
+- [ ] Reduce late initialization pattern (160+ occurrences)
+
+### Phase 16: Future Features (Backlog)
+
 - Exercise videos/GIFs
 - Multi-language support (i18n)
 - Apple Watch / Wear OS companion apps
@@ -293,6 +314,12 @@ supabase db reset
 
 ---
 
-**Document Version**: 3.3
-**Last Updated**: 2026-01-01
-**Status**: Phase 12 Complete (~90% overall progress)
+**Document Version**: 3.6
+**Last Updated**: 2026-01-02
+**Status**: Phase 15 In Progress - setState Migration Started (1/16 files complete, ~96% overall progress)
+
+---
+
+## Implementation Resources
+
+See **`IMPLEMENTATION_GUIDE.md`** for detailed step-by-step instructions, code examples, and patterns for completing Phase 14 (Code Quality & Architecture) and Phase 15 (Advanced Refactoring) tasks.

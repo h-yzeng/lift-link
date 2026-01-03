@@ -18,14 +18,18 @@ class _CreateExercisePageState extends ConsumerState<CreateExercisePage> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
 
-  String _selectedMuscleGroup = MuscleGroups.chest;
-  String? _selectedEquipment;
-  bool _isLoading = false;
+  // Using ValueNotifier to eliminate setState calls
+  final _selectedMuscleGroupNotifier = ValueNotifier(MuscleGroups.chest);
+  final _selectedEquipmentNotifier = ValueNotifier<String?>(null);
+  final _isLoadingNotifier = ValueNotifier(false);
 
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
+    _selectedMuscleGroupNotifier.dispose();
+    _selectedEquipmentNotifier.dispose();
+    _isLoadingNotifier.dispose();
     super.dispose();
   }
 
@@ -35,7 +39,7 @@ class _CreateExercisePageState extends ConsumerState<CreateExercisePage> {
     final user = await ref.read(currentUserProvider.future);
     if (user == null) return;
 
-    setState(() => _isLoading = true);
+    _isLoadingNotifier.value = true;
 
     try {
       final repository = ref.read(exerciseRepositoryProvider);
@@ -44,8 +48,8 @@ class _CreateExercisePageState extends ConsumerState<CreateExercisePage> {
         description: _descriptionController.text.trim().isEmpty
             ? null
             : _descriptionController.text.trim(),
-        muscleGroup: _selectedMuscleGroup,
-        equipmentType: _selectedEquipment,
+        muscleGroup: _selectedMuscleGroupNotifier.value,
+        equipmentType: _selectedEquipmentNotifier.value,
         userId: user.id,
       );
 
@@ -62,7 +66,7 @@ class _CreateExercisePageState extends ConsumerState<CreateExercisePage> {
       );
     } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        _isLoadingNotifier.value = false;
       }
     }
   }
@@ -77,222 +81,241 @@ class _CreateExercisePageState extends ConsumerState<CreateExercisePage> {
       ),
       body: Form(
         key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // Name field
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Exercise Name',
-                hintText: 'e.g., Incline Dumbbell Press',
-                border: OutlineInputBorder(),
-              ),
-              textCapitalization: TextCapitalization.words,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Please enter an exercise name';
-                }
-                if (value.trim().length < 2) {
-                  return 'Name must be at least 2 characters';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            // Description field
-            TextFormField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Description (Optional)',
-                hintText: 'Brief description of the exercise',
-                border: OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 3,
-              textCapitalization: TextCapitalization.sentences,
-            ),
-            const SizedBox(height: 24),
-
-            // Muscle group selection
-            Text(
-              'Muscle Group',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: MuscleGroups.all.map((muscle) {
-                final isSelected = _selectedMuscleGroup == muscle;
-                return FilterChip(
-                  label: Text(_formatLabel(muscle)),
-                  selected: isSelected,
-                  onSelected: (selected) {
-                    setState(() => _selectedMuscleGroup = muscle);
-                  },
-                  avatar: Icon(
-                    _getMuscleGroupIcon(muscle),
-                    size: 18,
-                    color: isSelected
-                        ? theme.colorScheme.onPrimaryContainer
-                        : theme.colorScheme.onSurfaceVariant,
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 24),
-
-            // Equipment selection
-            Text(
-              'Equipment (Optional)',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                FilterChip(
-                  label: const Text('Any'),
-                  selected: _selectedEquipment == null,
-                  onSelected: (selected) {
-                    setState(() => _selectedEquipment = null);
-                  },
-                ),
-                ...EquipmentTypes.all.map((equipment) {
-                  final isSelected = _selectedEquipment == equipment;
-                  return FilterChip(
-                    label: Text(_formatLabel(equipment)),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() {
-                        _selectedEquipment = selected ? equipment : null;
-                      });
-                    },
-                    avatar: Icon(
-                      _getEquipmentIcon(equipment),
-                      size: 18,
-                      color: isSelected
-                          ? theme.colorScheme.onPrimaryContainer
-                          : theme.colorScheme.onSurfaceVariant,
-                    ),
-                  );
-                }),
-              ],
-            ),
-            const SizedBox(height: 32),
-
-            // Preview card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+        child: ValueListenableBuilder<bool>(
+          valueListenable: _isLoadingNotifier,
+          builder: (context, isLoading, _) {
+            return ValueListenableBuilder<String>(
+              valueListenable: _selectedMuscleGroupNotifier,
+              builder: (context, selectedMuscleGroup, _) {
+                return ValueListenableBuilder<String?>(
+                  valueListenable: _selectedEquipmentNotifier,
+                  builder: (context, selectedEquipment, _) {
+                    return ListView(
+                      padding: const EdgeInsets.all(16),
                       children: [
-                        Icon(
-                          Icons.preview,
-                          color: theme.colorScheme.primary,
+                        // Name field
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Exercise Name',
+                            hintText: 'e.g., Incline Dumbbell Press',
+                            border: OutlineInputBorder(),
+                          ),
+                          textCapitalization: TextCapitalization.words,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Please enter an exercise name';
+                            }
+                            if (value.trim().length < 2) {
+                              return 'Name must be at least 2 characters';
+                            }
+                            return null;
+                          },
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(height: 16),
+
+                        // Description field
+                        TextFormField(
+                          controller: _descriptionController,
+                          decoration: const InputDecoration(
+                            labelText: 'Description (Optional)',
+                            hintText: 'Brief description of the exercise',
+                            border: OutlineInputBorder(),
+                            alignLabelWithHint: true,
+                          ),
+                          maxLines: 3,
+                          textCapitalization: TextCapitalization.sentences,
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Muscle group selection
                         Text(
-                          'Preview',
+                          'Muscle Group',
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                      ],
-                    ),
-                    const Divider(),
-                    Text(
-                      _nameController.text.isEmpty
-                          ? 'Exercise Name'
-                          : _nameController.text,
-                      style: theme.textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Chip(
-                          label: Text(_formatLabel(_selectedMuscleGroup)),
-                          avatar: Icon(
-                            _getMuscleGroupIcon(_selectedMuscleGroup),
-                            size: 16,
-                          ),
-                          visualDensity: VisualDensity.compact,
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: MuscleGroups.all.map((muscle) {
+                            final isSelected = selectedMuscleGroup == muscle;
+                            return FilterChip(
+                              label: Text(_formatLabel(muscle)),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                _selectedMuscleGroupNotifier.value = muscle;
+                              },
+                              avatar: Icon(
+                                _getMuscleGroupIcon(muscle),
+                                size: 18,
+                                color: isSelected
+                                    ? theme.colorScheme.onPrimaryContainer
+                                    : theme.colorScheme.onSurfaceVariant,
+                              ),
+                            );
+                          }).toList(),
                         ),
-                        const SizedBox(width: 8),
-                        Chip(
-                          label: Text(
-                            _selectedEquipment != null
-                                ? _formatLabel(_selectedEquipment!)
-                                : 'Any Equipment',
-                          ),
-                          avatar: Icon(
-                            _selectedEquipment != null
-                                ? _getEquipmentIcon(_selectedEquipment!)
-                                : Icons.fitness_center,
-                            size: 16,
-                          ),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                      ],
-                    ),
-                    if (_descriptionController.text.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        _descriptionController.text,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.outline,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        'Custom Exercise',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onPrimaryContainer,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-            // Create button
-            FilledButton.icon(
-              onPressed: _isLoading ? null : _createExercise,
-              icon: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.add),
-              label: Text(_isLoading ? 'Creating...' : 'Create Exercise'),
-              style: FilledButton.styleFrom(
-                minimumSize: const Size(double.infinity, 56),
-              ),
-            ),
-          ],
+                        // Equipment selection
+                        Text(
+                          'Equipment (Optional)',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            FilterChip(
+                              label: const Text('Any'),
+                              selected: selectedEquipment == null,
+                              onSelected: (selected) {
+                                _selectedEquipmentNotifier.value = null;
+                              },
+                            ),
+                            ...EquipmentTypes.all.map((equipment) {
+                              final isSelected = selectedEquipment == equipment;
+                              return FilterChip(
+                                label: Text(_formatLabel(equipment)),
+                                selected: isSelected,
+                                onSelected: (selected) {
+                                  _selectedEquipmentNotifier.value =
+                                      selected ? equipment : null;
+                                },
+                                avatar: Icon(
+                                  _getEquipmentIcon(equipment),
+                                  size: 18,
+                                  color: isSelected
+                                      ? theme.colorScheme.onPrimaryContainer
+                                      : theme.colorScheme.onSurfaceVariant,
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Preview card
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.preview,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Preview',
+                                      style:
+                                          theme.textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Divider(),
+                                Text(
+                                  _nameController.text.isEmpty
+                                      ? 'Exercise Name'
+                                      : _nameController.text,
+                                  style: theme.textTheme.titleLarge,
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Chip(
+                                      label:
+                                          Text(_formatLabel(selectedMuscleGroup)),
+                                      avatar: Icon(
+                                        _getMuscleGroupIcon(selectedMuscleGroup),
+                                        size: 16,
+                                      ),
+                                      visualDensity: VisualDensity.compact,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Chip(
+                                      label: Text(
+                                        selectedEquipment != null
+                                            ? _formatLabel(selectedEquipment)
+                                            : 'Any Equipment',
+                                      ),
+                                      avatar: Icon(
+                                        selectedEquipment != null
+                                            ? _getEquipmentIcon(selectedEquipment)
+                                            : Icons.fitness_center,
+                                        size: 16,
+                                      ),
+                                      visualDensity: VisualDensity.compact,
+                                    ),
+                                  ],
+                                ),
+                                if (_descriptionController.text.isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    _descriptionController.text,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.outline,
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(height: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    'Custom Exercise',
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color:
+                                          theme.colorScheme.onPrimaryContainer,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Create button
+                        FilledButton.icon(
+                          onPressed: isLoading ? null : _createExercise,
+                          icon: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : const Icon(Icons.add),
+                          label:
+                              Text(isLoading ? 'Creating...' : 'Create Exercise'),
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 56),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            );
+          },
         ),
       ),
     );

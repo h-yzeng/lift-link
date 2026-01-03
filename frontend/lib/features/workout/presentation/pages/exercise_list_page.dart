@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise.dart';
 import 'package:liftlink/features/workout/presentation/pages/create_exercise_page.dart';
+import 'package:liftlink/features/workout/presentation/providers/exercise_list_filter_notifier.dart';
 import 'package:liftlink/features/workout/presentation/providers/exercise_providers.dart';
 import 'package:liftlink/features/workout/presentation/widgets/exercise_card.dart';
 import 'package:liftlink/shared/widgets/shimmer_loading.dart';
@@ -20,47 +21,59 @@ class ExerciseListPage extends ConsumerStatefulWidget {
 
 class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
   final _searchController = TextEditingController();
-  String? _selectedMuscleGroup;
-  String? _selectedEquipmentType;
-  bool _showCustomOnly = false;
-  bool _isSearching = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Sync search controller with provider state
+    _searchController.addListener(_onSearchChanged);
+  }
 
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
   }
 
+  void _onSearchChanged() {
+    ref
+        .read(exerciseListFilterNotifierProvider.notifier)
+        .setSearchQuery(_searchController.text);
+  }
+
   void _clearFilters() {
-    setState(() {
-      _selectedMuscleGroup = null;
-      _selectedEquipmentType = null;
-      _showCustomOnly = false;
-      _searchController.clear();
-      _isSearching = false;
-    });
+    _searchController.clear();
+    ref.read(exerciseListFilterNotifierProvider.notifier).clearAll();
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    ref.read(exerciseListFilterNotifierProvider.notifier).clearSearch();
   }
 
   @override
   Widget build(BuildContext context) {
-    final exercisesAsync = _isSearching && _searchController.text.isNotEmpty
-        ? ref.watch(exerciseSearchResultsProvider(_searchController.text))
-        : ref.watch(
-            exerciseListProvider(
-              muscleGroup: _selectedMuscleGroup,
-              equipmentType: _selectedEquipmentType,
-              customOnly: _showCustomOnly ? true : null,
-            ),
-          );
+    final filterState = ref.watch(exerciseListFilterNotifierProvider);
+    final filterNotifier =
+        ref.read(exerciseListFilterNotifierProvider.notifier);
+
+    final exercisesAsync =
+        filterState.isSearching && filterState.searchQuery.isNotEmpty
+            ? ref.watch(exerciseSearchResultsProvider(filterState.searchQuery))
+            : ref.watch(
+                exerciseListProvider(
+                  muscleGroup: filterState.selectedMuscleGroup,
+                  equipmentType: filterState.selectedEquipmentType,
+                  customOnly: filterState.showCustomOnly ? true : null,
+                ),
+              );
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Exercise Library'),
         actions: [
-          if (_selectedMuscleGroup != null ||
-              _selectedEquipmentType != null ||
-              _showCustomOnly ||
-              _isSearching)
+          if (filterState.hasActiveFilters)
             Semantics(
               label: 'Clear all filters and search',
               button: true,
@@ -88,12 +101,7 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
                         button: true,
                         child: IconButton(
                           icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            setState(() {
-                              _searchController.clear();
-                              _isSearching = false;
-                            });
-                          },
+                          onPressed: _clearSearch,
                         ),
                       )
                     : null,
@@ -101,16 +109,11 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onChanged: (value) {
-                setState(() {
-                  _isSearching = value.isNotEmpty;
-                });
-              },
             ),
           ),
 
           // Filter chips
-          if (!_isSearching) ...[
+          if (!filterState.isSearching) ...[
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -118,18 +121,6 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
                 children: [
                   // Muscle group filter
                   PopupMenuButton<String>(
-                    child: Chip(
-                      avatar: const Icon(Icons.filter_list, size: 18),
-                      label: Text(
-                        _selectedMuscleGroup != null
-                            ? _selectedMuscleGroup![0].toUpperCase() +
-                                _selectedMuscleGroup!.substring(1)
-                            : 'Muscle Group',
-                      ),
-                      backgroundColor: _selectedMuscleGroup != null
-                          ? Theme.of(context).colorScheme.primaryContainer
-                          : null,
-                    ),
                     itemBuilder: (context) => [
                       const PopupMenuItem(
                         value: null,
@@ -144,28 +135,25 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
                         ),
                       ),
                     ],
-                    onSelected: (value) {
-                      setState(() {
-                        _selectedMuscleGroup = value;
-                      });
-                    },
+                    onSelected: filterNotifier.setMuscleGroup,
+                    child: Chip(
+                      avatar: const Icon(Icons.filter_list, size: 18),
+                      label: Text(
+                        filterState.selectedMuscleGroup != null
+                            ? filterState.selectedMuscleGroup![0]
+                                    .toUpperCase() +
+                                filterState.selectedMuscleGroup!.substring(1)
+                            : 'Muscle Group',
+                      ),
+                      backgroundColor: filterState.selectedMuscleGroup != null
+                          ? Theme.of(context).colorScheme.primaryContainer
+                          : null,
+                    ),
                   ),
                   const SizedBox(width: 8),
 
                   // Equipment filter
                   PopupMenuButton<String>(
-                    child: Chip(
-                      avatar: const Icon(Icons.fitness_center, size: 18),
-                      label: Text(
-                        _selectedEquipmentType != null
-                            ? _selectedEquipmentType![0].toUpperCase() +
-                                _selectedEquipmentType!.substring(1)
-                            : 'Equipment',
-                      ),
-                      backgroundColor: _selectedEquipmentType != null
-                          ? Theme.of(context).colorScheme.primaryContainer
-                          : null,
-                    ),
                     itemBuilder: (context) => [
                       const PopupMenuItem(
                         value: null,
@@ -180,23 +168,28 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
                         ),
                       ),
                     ],
-                    onSelected: (value) {
-                      setState(() {
-                        _selectedEquipmentType = value;
-                      });
-                    },
+                    onSelected: filterNotifier.setEquipmentType,
+                    child: Chip(
+                      avatar: const Icon(Icons.fitness_center, size: 18),
+                      label: Text(
+                        filterState.selectedEquipmentType != null
+                            ? filterState.selectedEquipmentType![0]
+                                    .toUpperCase() +
+                                filterState.selectedEquipmentType!.substring(1)
+                            : 'Equipment',
+                      ),
+                      backgroundColor: filterState.selectedEquipmentType != null
+                          ? Theme.of(context).colorScheme.primaryContainer
+                          : null,
+                    ),
                   ),
                   const SizedBox(width: 8),
 
                   // Custom only filter
                   FilterChip(
                     label: const Text('Custom Only'),
-                    selected: _showCustomOnly,
-                    onSelected: (selected) {
-                      setState(() {
-                        _showCustomOnly = selected;
-                      });
-                    },
+                    selected: filterState.showCustomOnly,
+                    onSelected: filterNotifier.setShowCustomOnly,
                   ),
                 ],
               ),
@@ -218,39 +211,51 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
                           Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer
+                                  .withValues(alpha: 0.3),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              _isSearching ? Icons.search_off : Icons.fitness_center,
+                              filterState.isSearching
+                                  ? Icons.search_off
+                                  : Icons.fitness_center,
                               size: 64,
                               color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           const SizedBox(height: 24),
                           Text(
-                            _isSearching
+                            filterState.isSearching
                                 ? 'No Exercises Found'
                                 : 'Build Your Exercise Library',
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineSmall
+                                ?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 12),
                           Text(
-                            _isSearching
+                            filterState.isSearching
                                 ? 'Try adjusting your search term or filters to find what you\'re looking for.'
                                 : 'Create custom exercises or pull down to sync from the cloud. Every great workout starts with the right exercises.',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                    ),
                             textAlign: TextAlign.center,
                           ),
-                          if (!_isSearching) ...[
+                          if (!filterState.isSearching) ...[
                             const SizedBox(height: 32),
                             FilledButton.icon(
-                              onPressed: () => _navigateToCreateExercise(context),
+                              onPressed: () =>
+                                  _navigateToCreateExercise(context),
                               icon: const Icon(Icons.add),
                               label: const Text('Create Custom Exercise'),
                             ),
@@ -295,7 +300,11 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.red,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Error loading exercises',

@@ -1,11 +1,10 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/providers/core_providers.dart';
+import 'package:liftlink/features/workout/presentation/providers/rest_timer_notifier.dart';
 
 /// A rest timer widget that counts down between sets.
-class RestTimer extends ConsumerStatefulWidget {
+class RestTimer extends ConsumerWidget {
   final int initialSeconds;
   final VoidCallback? onComplete;
   final VoidCallback? onCancel;
@@ -19,119 +18,42 @@ class RestTimer extends ConsumerStatefulWidget {
     this.exerciseName,
   });
 
-  @override
-  ConsumerState<RestTimer> createState() => _RestTimerState();
-}
-
-class _RestTimerState extends ConsumerState<RestTimer> {
-  late int _remainingSeconds;
-  Timer? _timer;
-  bool _isRunning = false;
-  bool _isPaused = false;
-  bool _permissionsRequested = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _remainingSeconds = widget.initialSeconds;
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _startTimer() {
-    setState(() {
-      _isRunning = true;
-      _isPaused = false;
-    });
-
-    // Request notification permissions on first start
-    if (!_permissionsRequested) {
-      _permissionsRequested = true;
-      final notificationService = ref.read(notificationServiceProvider);
-      notificationService.requestPermissions();
-    }
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_remainingSeconds > 0) {
-        setState(() {
-          _remainingSeconds--;
-        });
-
-        // Haptic feedback at 3, 2, 1
-        if (_remainingSeconds <= 3 && _remainingSeconds > 0) {
-          HapticFeedback.lightImpact();
-        }
-      } else {
-        _timer?.cancel();
-        HapticFeedback.heavyImpact();
-
-        // Show notification
-        _showCompletionNotification();
-
-        widget.onComplete?.call();
-        setState(() {
-          _isRunning = false;
-        });
-      }
-    });
-  }
-
-  /// Show notification when rest timer completes
-  void _showCompletionNotification() {
+  void _showCompletionNotification(WidgetRef ref) {
     final notificationService = ref.read(notificationServiceProvider);
-    final exerciseName = widget.exerciseName ?? 'your exercise';
+    final name = exerciseName ?? 'your exercise';
 
     notificationService.showRestTimerNotification(
-      exerciseName: exerciseName,
-      restSeconds: widget.initialSeconds,
+      exerciseName: name,
+      restSeconds: initialSeconds,
     );
   }
 
-  void _pauseTimer() {
-    _timer?.cancel();
-    setState(() {
-      _isPaused = true;
-    });
-  }
-
-  void _resumeTimer() {
-    _startTimer();
-  }
-
-  void _resetTimer() {
-    _timer?.cancel();
-    setState(() {
-      _remainingSeconds = widget.initialSeconds;
-      _isRunning = false;
-      _isPaused = false;
-    });
-  }
-
-  void _addTime(int seconds) {
-    setState(() {
-      _remainingSeconds += seconds;
-    });
-  }
-
-  String _formatTime(int seconds) {
-    final minutes = seconds ~/ 60;
-    final secs = seconds % 60;
-    return '${minutes.toString().padLeft(2, '0')}:${secs.toString().padLeft(2, '0')}';
-  }
-
-  double _getProgress() {
-    return _remainingSeconds / widget.initialSeconds;
+  void _requestPermissions(WidgetRef ref) {
+    final notificationService = ref.read(notificationServiceProvider);
+    notificationService.requestPermissions();
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final progress = _getProgress();
-    final isLowTime = _remainingSeconds <= 10;
+
+    // Create params for the provider
+    final params = RestTimerParams(
+      initialSeconds: initialSeconds,
+      onComplete: () {
+        _showCompletionNotification(ref);
+        onComplete?.call();
+      },
+      onShowNotification: () => _showCompletionNotification(ref),
+    );
+
+    final state = ref.watch(restTimerProvider(params));
+    final notifier = ref.read(restTimerProvider(params).notifier);
+
+    // Request permissions on first start
+    if (state.isRunning && !state.permissionsRequested) {
+      _requestPermissions(ref);
+    }
 
     return Card(
       elevation: 4,
@@ -152,8 +74,8 @@ class _RestTimerState extends ConsumerState<RestTimer> {
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () {
-                    _timer?.cancel();
-                    widget.onCancel?.call();
+                    notifier.cancel();
+                    onCancel?.call();
                   },
                   tooltip: 'Cancel',
                 ),
@@ -169,23 +91,25 @@ class _RestTimerState extends ConsumerState<RestTimer> {
                   width: 150,
                   height: 150,
                   child: CircularProgressIndicator(
-                    value: progress,
+                    value: state.progress,
                     strokeWidth: 8,
                     backgroundColor: Colors.grey.shade300,
-                    color: isLowTime ? Colors.red : theme.colorScheme.primary,
+                    color: state.isLowTime
+                        ? Colors.red
+                        : theme.colorScheme.primary,
                   ),
                 ),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      _formatTime(_remainingSeconds),
+                      state.formattedTime,
                       style: theme.textTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: isLowTime ? Colors.red : null,
+                        color: state.isLowTime ? Colors.red : null,
                       ),
                     ),
-                    if (_remainingSeconds == 0)
+                    if (state.isComplete)
                       Text(
                         'Rest Complete!',
                         style: theme.textTheme.bodySmall?.copyWith(
@@ -205,17 +129,17 @@ class _RestTimerState extends ConsumerState<RestTimer> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 OutlinedButton(
-                  onPressed: () => _addTime(15),
+                  onPressed: () => notifier.addTime(15),
                   child: const Text('+15s'),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton(
-                  onPressed: () => _addTime(30),
+                  onPressed: () => notifier.addTime(30),
                   child: const Text('+30s'),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton(
-                  onPressed: () => _addTime(60),
+                  onPressed: () => notifier.addTime(60),
                   child: const Text('+1m'),
                 ),
               ],
@@ -227,27 +151,27 @@ class _RestTimerState extends ConsumerState<RestTimer> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (!_isRunning && !_isPaused)
+                if (state.canStart)
                   FilledButton.icon(
-                    onPressed: _startTimer,
+                    onPressed: notifier.start,
                     icon: const Icon(Icons.play_arrow),
                     label: const Text('Start'),
                   )
-                else if (_isRunning && !_isPaused)
+                else if (state.canPause)
                   FilledButton.icon(
-                    onPressed: _pauseTimer,
+                    onPressed: notifier.pause,
                     icon: const Icon(Icons.pause),
                     label: const Text('Pause'),
                   )
-                else if (_isPaused)
+                else if (state.canResume)
                   FilledButton.icon(
-                    onPressed: _resumeTimer,
+                    onPressed: notifier.resume,
                     icon: const Icon(Icons.play_arrow),
                     label: const Text('Resume'),
                   ),
                 const SizedBox(width: 12),
                 OutlinedButton.icon(
-                  onPressed: _resetTimer,
+                  onPressed: notifier.reset,
                   icon: const Icon(Icons.refresh),
                   label: const Text('Reset'),
                 ),
@@ -257,11 +181,11 @@ class _RestTimerState extends ConsumerState<RestTimer> {
             const SizedBox(height: 8),
 
             // Skip button
-            if (_isRunning || _isPaused)
+            if (state.isRunning || state.isPaused)
               TextButton(
                 onPressed: () {
-                  _timer?.cancel();
-                  widget.onComplete?.call();
+                  notifier.cancel();
+                  onComplete?.call();
                 },
                 child: const Text('Skip Rest'),
               ),

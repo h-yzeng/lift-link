@@ -9,7 +9,8 @@ class SetInputRow extends StatefulWidget {
   final WorkoutSet? existingSet;
   final int setNumber;
   final bool useImperialUnits;
-  final Function(int reps, double weight, bool isWarmup, double? rpe, int? rir)? onSave;
+  final Function(int reps, double weight, bool isWarmup, double? rpe, int? rir)?
+      onSave;
   final VoidCallback? onDelete;
 
   const SetInputRow({
@@ -30,13 +31,15 @@ class _SetInputRowState extends State<SetInputRow> {
   late TextEditingController _repsController;
   late TextEditingController _rpeController;
   late TextEditingController _rirController;
-  late bool _isWarmup;
-  bool _isEditing = false;
+
+  // Using ValueNotifier to eliminate setState calls
+  late final ValueNotifier<bool> _isWarmupNotifier;
+  late final ValueNotifier<bool> _isEditingNotifier;
 
   @override
   void initState() {
     super.initState();
-    _isWarmup = widget.existingSet?.isWarmup ?? false;
+    _isWarmupNotifier = ValueNotifier(widget.existingSet?.isWarmup ?? false);
 
     // Convert weight to display unit
     final displayWeight = widget.existingSet != null
@@ -60,8 +63,11 @@ class _SetInputRowState extends State<SetInputRow> {
     // Start in edit mode if:
     // 1. This is a new set (existingSet is null), OR
     // 2. This is a freshly added set with no data (reps = 0 and weight = 0)
-    _isEditing = widget.existingSet == null ||
-        (widget.existingSet!.reps == 0 && widget.existingSet!.weightKg == 0.0);
+    _isEditingNotifier = ValueNotifier(
+      widget.existingSet == null ||
+          (widget.existingSet!.reps == 0 &&
+              widget.existingSet!.weightKg == 0.0),
+    );
   }
 
   @override
@@ -70,6 +76,8 @@ class _SetInputRowState extends State<SetInputRow> {
     _repsController.dispose();
     _rpeController.dispose();
     _rirController.dispose();
+    _isWarmupNotifier.dispose();
+    _isEditingNotifier.dispose();
     super.dispose();
   }
 
@@ -89,211 +97,233 @@ class _SetInputRowState extends State<SetInputRow> {
           ? UnitConversion.lbsToKg(inputWeight)
           : inputWeight;
 
-      widget.onSave?.call(reps, weightKg, _isWarmup, rpe, rir);
-      setState(() {
-        _isEditing = false;
-      });
+      widget.onSave?.call(reps, weightKg, _isWarmupNotifier.value, rpe, rir);
+      _isEditingNotifier.value = false;
     }
+  }
+
+  void _updateWeightController(double value) {
+    _weightController.text = value.toStringAsFixed(1);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      elevation: _isEditing ? 2 : 0,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header row with set number and action buttons
-            Row(
-              children: [
-                // Set number badge
-                Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: _isEditing
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.primaryContainer,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      '${widget.setNumber}',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: _isEditing
-                            ? theme.colorScheme.onPrimary
-                            : theme.colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
+    return ValueListenableBuilder<bool>(
+      valueListenable: _isEditingNotifier,
+      builder: (context, isEditing, _) {
+        return ValueListenableBuilder<bool>(
+          valueListenable: _isWarmupNotifier,
+          builder: (context, isWarmup, _) {
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 4),
+              elevation: isEditing ? 2 : 0,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header row with set number and action buttons
+                    Row(
+                      children: [
+                        // Set number badge
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: isEditing
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.primaryContainer,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${widget.setNumber}',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: isEditing
+                                    ? theme.colorScheme.onPrimary
+                                    : theme.colorScheme.onPrimaryContainer,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+
+                        // Set type indicators
+                        if (isWarmup)
+                          Chip(
+                            label: const Text('Warmup'),
+                            avatar: const Icon(
+                              Icons.local_fire_department,
+                              size: 16,
+                            ),
+                            labelStyle: theme.textTheme.labelSmall,
+                            visualDensity: VisualDensity.compact,
+                            backgroundColor:
+                                theme.colorScheme.secondaryContainer,
+                          ),
+
+                        const Spacer(),
+
+                        // Action buttons
+                        if (isEditing)
+                          IconButton(
+                            icon: const Icon(Icons.check_circle),
+                            onPressed: _saveSet,
+                            color: theme.colorScheme.primary,
+                            iconSize: 28,
+                          )
+                        else
+                          IconButton(
+                            icon: const Icon(Icons.edit_outlined),
+                            onPressed: () {
+                              _isEditingNotifier.value = true;
+                            },
+                            iconSize: 24,
+                          ),
+
+                        if (widget.onDelete != null)
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            onPressed: widget.onDelete,
+                            color: theme.colorScheme.error,
+                            iconSize: 24,
+                          ),
+                      ],
                     ),
-                  ),
-                ),
-                const SizedBox(width: 12),
+                    const SizedBox(height: 12),
 
-                // Set type indicators
-                if (_isWarmup)
-                  Chip(
-                    label: const Text('Warmup'),
-                    avatar: const Icon(Icons.local_fire_department, size: 16),
-                    labelStyle: theme.textTheme.labelSmall,
-                    visualDensity: VisualDensity.compact,
-                    backgroundColor: theme.colorScheme.secondaryContainer,
-                  ),
+                    // Input fields row
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Weight input with label underneath
+                        Expanded(
+                          flex: 3,
+                          child: _InputFieldWithLabel(
+                            controller: _weightController,
+                            enabled: isEditing,
+                            label:
+                                'Weight (${UnitConversion.getWeightUnit(widget.useImperialUnits)})',
+                            keyboardType:
+                                const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d+\.?\d{0,1}'),
+                              ),
+                            ],
+                            showIncrementButtons: isEditing,
+                            incrementValue:
+                                widget.useImperialUnits ? 2.5 : 1.25,
+                            onIncrement: _updateWeightController,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
 
-                const Spacer(),
+                        // Reps input with label underneath
+                        Expanded(
+                          flex: 2,
+                          child: _InputFieldWithLabel(
+                            controller: _repsController,
+                            enabled: isEditing,
+                            label: 'Reps',
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
 
-                // Action buttons
-                if (_isEditing)
-                  IconButton(
-                    icon: const Icon(Icons.check_circle),
-                    onPressed: _saveSet,
-                    color: theme.colorScheme.primary,
-                    iconSize: 28,
-                  )
-                else
-                  IconButton(
-                    icon: const Icon(Icons.edit_outlined),
-                    onPressed: () {
-                      setState(() {
-                        _isEditing = true;
-                      });
-                    },
-                    iconSize: 24,
-                  ),
+                        // RPE input with label underneath
+                        Expanded(
+                          flex: 2,
+                          child: _InputFieldWithLabel(
+                            controller: _rpeController,
+                            enabled: isEditing,
+                            label: 'RPE',
+                            keyboardType:
+                                const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d{1,2}\.?\d?'),
+                              ),
+                            ],
+                            isOptional: true,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
 
-                if (widget.onDelete != null)
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: widget.onDelete,
-                    color: theme.colorScheme.error,
-                    iconSize: 24,
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
+                        // RIR input with label underneath
+                        Expanded(
+                          flex: 2,
+                          child: _InputFieldWithLabel(
+                            controller: _rirController,
+                            enabled: isEditing,
+                            label: 'RIR',
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d{1,2}'),
+                              ),
+                            ],
+                            isOptional: true,
+                          ),
+                        ),
+                      ],
+                    ),
 
-            // Input fields row
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Weight input with label underneath
-                Expanded(
-                  flex: 3,
-                  child: _InputFieldWithLabel(
-                    controller: _weightController,
-                    enabled: _isEditing,
-                    label: 'Weight (${UnitConversion.getWeightUnit(widget.useImperialUnits)})',
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,1}')),
-                    ],
-                    showIncrementButtons: _isEditing,
-                    incrementValue: widget.useImperialUnits ? 2.5 : 1.25,
-                    onIncrement: (value) {
-                      setState(() {
-                        _weightController.text = value.toStringAsFixed(1);
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-
-                // Reps input with label underneath
-                Expanded(
-                  flex: 2,
-                  child: _InputFieldWithLabel(
-                    controller: _repsController,
-                    enabled: _isEditing,
-                    label: 'Reps',
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  ),
-                ),
-                const SizedBox(width: 12),
-
-                // RPE input with label underneath
-                Expanded(
-                  flex: 2,
-                  child: _InputFieldWithLabel(
-                    controller: _rpeController,
-                    enabled: _isEditing,
-                    label: 'RPE',
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d{1,2}\.?\d?')),
-                    ],
-                    isOptional: true,
-                  ),
-                ),
-                const SizedBox(width: 12),
-
-                // RIR input with label underneath
-                Expanded(
-                  flex: 2,
-                  child: _InputFieldWithLabel(
-                    controller: _rirController,
-                    enabled: _isEditing,
-                    label: 'RIR',
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d{1,2}')),
-                    ],
-                    isOptional: true,
-                  ),
-                ),
-              ],
-            ),
-
-            // Warmup toggle
-            if (_isEditing) ...[
-              const SizedBox(height: 8),
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    _isWarmup = !_isWarmup;
-                  });
-                },
-                borderRadius: BorderRadius.circular(8),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Checkbox(
-                        value: _isWarmup,
-                        onChanged: (value) {
-                          setState(() {
-                            _isWarmup = value ?? false;
-                          });
+                    // Warmup toggle
+                    if (isEditing) ...[
+                      const SizedBox(height: 8),
+                      InkWell(
+                        onTap: () {
+                          _isWarmupNotifier.value = !_isWarmupNotifier.value;
                         },
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.local_fire_department,
-                        size: 16,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Warmup Set',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Checkbox(
+                                value: isWarmup,
+                                onChanged: (value) {
+                                  _isWarmupNotifier.value = value ?? false;
+                                },
+                                visualDensity: VisualDensity.compact,
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                Icons.local_fire_department,
+                                size: 16,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Warmup Set',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
-                  ),
+                  ],
                 ),
               ),
-            ],
-          ],
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
   }
 }
@@ -400,7 +430,8 @@ class _InputFieldWithLabel extends StatelessWidget {
                   ),
                   hintText: isOptional ? '—' : '0',
                   hintStyle: TextStyle(
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                    color: theme.colorScheme.onSurfaceVariant
+                        .withValues(alpha: 0.4),
                   ),
                 ),
               ),

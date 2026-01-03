@@ -1,31 +1,14 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 
-/// Base class for creating mock providers in tests
+/// Helper utilities for creating mock providers in tests.
+///
+/// Note: These functions are primarily documentation. In practice, use:
+/// - `provider.overrideWith((ref) => value)` for most providers
+/// - `provider.overrideWithValue(value)` for use case providers
 class MockProviderContainer {
-  /// Create override for async provider returning loading state
-  static Override asyncLoading<T>(ProviderListenable<AsyncValue<T>> provider) {
-    return provider.overrideWith((ref) => const AsyncValue.loading());
-  }
-
-  /// Create override for async provider returning data
-  static Override asyncData<T>(
-    ProviderListenable<AsyncValue<T>> provider,
-    T data,
-  ) {
-    return provider.overrideWith((ref) => AsyncValue.data(data));
-  }
-
-  /// Create override for async provider returning error
-  static Override asyncError<T>(
-    ProviderListenable<AsyncValue<T>> provider,
-    Object error, [
-    StackTrace? stackTrace,
-  ]) {
-    return provider.overrideWith(
-      (ref) => AsyncValue.error(error, stackTrace ?? StackTrace.current),
-    );
-  }
+  // Note: Due to Riverpod's type system, these generic methods don't work
+  // Instead, use the provider's overrideWith method directly in your tests
+  // Example: myProvider.overrideWith((ref) => AsyncValue.data(myData))
 }
 
 /// Example mock classes for common interfaces

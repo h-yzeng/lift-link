@@ -4,6 +4,7 @@ import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_template.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
+import 'package:liftlink/features/workout/presentation/providers/create_template_notifier.dart';
 import 'package:liftlink/features/workout/presentation/providers/template_providers.dart';
 
 /// Page for creating a new workout template.
@@ -18,8 +19,6 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final List<TemplateExercise> _exercises = [];
-  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -46,34 +45,30 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
 
     if (sets == null) return;
 
-    setState(() {
-      _exercises.add(TemplateExercise(
-        exerciseId: exercise['id']!,
-        exerciseName: exercise['name']!,
-        sets: sets,
-      ),);
-    });
+    ref.read(createTemplateNotifierProvider.notifier).addExercise(
+          TemplateExercise(
+            exerciseId: exercise['id']!,
+            exerciseName: exercise['name']!,
+            sets: sets,
+          ),
+        );
   }
 
   void _removeExercise(int index) {
-    setState(() {
-      _exercises.removeAt(index);
-    });
+    ref.read(createTemplateNotifierProvider.notifier).removeExercise(index);
   }
 
   void _reorderExercises(int oldIndex, int newIndex) {
-    setState(() {
-      if (newIndex > oldIndex) {
-        newIndex -= 1;
-      }
-      final exercise = _exercises.removeAt(oldIndex);
-      _exercises.insert(newIndex, exercise);
-    });
+    ref
+        .read(createTemplateNotifierProvider.notifier)
+        .reorderExercises(oldIndex, newIndex);
   }
 
   Future<void> _saveTemplate() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_exercises.isEmpty) {
+
+    final templateState = ref.read(createTemplateNotifierProvider);
+    if (!templateState.hasExercises) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Add at least one exercise')),
       );
@@ -83,9 +78,8 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
     final user = await ref.read(currentUserProvider.future);
     if (user == null) return;
 
-    setState(() {
-      _isSaving = true;
-    });
+    final notifier = ref.read(createTemplateNotifierProvider.notifier);
+    notifier.setSaving(true);
 
     try {
       final useCase = ref.read(createTemplateUseCaseProvider);
@@ -95,7 +89,7 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
         description: _descriptionController.text.trim().isEmpty
             ? null
             : _descriptionController.text.trim(),
-        exercises: _exercises,
+        exercises: templateState.exercises,
       );
 
       result.fold(
@@ -118,20 +112,20 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
       );
     } finally {
       if (mounted) {
-        setState(() {
-          _isSaving = false;
-        });
+        notifier.setSaving(false);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final templateState = ref.watch(createTemplateNotifierProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create Template'),
         actions: [
-          if (_isSaving)
+          if (templateState.isSaving)
             const Padding(
               padding: EdgeInsets.all(16),
               child: SizedBox(
@@ -200,7 +194,7 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
             ),
             const SizedBox(height: 8),
 
-            if (_exercises.isEmpty)
+            if (!templateState.hasExercises)
               Card(
                 child: Padding(
                   padding: const EdgeInsets.all(32),
@@ -214,9 +208,10 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
                       const SizedBox(height: 8),
                       Text(
                         'No exercises added',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.outline,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
                       ),
                       const SizedBox(height: 16),
                       OutlinedButton.icon(
@@ -232,10 +227,10 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
               ReorderableListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: _exercises.length,
+                itemCount: templateState.exercises.length,
                 onReorder: _reorderExercises,
                 itemBuilder: (context, index) {
-                  final exercise = _exercises[index];
+                  final exercise = templateState.exercises[index];
                   return Card(
                     key: ValueKey(exercise.exerciseId + index.toString()),
                     margin: const EdgeInsets.only(bottom: 8),
@@ -271,42 +266,60 @@ class _SetCountDialog extends StatefulWidget {
 }
 
 class _SetCountDialogState extends State<_SetCountDialog> {
-  int _sets = 3;
+  final ValueNotifier<int> _setsNotifier = ValueNotifier(3);
+
+  @override
+  void dispose() {
+    _setsNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Add ${widget.exerciseName}'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('How many sets?'),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+      content: ValueListenableBuilder<int>(
+        valueListenable: _setsNotifier,
+        builder: (context, sets, _) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              IconButton(
-                onPressed: _sets > 1 ? () => setState(() => _sets--) : null,
-                icon: const Icon(Icons.remove),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '$_sets',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              ),
-              IconButton(
-                onPressed: _sets < 10 ? () => setState(() => _sets++) : null,
-                icon: const Icon(Icons.add),
+              const Text('How many sets?'),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: sets > 1
+                        ? () => _setsNotifier.value = sets - 1
+                        : null,
+                    icon: const Icon(Icons.remove),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '$sets',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: sets < 10
+                        ? () => _setsNotifier.value = sets + 1
+                        : null,
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
               ),
             ],
-          ),
-        ],
+          );
+        },
       ),
       actions: [
         TextButton(
@@ -314,7 +327,7 @@ class _SetCountDialogState extends State<_SetCountDialog> {
           child: const Text('Cancel'),
         ),
         FilledButton(
-          onPressed: () => Navigator.pop(context, _sets),
+          onPressed: () => Navigator.pop(context, _setsNotifier.value),
           child: const Text('Add'),
         ),
       ],

@@ -1,7 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/social/presentation/providers/user_search_state.dart';
-import 'package:liftlink/features/profile/domain/entities/profile.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 
 part 'user_search_notifier.g.dart';

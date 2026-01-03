@@ -297,10 +297,16 @@ flutter test test/unit/workout_set_test.dart
 
 ### Phase 15: Advanced Refactoring 🔄 (In Progress)
 
-- [x] setState migration to StateNotifier (2/16 files complete, 9/60 calls)
-  - [x] user_search_page.dart migrated to StateNotifier (5 calls)
-  - [x] active_workout_page.dart migrated to StateProvider (4 calls)
-- [ ] Complete remaining 14 files (51 setState calls)
+- [x] setState migration to StateNotifier (8/16 files complete, 41/60 calls - 68%)
+  - [x] user_search_page.dart - StateNotifier pattern
+  - [x] active_workout_page.dart - StateProvider pattern
+  - [x] rest_timer.dart - StateNotifier with Timer management
+  - [x] set_input_row.dart - ValueNotifier pattern
+  - [x] exercise_list_page.dart - StateNotifier pattern
+  - [x] create_template_page.dart - StateNotifier + ValueNotifier
+  - [x] create_exercise_page.dart - ValueNotifier pattern
+  - [x] export_data_page.dart - ValueNotifier pattern
+- [ ] Complete remaining 12 files (19 setState calls)
 - [ ] Reduce late initialization pattern usage
 
 ### Future Enhancements

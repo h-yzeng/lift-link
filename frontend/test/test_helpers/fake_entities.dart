@@ -1,6 +1,6 @@
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_performance.dart';
-import 'package:liftlink/features/workout/domain/entities/set_performance.dart';
+import 'package:liftlink/features/workout/domain/entities/workout_set.dart';
 import 'package:liftlink/features/profile/domain/entities/profile.dart';
 import 'package:liftlink/features/social/domain/entities/friendship.dart';
 
@@ -36,8 +36,8 @@ class FakeEntities {
     String workoutSessionId = 'workout1',
     String exerciseId = 'bench-press',
     String exerciseName = 'Bench Press',
-    List<SetPerformance> sets = const [],
-    double? maxWeight,
+    int orderIndex = 0,
+    List<WorkoutSet> sets = const [],
   }) {
     final now = DateTime.now();
     return ExercisePerformance(
@@ -45,15 +45,15 @@ class FakeEntities {
       workoutSessionId: workoutSessionId,
       exerciseId: exerciseId,
       exerciseName: exerciseName,
+      orderIndex: orderIndex,
       sets: sets,
-      maxWeight: maxWeight,
       createdAt: now,
       updatedAt: now,
     );
   }
 
-  /// Create a fake set performance
-  static SetPerformance setPerformance({
+  /// Create a fake workout set
+  static WorkoutSet workoutSet({
     String id = 'set1',
     String exercisePerformanceId = 'exercise1',
     int setNumber = 1,
@@ -64,7 +64,7 @@ class FakeEntities {
     int? rir,
   }) {
     final now = DateTime.now();
-    return SetPerformance(
+    return WorkoutSet(
       id: id,
       exercisePerformanceId: exercisePerformanceId,
       setNumber: setNumber,
@@ -73,7 +73,6 @@ class FakeEntities {
       isWarmup: isWarmup,
       rpe: rpe,
       rir: rir,
-      completedAt: now,
       createdAt: now,
       updatedAt: now,
     );
@@ -105,7 +104,8 @@ class FakeEntities {
     String requesterId = 'user1',
     String addresseeId = 'user2',
     FriendshipStatus status = FriendshipStatus.accepted,
-    String? nickname,
+    String? requesterNickname,
+    String? addresseeNickname,
   }) {
     final now = DateTime.now();
     return Friendship(
@@ -113,7 +113,8 @@ class FakeEntities {
       requesterId: requesterId,
       addresseeId: addresseeId,
       status: status,
-      nickname: nickname,
+      requesterNickname: requesterNickname,
+      addresseeNickname: addresseeNickname,
       createdAt: now,
       updatedAt: now,
     );
@@ -122,9 +123,9 @@ class FakeEntities {
   /// Create a complete workout with exercises and sets
   static WorkoutSession completeWorkout() {
     final sets = [
-      setPerformance(id: 'set1', setNumber: 1, reps: 10, weightKg: 60.0),
-      setPerformance(id: 'set2', setNumber: 2, reps: 8, weightKg: 65.0),
-      setPerformance(id: 'set3', setNumber: 3, reps: 6, weightKg: 70.0),
+      workoutSet(id: 'set1', setNumber: 1, reps: 10, weightKg: 60.0),
+      workoutSet(id: 'set2', setNumber: 2, reps: 8, weightKg: 65.0),
+      workoutSet(id: 'set3', setNumber: 3, reps: 6, weightKg: 70.0),
     ];
 
     final exercises = [
@@ -133,14 +134,12 @@ class FakeEntities {
         exerciseId: 'bench-press',
         exerciseName: 'Bench Press',
         sets: sets,
-        maxWeight: 70.0,
       ),
       exercisePerformance(
         id: 'ex2',
         exerciseId: 'squat',
         exerciseName: 'Squat',
         sets: sets.map((s) => s.copyWith(id: '${s.id}_squat')).toList(),
-        maxWeight: 100.0,
       ),
     ];
 

@@ -8,6 +8,7 @@ import 'package:liftlink/features/social/domain/entities/friendship.dart';
 import 'package:liftlink/features/social/presentation/pages/friend_profile_page.dart';
 import 'package:liftlink/features/social/presentation/pages/user_search_page.dart';
 import 'package:liftlink/features/social/presentation/providers/friendship_providers.dart';
+import 'package:liftlink/features/social/presentation/providers/paginated_friends_provider.dart';
 import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 
 /// Page for viewing the user's friends list (standalone with AppBar)
@@ -56,81 +57,15 @@ class FriendsListContent extends ConsumerWidget {
           return const Center(child: Text('Please log in'));
         }
 
-        final friendsAsync = ref.watch(friendsListProvider(user.id));
+        final paginatedState = ref.watch(paginatedFriendsProvider(user.id));
 
-        return friendsAsync.when(
-          data: (friends) {
-            if (friends.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.group,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Connect with Your Crew',
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Add friends to share your fitness journey, motivate each other, and track your collective progress.',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 32),
-                      FilledButton.icon(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const UserSearchPage(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.person_add),
-                        label: const Text('Find Friends'),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
+        if (paginatedState.friendships.isEmpty && paginatedState.isLoading) {
+          return const FriendsListSkeleton();
+        }
 
-            return RefreshIndicator(
-              onRefresh: () async {
-                ref.invalidate(friendsListProvider(user.id));
-              },
-              child: ListView.builder(
-                itemCount: friends.length,
-                itemBuilder: (context, index) {
-                  final friendship = friends[index];
-                  return _FriendListTile(
-                    friendship: friendship,
-                    currentUserId: user.id,
-                  );
-                },
-              ),
-            );
-          },
-          loading: () => const FriendsListSkeleton(),
-          error: (error, stack) => Center(
+        if (paginatedState.friendships.isEmpty &&
+            paginatedState.errorMessage != null) {
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -140,9 +75,104 @@ class FriendsListContent extends ConsumerWidget {
                   color: Colors.red,
                 ),
                 const SizedBox(height: 16),
-                Text('Error: $error'),
+                Text('Error: ${paginatedState.errorMessage}'),
               ],
             ),
+          );
+        }
+
+        if (paginatedState.friendships.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primaryContainer
+                          .withValues(alpha: 0.3),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.group,
+                      size: 64,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Connect with Your Crew',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Add friends to share your fitness journey, motivate each other, and track your collective progress.',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 32),
+                  FilledButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const UserSearchPage(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.person_add),
+                    label: const Text('Find Friends'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            ref.read(paginatedFriendsProvider(user.id).notifier).refresh();
+          },
+          child: ListView.builder(
+            itemCount: paginatedState.friendships.length +
+                (paginatedState.hasMore ? 1 : 0),
+            itemBuilder: (context, index) {
+              // Load more button at the end
+              if (index == paginatedState.friendships.length) {
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Center(
+                    child: paginatedState.isLoading
+                        ? const CircularProgressIndicator()
+                        : FilledButton.tonalIcon(
+                            onPressed: () {
+                              ref
+                                  .read(
+                                    paginatedFriendsProvider(user.id).notifier,
+                                  )
+                                  .loadNextPage();
+                            },
+                            icon: const Icon(Icons.expand_more),
+                            label: const Text('Load More'),
+                          ),
+                  ),
+                );
+              }
+
+              final friendship = paginatedState.friendships[index];
+              return _FriendListTile(
+                friendship: friendship,
+                currentUserId: user.id,
+              );
+            },
           ),
         );
       },
@@ -206,7 +236,7 @@ class _FriendListTile extends ConsumerWidget {
             content: Text('Friend removed'),
           ),
         );
-        ref.invalidate(friendsListProvider);
+        ref.invalidate(paginatedFriendsProvider);
       },
     );
   }
@@ -269,12 +299,16 @@ class _FriendListTile extends ConsumerWidget {
             ),
           ),
         );
-        ref.invalidate(friendsListProvider);
+        ref.invalidate(paginatedFriendsProvider);
       },
     );
   }
 
-  void _navigateToFriendProfile(BuildContext context, String friendId, String? nickname) {
+  void _navigateToFriendProfile(
+    BuildContext context,
+    String friendId,
+    String? nickname,
+  ) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => FriendProfilePage(
@@ -297,7 +331,8 @@ class _FriendListTile extends ConsumerWidget {
       ),
       builder: (context, snapshot) {
         final profile = snapshot.data;
-        final displayName = nickname ?? profile?.displayNameOrUsername ?? 'Loading...';
+        final displayName =
+            nickname ?? profile?.displayNameOrUsername ?? 'Loading...';
 
         return ListTile(
           leading: CircleAvatar(
@@ -319,7 +354,8 @@ class _FriendListTile extends ConsumerWidget {
             displayName,
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
-          subtitle: profile?.hasUsername == true && (profile?.hasCustomDisplayName == true || nickname != null)
+          subtitle: profile?.hasUsername == true &&
+                  (profile?.hasCustomDisplayName == true || nickname != null)
               ? Text('@${profile!.username}')
               : null,
           trailing: PopupMenuButton<String>(

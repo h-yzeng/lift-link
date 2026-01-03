@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:liftlink/core/error/failures.dart';
-import 'package:liftlink/features/profile/domain/entities/profile.dart';
+import 'package:liftlink/features/social/domain/entities/friendship.dart';
 import 'package:liftlink/features/social/presentation/providers/friendship_providers.dart';
 
 part 'paginated_friends_provider.freezed.dart';
@@ -10,10 +10,10 @@ part 'paginated_friends_provider.g.dart';
 @freezed
 class PaginatedFriendsState with _$PaginatedFriendsState {
   const factory PaginatedFriendsState({
-    @Default([]) List<Profile> friends,
+    @Default([]) List<Friendship> friendships,
     @Default(false) bool isLoading,
     @Default(true) bool hasMore,
-    Failure? error,
+    String? errorMessage,
   }) = _PaginatedFriendsState;
 }
 
@@ -37,7 +37,7 @@ class PaginatedFriends extends _$PaginatedFriends {
     if (state.isLoading || !state.hasMore) return;
 
     state = state.copyWith(isLoading: true);
-    await _loadPage(offset: state.friends.length);
+    await _loadPage(offset: state.friendships.length);
   }
 
   Future<void> refresh() async {
@@ -60,22 +60,24 @@ class PaginatedFriends extends _$PaginatedFriends {
         (failure) {
           state = state.copyWith(
             isLoading: false,
-            error: failure,
+            errorMessage: failure.userMessage,
           );
         },
-        (newFriends) {
+        (newFriendships) {
           state = state.copyWith(
-            friends: isRefresh ? newFriends : [...state.friends, ...newFriends],
+            friendships: isRefresh
+                ? newFriendships
+                : [...state.friendships, ...newFriendships],
             isLoading: false,
-            hasMore: newFriends.length == _pageSize,
-            error: null,
+            hasMore: newFriendships.length == _pageSize,
+            errorMessage: null,
           );
         },
       );
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: Failure(message: e.toString()),
+        errorMessage: e.toString(),
       );
     }
   }

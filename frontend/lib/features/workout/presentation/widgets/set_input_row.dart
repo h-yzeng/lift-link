@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:liftlink/core/utils/unit_conversion.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_set.dart';
+import 'package:liftlink/features/workout/presentation/widgets/plate_calculator_bottom_sheet.dart';
 import 'package:liftlink/shared/utils/haptic_service.dart';
 
 /// Widget for inputting set data (weight, reps, RPE)
@@ -207,8 +208,7 @@ class _SetInputRowState extends State<SetInputRow> {
                             enabled: isEditing,
                             label:
                                 'Weight (${UnitConversion.getWeightUnit(widget.useImperialUnits)})',
-                            keyboardType:
-                                const TextInputType.numberWithOptions(
+                            keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
                             inputFormatters: [
@@ -222,6 +222,29 @@ class _SetInputRowState extends State<SetInputRow> {
                             onIncrement: _updateWeightController,
                           ),
                         ),
+
+                        // Plate calculator button
+                        if (isEditing && _weightController.text.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4, top: 0),
+                            child: IconButton(
+                              icon: const Icon(Icons.calculate_outlined,
+                                  size: 20),
+                              onPressed: () {
+                                final weight =
+                                    double.tryParse(_weightController.text);
+                                if (weight != null && weight > 0) {
+                                  showPlateCalculator(
+                                    context,
+                                    targetWeight: weight,
+                                    useImperial: widget.useImperialUnits,
+                                  );
+                                }
+                              },
+                              tooltip: 'Plate Calculator',
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          ),
                         const SizedBox(width: 12),
 
                         // Reps input with label underneath
@@ -246,8 +269,7 @@ class _SetInputRowState extends State<SetInputRow> {
                             controller: _rpeController,
                             enabled: isEditing,
                             label: 'RPE',
-                            keyboardType:
-                                const TextInputType.numberWithOptions(
+                            keyboardType: const TextInputType.numberWithOptions(
                               decimal: true,
                             ),
                             inputFormatters: [

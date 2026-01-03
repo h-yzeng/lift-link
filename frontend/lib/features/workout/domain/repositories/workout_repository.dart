@@ -59,6 +59,12 @@ abstract class WorkoutRepository {
   /// Remove an exercise from the workout
   Future<Either<Failure, void>> removeExercise(String exercisePerformanceId);
 
+  /// Update exercise performance notes
+  Future<Either<Failure, void>> updateExerciseNotes({
+    required String exercisePerformanceId,
+    String? notes,
+  });
+
   /// Complete the current workout session
   Future<Either<Failure, WorkoutSession>> completeWorkout({
     required String workoutSessionId,

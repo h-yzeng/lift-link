@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/utils/unit_conversion.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/core/preferences/workout_duration_preference.dart';
+import 'package:liftlink/core/preferences/rest_timer_preference.dart';
 
 /// Displays workout statistics summary at the top of active workout page
 class WorkoutSummarySection extends ConsumerWidget {

@@ -166,6 +166,22 @@ class _ExerciseCard extends ConsumerWidget {
               }),
             ],
 
+            // Exercise notes
+            const SizedBox(height: 12),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Exercise Notes (optional)',
+                hintText: 'e.g., "felt heavy", "good form"',
+                border: const OutlineInputBorder(),
+                isDense: true,
+                prefixIcon: const Icon(Icons.note_outlined, size: 20),
+              ),
+              maxLines: 2,
+              textCapitalization: TextCapitalization.sentences,
+              controller: TextEditingController(text: exercise.notes),
+              onChanged: (value) => _updateExerciseNotes(ref, value),
+            ),
+
             // Add set button
             const SizedBox(height: 8),
             SizedBox(
@@ -199,6 +215,12 @@ class _ExerciseCard extends ConsumerWidget {
           (sum, set) => sum + set.weightKg,
         ) /
         workingSets.length;
+
+    // Calculate progressive overload suggestion (2.5% increase or smallest increment)
+    final smallIncrement = useImperialUnits ? 2.5 : 1.25;
+    final suggestedIncrease =
+        (avgWeight * 0.025).clamp(smallIncrement, double.infinity);
+    final suggestedWeight = avgWeight + suggestedIncrease;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -234,6 +256,33 @@ class _ExerciseCard extends ConsumerWidget {
           Text(
             '${workingSets.length} sets × ${avgReps.toStringAsFixed(0)} reps × ${UnitConversion.formatWeight(avgWeight, useImperialUnits)}',
             style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 8),
+          // Progressive overload suggestion
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.trending_up,
+                  size: 14,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Try ${UnitConversion.formatWeight(suggestedWeight, useImperialUnits)} (+${UnitConversion.formatWeightValue(suggestedIncrease, useImperialUnits)})',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -290,6 +339,14 @@ class _ExerciseCard extends ConsumerWidget {
           maybeAutoStartRestTimer(context: context, ref: ref);
         }
       },
+    );
+  }
+
+  Future<void> _updateExerciseNotes(WidgetRef ref, String notes) async {
+    final repository = ref.read(workoutRepositoryProvider);
+    await repository.updateExerciseNotes(
+      exercisePerformanceId: exercise.id,
+      notes: notes.isEmpty ? null : notes,
     );
   }
 

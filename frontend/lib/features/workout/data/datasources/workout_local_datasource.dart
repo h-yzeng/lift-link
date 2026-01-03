@@ -19,7 +19,8 @@ abstract class WorkoutLocalDataSource {
 
   /// Add an exercise to a workout session
   Future<ExercisePerformance> addExerciseToWorkout(
-      ExercisePerformance performance,);
+    ExercisePerformance performance,
+  );
 
   /// Add a set to an exercise
   Future<WorkoutSet> addSetToExercise(WorkoutSet set);
@@ -35,6 +36,12 @@ abstract class WorkoutLocalDataSource {
 
   /// Remove an exercise and all its sets
   Future<void> removeExercise(String exercisePerformanceId);
+
+  /// Update exercise performance notes
+  Future<void> updateExerciseNotes({
+    required String exercisePerformanceId,
+    String? notes,
+  });
 
   /// Complete a workout session
   Future<WorkoutSession> completeWorkout(String workoutSessionId);
@@ -105,8 +112,7 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
       if (workoutEntity == null) return null;
 
       // Load exercises and sets for this workout
-      final exercises =
-          await _loadExercisesForWorkout(workoutEntity.id);
+      final exercises = await _loadExercisesForWorkout(workoutEntity.id);
 
       return workoutEntity.toEntity(exercises: exercises);
     } catch (e) {
@@ -205,7 +211,8 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
     try {
       // Delete all sets for this exercise
       await (database.delete(database.sets)
-            ..where((s) => s.exercisePerformanceId.equals(exercisePerformanceId)))
+            ..where(
+                (s) => s.exercisePerformanceId.equals(exercisePerformanceId)))
           .go();
 
       // Delete the exercise performance
@@ -216,7 +223,26 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
       // Mark workout as pending sync
       await _markWorkoutPendingSync(exercisePerformanceId);
     } catch (e) {
-      throw CacheException(message: 'Failed to remove exercise: ${e.toString()}');
+      throw CacheException(
+          message: 'Failed to remove exercise: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<void> updateExerciseNotes({
+    required String exercisePerformanceId,
+    String? notes,
+  }) async {
+    try {
+      await (database.update(database.exercisePerformances)
+            ..where((ep) => ep.id.equals(exercisePerformanceId)))
+          .write(ExercisePerformancesCompanion(
+        notes: Value(notes),
+        updatedAt: Value(DateTime.now()),
+      ));
+    } catch (e) {
+      throw CacheException(
+          message: 'Failed to update exercise notes: ${e.toString()}');
     }
   }
 
@@ -326,7 +352,8 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
       final workoutQuery = database.select(database.workoutSessions).join([
         innerJoin(
           database.exercisePerformances,
-          database.exercisePerformances.workoutSessionId.equalsExp(database.workoutSessions.id),
+          database.exercisePerformances.workoutSessionId
+              .equalsExp(database.workoutSessions.id),
         ),
       ])
         ..where(
@@ -352,9 +379,10 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
 
         // Get all sets for this exercise in this workout
         final exercisePerfQuery = database.select(database.exercisePerformances)
-          ..where((ep) =>
-            ep.workoutSessionId.equals(workoutEntity.id) &
-            ep.exerciseId.equals(exerciseId),
+          ..where(
+            (ep) =>
+                ep.workoutSessionId.equals(workoutEntity.id) &
+                ep.exerciseId.equals(exerciseId),
           );
 
         final exercisePerfs = await exercisePerfQuery.get();
@@ -417,7 +445,8 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
   }
 
   @override
-  Future<void> upsertExercisePerformance(ExercisePerformance performance) async {
+  Future<void> upsertExercisePerformance(
+      ExercisePerformance performance) async {
     try {
       await database
           .into(database.exercisePerformances)
@@ -432,7 +461,9 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
   @override
   Future<void> upsertSet(WorkoutSet set) async {
     try {
-      await database.into(database.sets).insertOnConflictUpdate(set.toCompanion());
+      await database
+          .into(database.sets)
+          .insertOnConflictUpdate(set.toCompanion());
     } catch (e) {
       throw CacheException(message: 'Failed to upsert set: ${e.toString()}');
     }
@@ -442,7 +473,8 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
   Future<List<WorkoutSession>> getPendingSyncWorkouts(String userId) async {
     try {
       final query = database.select(database.workoutSessions)
-        ..where((ws) => ws.userId.equals(userId) & ws.isPendingSync.equals(true))
+        ..where(
+            (ws) => ws.userId.equals(userId) & ws.isPendingSync.equals(true))
         ..orderBy([(ws) => OrderingTerm.asc(ws.updatedAt)]);
 
       final workoutEntities = await query.get();

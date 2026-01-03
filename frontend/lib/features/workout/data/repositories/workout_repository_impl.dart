@@ -87,8 +87,8 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       final now = DateTime.now();
 
       // Determine order index if not provided
-      final effectiveOrderIndex = orderIndex ??
-          await _getNextExerciseOrderIndex(workoutSessionId);
+      final effectiveOrderIndex =
+          orderIndex ?? await _getNextExerciseOrderIndex(workoutSessionId);
 
       final performance = ExercisePerformance(
         id: const Uuid().v4(),
@@ -237,11 +237,31 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
 
   @override
   Future<Either<Failure, void>> removeExercise(
-      String exercisePerformanceId,) async {
+    String exercisePerformanceId,
+  ) async {
     try {
       await localDataSource.removeExercise(exercisePerformanceId);
 
       // Note: Remote sync will happen when workout is completed or manually synced
+
+      return const Right(null);
+    } on CacheException catch (e) {
+      return Left(CacheFailure(message: e.message));
+    } catch (e) {
+      return Left(CacheFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateExerciseNotes({
+    required String exercisePerformanceId,
+    String? notes,
+  }) async {
+    try {
+      await localDataSource.updateExerciseNotes(
+        exercisePerformanceId: exercisePerformanceId,
+        notes: notes,
+      );
 
       return const Right(null);
     } on CacheException catch (e) {
@@ -425,5 +445,4 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       // Silently fail
     }
   }
-
 }

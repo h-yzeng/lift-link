@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:uuid/uuid.dart';
+import 'package:liftlink/core/caching/cache_manager.dart';
 import 'package:liftlink/core/error/exceptions.dart';
 import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/core/network/network_info.dart';
@@ -11,15 +12,22 @@ import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_set.dart';
 import 'package:liftlink/features/workout/domain/repositories/workout_repository.dart';
 
+/// Implementation of [WorkoutRepository] with caching support.
+///
+/// This repository follows an offline-first approach, reading from local storage
+/// and syncing with remote storage in the background. Query results are cached
+/// to reduce database operations and improve performance.
 class WorkoutRepositoryImpl implements WorkoutRepository {
   final WorkoutLocalDataSource localDataSource;
   final WorkoutRemoteDataSource remoteDataSource;
   final NetworkInfo networkInfo;
+  final CacheManager cacheManager;
 
   WorkoutRepositoryImpl({
     required this.localDataSource,
     required this.remoteDataSource,
     required this.networkInfo,
+    required this.cacheManager,
   });
 
   @override
@@ -278,6 +286,19 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   }) async {
     try {
       // Complete the workout locally
+      final completedWorkout = await localDataSource.completeWorkout(
+        workoutSessionId: workoutSessionId,
+        notes: notes,
+      );
+
+      // Invalidate workout history caches
+      cacheManager
+          .invalidatePattern('workout_history_${completedWorkout.userId}');
+      // Invalidate exercise history caches for all exercises in this workout
+      for (final exercise in completedWorkout.exercises) {
+        cacheManager.invalidatePattern(
+            'exercise_history_${completedWorkout.userId}_${exercise.exerciseId}');
+      }
       final completedWorkout =
           await localDataSource.completeWorkout(workoutSessionId);
 
@@ -324,6 +345,18 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     DateTime? endDate,
   }) async {
     try {
+      // Generate cache key based on parameters
+      final cacheKey = 'workout_history_$userId'
+          '_${limit ?? 'all'}_${offset ?? '0'}'
+          '_${startDate?.millisecondsSinceEpoch ?? 'any'}'
+          '_${endDate?.millisecondsSinceEpoch ?? 'any'}';
+
+      // Check cache first
+      final cachedWorkouts = cacheManager.get<List<WorkoutSession>>(cacheKey);
+      if (cachedWorkouts != null) {
+        return Right(cachedWorkouts);
+      }
+
       // Always read from local (offline-first)
       final workouts = await localDataSource.getWorkoutHistory(
         userId: userId,
@@ -333,10 +366,15 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
         endDate: endDate,
       );
 
+      // Cache result for 5 minutes
+      cacheManager.set(cacheKey, workouts, const Duration(minutes: 5));
+
       // Sync from remote in background if online
       if (await networkInfo.isConnected) {
         _syncInBackground(() async {
           await syncWorkouts(userId: userId);
+          // Invalidate cache after sync to get fresh data
+          cacheManager.invalidatePattern('workout_history_$userId');
         });
       }
 
@@ -355,12 +393,24 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
     int limit = 3,
   }) async {
     try {
+      // Generate cache key
+      final cacheKey = 'exercise_history_${userId}_${exerciseId}_$limit';
+
+      // Check cache first
+      final cachedHistory = cacheManager.get<ExerciseHistory>(cacheKey);
+      if (cachedHistory != null) {
+        return Right(cachedHistory);
+      }
+
       // Always read from local (offline-first)
       final history = await localDataSource.getExerciseHistory(
         userId: userId,
         exerciseId: exerciseId,
         limit: limit,
       );
+
+      // Cache result for 3 minutes
+      cacheManager.set(cacheKey, history, const Duration(minutes: 3));
 
       return Right(history);
     } on CacheException catch (e) {

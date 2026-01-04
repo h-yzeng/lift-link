@@ -47,6 +47,9 @@ dependencies:
   # Share
   share_plus: ^7.2.1
 
+  # PDF Generation
+  pdf: ^3.10.8
+
   # Notifications
   flutter_local_notifications: ^17.0.0
 

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import 'package:liftlink/core/caching/cache_provider.dart';
 import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/workout/data/datasources/workout_local_datasource.dart';
@@ -51,6 +52,7 @@ WorkoutRepository workoutRepository(Ref ref) {
     localDataSource: ref.watch(workoutLocalDataSourceProvider),
     remoteDataSource: ref.watch(workoutRemoteDataSourceProvider),
     networkInfo: ref.watch(networkInfoProvider),
+    cacheManager: ref.watch(cacheManagerProvider),
   );
 }
 

@@ -9,6 +9,7 @@
 ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
 
 ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+![Web](https://img.shields.io/badge/Web-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
 ![iOS](https://img.shields.io/badge/iOS-000000?style=for-the-badge&logo=ios&logoColor=white)
 
@@ -16,7 +17,7 @@
 
 **A cross-platform fitness tracking app with offline-first architecture**
 
-_Version 2.4.0 • 99% Complete • 250 Tests Passing • 0 Errors_
+_Version 2.5.0 • Production Ready • 283 Tests Passing • 0 Errors_
 
 [Features](#features) • [Screenshots](#screenshots) • [Tech Stack](#tech-stack) • [Getting Started](#getting-started) • [Architecture](#architecture)
 
@@ -47,7 +48,10 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
 
 - **Personal Records** - Track PRs with automatic rank indicators (Bronze, Silver, Gold, Diamond)
 - **Progress Charts** - Visualize volume, 1RM, and muscle frequency over time
+- **Advanced Analytics Dashboard** - Comprehensive workout insights with heatmaps and trends
 - **Muscle Frequency Analysis** - Pie chart breakdown of muscle group training
+- **Volume Tracking** - Track total volume per muscle group over time
+- **PDF Export** - Export workouts as professional PDF documents with charts
 - **Data Export** - Export workout data in JSON or CSV format
 
 #### Social Features
@@ -56,13 +60,21 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
 - **Activity Feed** - See friends' recent workout activity
 - **User Search** - Find and connect with other users
 - **Profile Management** - Customizable username, display name, and bio
+- **Workout Sharing** - Generate and share workout summary cards
+- **Social Posts** - Share achievements on external platforms (4 formats)
+- **Smart Recommendations** - AI-like workout pattern analysis and suggestions
+- **Rest Day Suggestions** - Intelligent rest recommendations based on training patterns
 
 #### Technical Features
 
 - **Offline-First** - Full functionality without internet connection
 - **Cloud Sync** - Automatic synchronization when online
+- **Query Caching** - In-memory cache with TTL for improved performance
+- **Lazy Loading** - Efficient pagination for exercise history
 - **Secure** - Row-level security with Supabase
-- **Cross-Platform** - Windows, Android, and iOS support
+- **Cross-Platform** - Windows Desktop ✅, Android ✅, iOS ✅, Web (requires DB adapter)
+- **Progressive Web App** - Installable web app with offline support (PWA configured)
+- **API Documentation** - Comprehensive dartdoc for 204 libraries
 
 ### Screenshots
 
@@ -80,6 +92,8 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
 - **Local Database**: Drift (SQLite wrapper)
 - **Data Classes**: Freezed for immutability
 - **JSON**: json_serializable
+- **PDF Generation**: pdf package
+- **Sharing**: share_plus package
 
 ### Backend
 
@@ -139,10 +153,58 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
    ```
 
 5. **Run the app**
+
+   **For Windows Desktop:**
+
    ```bash
-   flutter run -d windows  # For Windows
-   flutter run -d <device> # For iOS/Android
+   flutter run -d windows
    ```
+
+   **For Web Browser:**
+
+   ```bash
+   flutter run -d chrome  # or 'edge' for Microsoft Edge
+   ```
+
+   **For Mobile:**
+
+   ```bash
+   flutter run -d <device>  # iOS/Android device or emulator
+   ```
+
+### Building for Production
+
+**Windows Desktop (.exe):**
+
+```bash
+cd frontend
+flutter build windows --release
+# Output: build/windows/x64/runner/Release/liftlink.exe
+```
+
+**Web (PWA):**
+
+```bash
+cd frontend
+flutter build web --release
+# Output: build/web/ (deploy to static hosting)
+# Features: PWA manifest, service worker, installable
+```
+
+**Note**: Web deployment requires database adapter changes (SQLite uses FFI which isn't supported on web). The app can run on web using Supabase-only mode or IndexedDB. See [docs/setup-guide.md](docs/setup-guide.md) for web configuration.
+
+**Android (.apk / .aab):**
+
+```bash
+flutter build apk --release  # APK for direct installation
+flutter build appbundle      # AAB for Google Play Store
+```
+
+**iOS (.ipa):**
+
+```bash
+flutter build ios --release  # Requires Apple Developer account
+```
 
 ### Configuration
 

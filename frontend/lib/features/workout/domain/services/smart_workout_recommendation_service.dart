@@ -146,20 +146,22 @@ class SmartWorkoutRecommendationService {
         final daysSinceLastPerformed =
             lastSeen != null ? now.difference(lastSeen).inDays : 999;
 
-        suggestions.add(ExerciseSuggestion(
-          exerciseName: exercise,
-          muscleGroup: group.key,
-          priority: _calculatePriority(
-            daysSinceLastPerformed,
-            group.value,
-            analysis.totalWorkouts,
+        suggestions.add(
+          ExerciseSuggestion(
+            exerciseName: exercise,
+            muscleGroup: group.key,
+            priority: _calculatePriority(
+              daysSinceLastPerformed,
+              group.value,
+              analysis.totalWorkouts,
+            ),
+            reasoning: _getExerciseReasoning(
+              exercise,
+              group.key,
+              daysSinceLastPerformed,
+            ),
           ),
-          reasoning: _getExerciseReasoning(
-            exercise,
-            group.key,
-            daysSinceLastPerformed,
-          ),
-        ),);
+        );
       }
     }
 
@@ -205,7 +207,8 @@ class SmartWorkoutRecommendationService {
     final buffer = StringBuffer();
 
     buffer.write(
-        'Based on your training pattern over ${analysis.totalWorkouts} workouts: ',);
+      'Based on your training pattern over ${analysis.totalWorkouts} workouts: ',
+    );
 
     // Volume analysis
     if (analysis.averageVolume > 15000) {
@@ -222,7 +225,8 @@ class SmartWorkoutRecommendationService {
 
     if (underTrainedGroups.isNotEmpty) {
       buffer.write(
-          'Focus on ${underTrainedGroups.join(", ")} for better balance.',);
+        'Focus on ${underTrainedGroups.join(", ")} for better balance.',
+      );
     }
 
     return buffer.toString();

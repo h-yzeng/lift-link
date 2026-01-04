@@ -210,7 +210,8 @@ class _AdvancedAnalyticsDashboardState
               height: 200,
               child: LineChart(
                 LineChartData(
-                  gridData: const FlGridData(show: true, drawVerticalLine: false),
+                  gridData:
+                      const FlGridData(show: true, drawVerticalLine: false),
                   titlesData: FlTitlesData(
                     rightTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),

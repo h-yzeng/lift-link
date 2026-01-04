@@ -68,7 +68,8 @@ class WorkoutSharingService {
     }
 
     buffer.writeln(
-        '📈 Total Volume: ${totalVolume.toStringAsFixed(0)} $weightUnit',);
+      '📈 Total Volume: ${totalVolume.toStringAsFixed(0)} $weightUnit',
+    );
     buffer.writeln('🔢 Total Sets: $totalSets');
     buffer.writeln('🔄 Total Reps: $totalReps');
     buffer.writeln();
@@ -168,7 +169,8 @@ class WorkoutSharingService {
     buffer.writeln('• ${workout.exercises.length} exercises');
     buffer.writeln('• $totalSets total sets');
     buffer.writeln(
-        '• ${totalVolume.toStringAsFixed(0)} $weightUnit total volume',);
+      '• ${totalVolume.toStringAsFixed(0)} $weightUnit total volume',
+    );
     buffer.writeln();
 
     // Personal records
@@ -271,9 +273,11 @@ class WorkoutSharingService {
     buffer.writeln('📊 Volume:');
     buffer.writeln('  Today: ${currentVolume.toStringAsFixed(0)} $weightUnit');
     buffer.writeln(
-        '  Previous: ${previousVolume.toStringAsFixed(0)} $weightUnit',);
+      '  Previous: ${previousVolume.toStringAsFixed(0)} $weightUnit',
+    );
     buffer.writeln(
-        '  Change: ${volumeDiff > 0 ? '+' : ''}${volumeDiff.toStringAsFixed(0)} $weightUnit (${volumeDiff > 0 ? '+' : ''}$volumePercent%)',);
+      '  Change: ${volumeDiff > 0 ? '+' : ''}${volumeDiff.toStringAsFixed(0)} $weightUnit (${volumeDiff > 0 ? '+' : ''}$volumePercent%)',
+    );
     buffer.writeln();
     buffer.writeln('⏱️ Duration:');
     buffer.writeln('  Today: $currentDuration min');

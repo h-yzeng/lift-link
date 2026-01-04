@@ -64,7 +64,12 @@ class WorkoutSummarySection extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
+                // Estimated completion time
+                if (workout.isInProgress) ...[
+                  _EstimatedCompletion(workout: workout, ref: ref),
+                  const SizedBox(height: 8),
+                ],
               ],
             ),
           // Stats row
@@ -142,6 +147,64 @@ class _StatItem extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Estimated workout completion time
+class _EstimatedCompletion extends StatelessWidget {
+  final WorkoutSession workout;
+  final WidgetRef ref;
+
+  const _EstimatedCompletion({
+    required this.workout,
+    required this.ref,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    // Calculate remaining sets
+    final totalSets = workout.totalSets;
+    final completedSets = workout.exercises
+        .expand((e) => e.sets)
+        .where((s) => s.reps > 0 && s.weightKg > 0)
+        .length;
+    final remainingSets = totalSets - completedSets;
+
+    if (remainingSets <= 0) return const SizedBox.shrink();
+
+    // Get average rest time
+    final defaultRestSeconds = ref.read(defaultRestTimerSecondsProvider);
+
+    // Estimate: remaining sets * (30s work + rest time)
+    final workTimePerSet = 30; // seconds
+    final estimatedSeconds =
+        remainingSets * (workTimePerSet + defaultRestSeconds);
+    final estimatedMinutes = (estimatedSeconds / 60).ceil();
+
+    // Calculate estimated completion time
+    final now = DateTime.now();
+    final estimatedCompletion = now.add(Duration(seconds: estimatedSeconds));
+    final timeString =
+        '${estimatedCompletion.hour.toString().padLeft(2, '0')}:${estimatedCompletion.minute.toString().padLeft(2, '0')}';
+
+    return Row(
+      children: [
+        Icon(
+          Icons.access_time,
+          size: 14,
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          'Est. completion: ~$timeString ($estimatedMinutes min)',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
     );
   }
 }

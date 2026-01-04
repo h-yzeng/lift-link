@@ -74,7 +74,7 @@ class RestDaySuggestionCard extends ConsumerWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.2),
+                    color: iconColor.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -106,13 +106,13 @@ class RestDaySuggestionCard extends ConsumerWidget {
                   Icon(
                     Icons.calendar_today,
                     size: 16,
-                    color: textColor.withOpacity(0.7),
+                    color: textColor.withValues(alpha: 0.7),
                   ),
                   const SizedBox(width: 6),
                   Text(
                     'Consider rest in ${suggestion.daysUntilRecommendedRest} day${suggestion.daysUntilRecommendedRest > 1 ? 's' : ''}',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: textColor.withOpacity(0.7),
+                      color: textColor.withValues(alpha: 0.7),
                       fontStyle: FontStyle.italic,
                     ),
                   ),

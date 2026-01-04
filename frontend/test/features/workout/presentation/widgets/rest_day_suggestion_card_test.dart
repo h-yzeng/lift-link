@@ -35,7 +35,7 @@ void main() {
       // Assert
       expect(find.text('Rest Day Recommended'), findsOneWidget);
       expect(find.text('You have trained for 6 consecutive days.'),
-          findsOneWidget);
+          findsOneWidget,);
       expect(find.text('High'), findsOneWidget);
       expect(find.byIcon(Icons.spa), findsOneWidget);
     });
@@ -67,7 +67,7 @@ void main() {
       // Assert
       expect(find.text('Ready to Train'), findsOneWidget);
       expect(
-          find.text('Your training schedule looks balanced.'), findsOneWidget);
+          find.text('Your training schedule looks balanced.'), findsOneWidget,);
       expect(find.text('Medium'), findsOneWidget);
       expect(find.text('Consider rest in 2 days'), findsOneWidget);
       expect(find.byIcon(Icons.fitness_center), findsOneWidget);

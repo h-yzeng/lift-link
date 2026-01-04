@@ -7,7 +7,7 @@ part 'smart_recommendation_provider.g.dart';
 /// Provider for smart workout recommendation service.
 @Riverpod(keepAlive: true)
 SmartWorkoutRecommendationService smartWorkoutRecommendationService(
-    SmartWorkoutRecommendationServiceRef ref) {
+    SmartWorkoutRecommendationServiceRef ref,) {
   return SmartWorkoutRecommendationService();
 }
 
@@ -27,7 +27,7 @@ SmartWorkoutRecommendationService smartWorkoutRecommendationService(
 /// ```
 @riverpod
 Future<WorkoutRecommendations> workoutRecommendations(
-    WorkoutRecommendationsRef ref) async {
+    WorkoutRecommendationsRef ref,) async {
   final now = DateTime.now();
   final thirtyDaysAgo = now.subtract(const Duration(days: 30));
 
@@ -71,7 +71,7 @@ Future<List<ExerciseSuggestion>> exerciseSuggestions(
 /// Provider for workout timing recommendations.
 @riverpod
 Future<TimeRecommendation> workoutTimingRecommendation(
-    WorkoutTimingRecommendationRef ref) async {
+    WorkoutTimingRecommendationRef ref,) async {
   final now = DateTime.now();
   final thirtyDaysAgo = now.subtract(const Duration(days: 30));
 

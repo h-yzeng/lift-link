@@ -7,7 +7,7 @@ part 'rest_day_provider.g.dart';
 /// Provider for the rest day suggestion service.
 @Riverpod(keepAlive: true)
 RestDaySuggestionService restDaySuggestionService(
-    RestDaySuggestionServiceRef ref) {
+    RestDaySuggestionServiceRef ref,) {
   return RestDaySuggestionService();
 }
 

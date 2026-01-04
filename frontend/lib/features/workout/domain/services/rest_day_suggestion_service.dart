@@ -25,7 +25,7 @@ class RestDaySuggestionService {
   /// - Overall fatigue indicators
   RestDaySuggestion suggestRestDay(List<WorkoutSession> recentWorkouts) {
     if (recentWorkouts.isEmpty) {
-      return RestDaySuggestion(
+      return const RestDaySuggestion(
         shouldRest: false,
         confidenceLevel: ConfidenceLevel.high,
         reason: 'No recent workout data available. Feel free to train!',
@@ -147,7 +147,7 @@ class RestDaySuggestionService {
         .where((w) =>
             w.completedAt != null &&
             w.completedAt!.isAfter(weekAgo) &&
-            w.completedAt!.isBefore(now))
+            w.completedAt!.isBefore(now),)
         .length;
   }
 

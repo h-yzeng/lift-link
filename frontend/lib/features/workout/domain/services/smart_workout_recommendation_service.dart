@@ -56,7 +56,7 @@ class SmartWorkoutRecommendationService {
     List<WorkoutSession> recentWorkouts,
   ) {
     if (recentWorkouts.isEmpty) {
-      return TimeRecommendation(
+      return const TimeRecommendation(
         recommendedDayOfWeek: DateTime.monday,
         recommendedTimeOfDay: TimeOfDay.morning,
         reasoning: 'Morning workouts help establish a consistent routine.',
@@ -108,7 +108,7 @@ class SmartWorkoutRecommendationService {
         // Calculate volume
         for (final set in exercise.sets) {
           totalSets++;
-          totalVolume += (set.weightKg ?? 0) * (set.reps ?? 0);
+          totalVolume += set.weightKg * set.reps;
         }
       }
     }
@@ -159,7 +159,7 @@ class SmartWorkoutRecommendationService {
             group.key,
             daysSinceLastPerformed,
           ),
-        ));
+        ),);
       }
     }
 
@@ -205,7 +205,7 @@ class SmartWorkoutRecommendationService {
     final buffer = StringBuffer();
 
     buffer.write(
-        'Based on your training pattern over ${analysis.totalWorkouts} workouts: ');
+        'Based on your training pattern over ${analysis.totalWorkouts} workouts: ',);
 
     // Volume analysis
     if (analysis.averageVolume > 15000) {
@@ -222,7 +222,7 @@ class SmartWorkoutRecommendationService {
 
     if (underTrainedGroups.isNotEmpty) {
       buffer.write(
-          'Focus on ${underTrainedGroups.join(", ")} for better balance.');
+          'Focus on ${underTrainedGroups.join(", ")} for better balance.',);
     }
 
     return buffer.toString();
@@ -273,25 +273,25 @@ class SmartWorkoutRecommendationService {
   /// Returns default beginner exercises.
   List<ExerciseSuggestion> _getDefaultExercises() {
     return [
-      ExerciseSuggestion(
+      const ExerciseSuggestion(
         exerciseName: 'Barbell Squat',
         muscleGroup: 'Legs',
         priority: 10,
         reasoning: 'Fundamental compound exercise for lower body strength',
       ),
-      ExerciseSuggestion(
+      const ExerciseSuggestion(
         exerciseName: 'Bench Press',
         muscleGroup: 'Chest',
         priority: 9,
         reasoning: 'Essential upper body compound movement',
       ),
-      ExerciseSuggestion(
+      const ExerciseSuggestion(
         exerciseName: 'Deadlift',
         muscleGroup: 'Back',
         priority: 9,
         reasoning: 'Full body compound exercise',
       ),
-      ExerciseSuggestion(
+      const ExerciseSuggestion(
         exerciseName: 'Overhead Press',
         muscleGroup: 'Shoulders',
         priority: 8,
@@ -310,7 +310,7 @@ class SmartWorkoutRecommendationService {
           'Bench Press',
           'Incline Bench Press',
           'Dumbbell Flyes',
-          'Push-ups'
+          'Push-ups',
         ];
       case 'Back':
         return ['Barbell Row', 'Pull-ups', 'Lat Pulldown', 'Deadlift'];
@@ -319,14 +319,14 @@ class SmartWorkoutRecommendationService {
           'Overhead Press',
           'Lateral Raises',
           'Face Pulls',
-          'Arnold Press'
+          'Arnold Press',
         ];
       case 'Arms':
         return [
           'Barbell Curl',
           'Tricep Dips',
           'Hammer Curls',
-          'Skull Crushers'
+          'Skull Crushers',
         ];
       default:
         return ['Plank', 'Hanging Leg Raises', 'Cable Crunches'];
@@ -353,7 +353,7 @@ class SmartWorkoutRecommendationService {
     int daysSinceLast,
   ) {
     if (daysSinceLast > 14) {
-      return 'Last performed ${daysSinceLast} days ago - time to target $muscleGroup again';
+      return 'Last performed $daysSinceLast days ago - time to target $muscleGroup again';
     }
     if (daysSinceLast > 7) {
       return 'Good time to work $muscleGroup - adequate recovery time';
@@ -373,7 +373,7 @@ class SmartWorkoutRecommendationService {
 
       for (final exercise in workout.exercises) {
         for (final set in exercise.sets) {
-          volume += (set.weightKg ?? 0) * (set.reps ?? 0);
+          volume += set.weightKg * set.reps;
         }
       }
 

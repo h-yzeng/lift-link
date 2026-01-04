@@ -3,6 +3,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:path_provider/path_provider.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
+import 'package:liftlink/features/workout/domain/entities/workout_set.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 
@@ -193,7 +194,7 @@ class WorkoutPdfExportService {
   /// Builds an exercise section with sets table.
   pw.Widget _buildExerciseSection(
     String exerciseName,
-    List<dynamic> sets,
+    List<WorkoutSet> sets,
     String weightUnit,
     String? notes,
   ) {
@@ -225,18 +226,16 @@ class WorkoutPdfExportService {
               ],
             ),
             // Data rows
-            ...sets.asMap().entries.map((entry) {
-              final index = entry.key + 1;
+            ...sets.asMap().entries.map<pw.TableRow>((entry) {
+              final int index = entry.key + 1;
               final set = entry.value;
+              final String weightStr = set.weightKg.toStringAsFixed(1);
+              final String repsStr = set.reps.toString();
               return pw.TableRow(
                 children: [
-                  _buildTableCell('$index'),
-                  _buildTableCell(
-                    set.weightKg != null
-                        ? set.weightKg!.toStringAsFixed(1)
-                        : '-',
-                  ),
-                  _buildTableCell(set.reps?.toString() ?? '-'),
+                  _buildTableCell(index.toString()),
+                  _buildTableCell(weightStr),
+                  _buildTableCell(repsStr),
                 ],
               );
             }),
@@ -248,9 +247,9 @@ class WorkoutPdfExportService {
           pw.SizedBox(height: 8),
           pw.Container(
             padding: const pw.EdgeInsets.all(8),
-            decoration: pw.BoxDecoration(
+            decoration: const pw.BoxDecoration(
               color: PdfColors.grey100,
-              borderRadius: const pw.BorderRadius.all(pw.Radius.circular(4)),
+              borderRadius: pw.BorderRadius.all(pw.Radius.circular(4)),
             ),
             child: pw.Text(
               'Notes: $notes',

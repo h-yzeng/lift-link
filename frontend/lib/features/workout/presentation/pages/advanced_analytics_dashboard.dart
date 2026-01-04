@@ -186,9 +186,7 @@ class _AdvancedAnalyticsDashboardState
 
       for (final exercise in workout.exercises) {
         for (final set in exercise.sets) {
-          final weight = set.weightKg ?? 0;
-          final reps = set.reps ?? 0;
-          volume += weight * reps;
+          volume += set.weightKg * set.reps;
         }
       }
 
@@ -212,7 +210,7 @@ class _AdvancedAnalyticsDashboardState
               height: 200,
               child: LineChart(
                 LineChartData(
-                  gridData: FlGridData(show: true, drawVerticalLine: false),
+                  gridData: const FlGridData(show: true, drawVerticalLine: false),
                   titlesData: FlTitlesData(
                     rightTitles: const AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
@@ -246,7 +244,7 @@ class _AdvancedAnalyticsDashboardState
                       dotData: const FlDotData(show: false),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                       ),
                     ),
                   ],
@@ -518,9 +516,7 @@ class _AdvancedAnalyticsDashboardState
       for (final exercise in workout.exercises) {
         for (final set in exercise.sets) {
           totalSets++;
-          final weight = set.weightKg ?? 0;
-          final reps = set.reps ?? 0;
-          totalVolume += weight * reps;
+          totalVolume += set.weightKg * set.reps;
         }
       }
     }

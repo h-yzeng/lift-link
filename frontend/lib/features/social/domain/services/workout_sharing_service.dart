@@ -62,13 +62,13 @@ class WorkoutSharingService {
     for (final exercise in workout.exercises) {
       for (final set in exercise.sets) {
         totalSets++;
-        totalReps += set.reps ?? 0;
-        totalVolume += (set.weightKg ?? 0) * (set.reps ?? 0);
+        totalReps += set.reps;
+        totalVolume += set.weightKg * set.reps;
       }
     }
 
     buffer.writeln(
-        '📈 Total Volume: ${totalVolume.toStringAsFixed(0)} $weightUnit');
+        '📈 Total Volume: ${totalVolume.toStringAsFixed(0)} $weightUnit',);
     buffer.writeln('🔢 Total Sets: $totalSets');
     buffer.writeln('🔄 Total Reps: $totalReps');
     buffer.writeln();
@@ -81,8 +81,8 @@ class WorkoutSharingService {
 
       for (var i = 0; i < exercise.sets.length; i++) {
         final set = exercise.sets[i];
-        final weight = set.weightKg?.toStringAsFixed(1) ?? '-';
-        final reps = set.reps?.toString() ?? '-';
+        final weight = set.weightKg.toStringAsFixed(1);
+        final reps = set.reps.toString();
         buffer.writeln('  Set ${i + 1}: $weight $weightUnit × $reps reps');
       }
 
@@ -160,7 +160,7 @@ class WorkoutSharingService {
     for (final exercise in workout.exercises) {
       for (final set in exercise.sets) {
         totalSets++;
-        totalVolume += (set.weightKg ?? 0) * (set.reps ?? 0);
+        totalVolume += set.weightKg * set.reps;
       }
     }
 
@@ -168,7 +168,7 @@ class WorkoutSharingService {
     buffer.writeln('• ${workout.exercises.length} exercises');
     buffer.writeln('• $totalSets total sets');
     buffer.writeln(
-        '• ${totalVolume.toStringAsFixed(0)} $weightUnit total volume');
+        '• ${totalVolume.toStringAsFixed(0)} $weightUnit total volume',);
     buffer.writeln();
 
     // Personal records
@@ -196,12 +196,12 @@ class WorkoutSharingService {
     double totalVolume = 0;
     for (final exercise in workout.exercises) {
       for (final set in exercise.sets) {
-        totalVolume += (set.weightKg ?? 0) * (set.reps ?? 0);
+        totalVolume += set.weightKg * set.reps;
       }
     }
 
     final message = '💪 Just crushed ${workout.title}!\n'
-        '⏱️ ${workout.durationMinutes ?? 0} min | '
+        '⏱️ ${workout.durationMinutes} min | '
         '🏋️ ${workout.exercises.length} exercises | '
         '📈 ${totalVolume.toStringAsFixed(0)} $weightUnit volume\n\n'
         'Tracked with LiftLink';
@@ -247,13 +247,13 @@ class WorkoutSharingService {
 
     for (final exercise in currentWorkout.exercises) {
       for (final set in exercise.sets) {
-        currentVolume += (set.weightKg ?? 0) * (set.reps ?? 0);
+        currentVolume += set.weightKg * set.reps;
       }
     }
 
     for (final exercise in previousWorkout.exercises) {
       for (final set in exercise.sets) {
-        previousVolume += (set.weightKg ?? 0) * (set.reps ?? 0);
+        previousVolume += set.weightKg * set.reps;
       }
     }
 
@@ -271,9 +271,9 @@ class WorkoutSharingService {
     buffer.writeln('📊 Volume:');
     buffer.writeln('  Today: ${currentVolume.toStringAsFixed(0)} $weightUnit');
     buffer.writeln(
-        '  Previous: ${previousVolume.toStringAsFixed(0)} $weightUnit');
+        '  Previous: ${previousVolume.toStringAsFixed(0)} $weightUnit',);
     buffer.writeln(
-        '  Change: ${volumeDiff > 0 ? '+' : ''}${volumeDiff.toStringAsFixed(0)} $weightUnit (${volumeDiff > 0 ? '+' : ''}$volumePercent%)');
+        '  Change: ${volumeDiff > 0 ? '+' : ''}${volumeDiff.toStringAsFixed(0)} $weightUnit (${volumeDiff > 0 ? '+' : ''}$volumePercent%)',);
     buffer.writeln();
     buffer.writeln('⏱️ Duration:');
     buffer.writeln('  Today: $currentDuration min');

@@ -228,8 +228,10 @@ class _SetInputRowState extends State<SetInputRow> {
                           Padding(
                             padding: const EdgeInsets.only(left: 4, top: 0),
                             child: IconButton(
-                              icon: const Icon(Icons.calculate_outlined,
-                                  size: 20),
+                              icon: const Icon(
+                                Icons.calculate_outlined,
+                                size: 20,
+                              ),
                               onPressed: () {
                                 final weight =
                                     double.tryParse(_weightController.text);

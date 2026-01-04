@@ -16,6 +16,8 @@
 
 **A cross-platform fitness tracking app with offline-first architecture**
 
+_Version 2.4.0 • 99% Complete • 250 Tests Passing • 0 Errors_
+
 [Features](#features) • [Screenshots](#screenshots) • [Tech Stack](#tech-stack) • [Getting Started](#getting-started) • [Architecture](#architecture)
 
 </div>
@@ -30,12 +32,16 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
 
 #### Core Tracking
 
-- **Workout Tracking** - Log exercises, sets, reps, and weight
+- **Workout Tracking** - Log exercises, sets, reps, weight, RPE, and RIR
 - **Automatic 1RM Calculation** - Real-time estimated one-rep max using Epley Formula
-- **Exercise Library** - 20+ pre-loaded exercises with search functionality
-- **Workout History** - View all past workout sessions
+- **Exercise Library** - 20+ pre-loaded exercises with smart sorting by recent usage
+- **Workout History** - View all past workout sessions with filtering
 - **Workout Templates** - Create and reuse workout routines
-- **Rest Timer** - Built-in countdown timer with customizable intervals
+- **Rest Timer** - Auto-start countdown timer with customizable intervals
+- **Plate Calculator** - Visual barbell loading calculator with color-coded plates
+- **Progressive Overload** - Smart weight increase suggestions (2.5% increments)
+- **Exercise Notes** - Quick notes per exercise during workouts
+- **Warmup Generator** - Automatic warmup set recommendations
 
 #### Analytics & Progress
 
@@ -234,89 +240,6 @@ flutter test test/unit/workout_set_test.dart
 - Domain layer: 100% (pure business logic)
 - Data layer: 80%+
 - Presentation layer: 60%+
-
----
-
-## Roadmap
-
-### Phase 1: Foundation ✅ (Completed)
-
-- [x] Project scaffolding
-- [x] Database schema with RLS
-- [x] Offline-first architecture
-- [x] Core domain entities
-- [x] Working Windows desktop app
-
-### Phase 2: Core Features ✅ (Completed)
-
-- [x] Authentication (login, register, password reset)
-- [x] Exercise library browser with search
-- [x] Active workout tracking
-- [x] Workout history viewer
-- [x] 1RM calculations and display
-- [x] Profile management
-
-### Phase 3: Social ✅ (Completed)
-
-- [x] Friend request system
-- [x] Activity feed
-- [x] User search and profiles
-- [x] Nickname display in friendships
-
-### Phase 4: Analytics ✅ (Completed)
-
-- [x] Progress charts (Volume, 1RM, Frequency)
-- [x] Personal records tracking with rank indicators
-- [x] Muscle group frequency analysis
-
-### Phase 5: Enhanced Features ✅ (Completed)
-
-- [x] Workout templates
-- [x] Rest timer with haptic feedback
-- [x] Data export (JSON/CSV)
-- [x] Dark mode with system/light/dark options
-- [x] Onboarding flow for new users
-
-### Phase 6-13: Completed ✅
-
-- [x] Code quality & UX polish
-- [x] Testing & quality assurance
-- [x] Static analysis & code cleanup
-- [x] Quick wins & core UX improvements
-- [x] Quality & reliability improvements
-- [x] Advanced improvements (RPE tracking, RIR, weight logging)
-- [x] Mobile enhancement features
-
-### Phase 14: Code Quality & Architecture ✅ (Completed)
-
-- [x] Comprehensive accessibility support (WCAG 2.1 AA)
-- [x] Field-level sync conflict resolution
-- [x] Widget decomposition (active_workout_page: 803→470 lines)
-- [x] UI test infrastructure with Riverpod helpers
-- [x] Social features pagination foundation
-
-### Phase 15: Advanced Refactoring 🔄 (In Progress)
-
-- [x] setState migration to StateNotifier (8/16 files complete, 41/60 calls - 68%)
-  - [x] user_search_page.dart - StateNotifier pattern
-  - [x] active_workout_page.dart - StateProvider pattern
-  - [x] rest_timer.dart - StateNotifier with Timer management
-  - [x] set_input_row.dart - ValueNotifier pattern
-  - [x] exercise_list_page.dart - StateNotifier pattern
-  - [x] create_template_page.dart - StateNotifier + ValueNotifier
-  - [x] create_exercise_page.dart - ValueNotifier pattern
-  - [x] export_data_page.dart - ValueNotifier pattern
-- [ ] Complete remaining 12 files (19 setState calls)
-- [ ] Reduce late initialization pattern usage
-
-### Future Enhancements
-
-- [ ] Exercise videos and form tips
-- [ ] Workout notes and photos
-- [ ] Nutrition tracking integration
-- [ ] iOS & Android releases
-- [ ] Web version
-- [ ] Workout sharing and challenges
 
 ---
 

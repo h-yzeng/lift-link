@@ -83,7 +83,7 @@ class PlateCalculator {
     final unit = useImperial ? 'lb' : 'kg';
     final parts = plates.entries
         .map((e) =>
-            '${e.value}×${e.key.toStringAsFixed(e.key % 1 == 0 ? 0 : 1)}$unit')
+            '${e.value}×${e.key.toStringAsFixed(e.key % 1 == 0 ? 0 : 1)}$unit',)
         .toList();
 
     return parts.join(' + ');

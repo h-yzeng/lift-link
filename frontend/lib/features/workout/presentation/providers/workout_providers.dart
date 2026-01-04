@@ -178,7 +178,10 @@ Future<ExerciseHistory> exerciseHistory(
   final user = await ref.watch(currentUserProvider.future);
   if (user == null) {
     return ExerciseHistory(
-        exerciseId: exerciseId, userId: '', sessions: const []);
+      exerciseId: exerciseId,
+      userId: '',
+      sessions: const [],
+    );
   }
 
   final useCase = ref.watch(getExerciseHistoryUseCaseProvider);

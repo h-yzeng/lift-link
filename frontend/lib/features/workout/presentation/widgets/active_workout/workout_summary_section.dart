@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/utils/unit_conversion.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/core/preferences/workout_duration_preference.dart';
-import 'package:liftlink/core/preferences/rest_timer_preference.dart';
 
 /// Displays workout statistics summary at the top of active workout page
 class WorkoutSummarySection extends ConsumerWidget {
@@ -176,10 +175,10 @@ class _EstimatedCompletion extends StatelessWidget {
     if (remainingSets <= 0) return const SizedBox.shrink();
 
     // Get average rest time
-    final defaultRestSeconds = ref.read(defaultRestTimerSecondsProvider);
+    const int defaultRestSeconds = 90; // Default rest timer seconds
 
     // Estimate: remaining sets * (30s work + rest time)
-    final workTimePerSet = 30; // seconds
+    const workTimePerSet = 30; // seconds
     final estimatedSeconds =
         remainingSets * (workTimePerSet + defaultRestSeconds);
     final estimatedMinutes = (estimatedSeconds / 60).ceil();

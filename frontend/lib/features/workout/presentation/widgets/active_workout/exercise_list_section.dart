@@ -159,7 +159,14 @@ class _ExerciseCard extends ConsumerWidget {
                     existingSet: set,
                     useImperialUnits: useImperialUnits,
                     onSave: (reps, weight, isWarmup, rpe, rir) => _updateSet(
-                        ref, set.id, reps, weight, isWarmup, rpe, rir),
+                      ref,
+                      set.id,
+                      reps,
+                      weight,
+                      isWarmup,
+                      rpe,
+                      rir,
+                    ),
                     onDelete: () => _deleteSet(ref, set.id),
                   ),
                 );
@@ -169,12 +176,12 @@ class _ExerciseCard extends ConsumerWidget {
             // Exercise notes
             const SizedBox(height: 12),
             TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Exercise Notes (optional)',
                 hintText: 'e.g., "felt heavy", "good form"',
-                border: const OutlineInputBorder(),
+                border: OutlineInputBorder(),
                 isDense: true,
-                prefixIcon: const Icon(Icons.note_outlined, size: 20),
+                prefixIcon: Icon(Icons.note_outlined, size: 20),
               ),
               maxLines: 2,
               textCapitalization: TextCapitalization.sentences,

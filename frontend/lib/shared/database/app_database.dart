@@ -88,9 +88,12 @@ class AppDatabase extends _$AppDatabase {
               'INSERT INTO profiles_new SELECT * FROM profiles',
             );
 
-            await customStatement('DROP TABLE profiles');
             await customStatement(
-                'ALTER TABLE profiles_new RENAME TO profiles');
+              'DROP TABLE profiles',
+            );
+            await customStatement(
+              'ALTER TABLE profiles_new RENAME TO profiles',
+            );
           }
 
           // Migration from v4 to v5: Add nickname columns to friendships

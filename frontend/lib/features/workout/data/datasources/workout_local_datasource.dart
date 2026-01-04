@@ -212,19 +212,19 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
       // Delete all sets for this exercise
       await (database.delete(database.sets)
             ..where(
-                (s) => s.exercisePerformanceId.equals(exercisePerformanceId)))
+                (s) => s.exercisePerformanceId.equals(exercisePerformanceId),))
           .go();
 
       // Delete the exercise performance
       await (database.delete(database.exercisePerformances)
-            ..where((ep) => ep.id.equals(exercisePerformanceId)))
+            ..where((ep) => ep.id.equals(exercisePerformanceId),))
           .go();
 
       // Mark workout as pending sync
       await _markWorkoutPendingSync(exercisePerformanceId);
     } catch (e) {
       throw CacheException(
-          message: 'Failed to remove exercise: ${e.toString()}');
+          message: 'Failed to remove exercise: ${e.toString()}',);
     }
   }
 
@@ -235,14 +235,14 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
   }) async {
     try {
       await (database.update(database.exercisePerformances)
-            ..where((ep) => ep.id.equals(exercisePerformanceId)))
+            ..where((ep) => ep.id.equals(exercisePerformanceId),))
           .write(ExercisePerformancesCompanion(
         notes: Value(notes),
         updatedAt: Value(DateTime.now()),
-      ));
+      ),);
     } catch (e) {
       throw CacheException(
-          message: 'Failed to update exercise notes: ${e.toString()}');
+          message: 'Failed to update exercise notes: ${e.toString()}',);
     }
   }
 
@@ -446,11 +446,11 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
 
   @override
   Future<void> upsertExercisePerformance(
-      ExercisePerformance performance) async {
+      ExercisePerformance performance,) async {
     try {
       await database
           .into(database.exercisePerformances)
-          .insertOnConflictUpdate(performance.toCompanion());
+          .insertOnConflictUpdate(performance.toCompanion(),);
     } catch (e) {
       throw CacheException(
         message: 'Failed to upsert exercise performance: ${e.toString()}',
@@ -474,7 +474,7 @@ class WorkoutLocalDataSourceImpl implements WorkoutLocalDataSource {
     try {
       final query = database.select(database.workoutSessions)
         ..where(
-            (ws) => ws.userId.equals(userId) & ws.isPendingSync.equals(true))
+            (ws) => ws.userId.equals(userId) & ws.isPendingSync.equals(true),)
         ..orderBy([(ws) => OrderingTerm.asc(ws.updatedAt)]);
 
       final workoutEntities = await query.get();

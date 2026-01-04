@@ -72,8 +72,8 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
 - **Query Caching** - In-memory cache with TTL for improved performance
 - **Lazy Loading** - Efficient pagination for exercise history
 - **Secure** - Row-level security with Supabase
-- **Cross-Platform** - Windows Desktop ✅, Android ✅, iOS ✅, Web (requires DB adapter)
-- **Progressive Web App** - Installable web app with offline support (PWA configured)
+- **Cross-Platform** - Windows Desktop ✅, Web ✅, Android ✅, iOS ✅
+- **Progressive Web App** - Installable web app with IndexedDB offline support
 - **API Documentation** - Comprehensive dartdoc for 204 libraries
 
 ### Screenshots

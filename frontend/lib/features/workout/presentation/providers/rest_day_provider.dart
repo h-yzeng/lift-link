@@ -35,7 +35,9 @@ Future<RestDaySuggestion> restDaySuggestion(RestDaySuggestionRef ref) async {
   final now = DateTime.now();
   final twoWeeksAgo = now.subtract(const Duration(days: 14));
 
-  final historyResult = await ref.watch(
+  // workoutHistoryProvider returns Future<List<WorkoutSession>> directly
+  // and throws on failure, so we can use it directly
+  final workouts = await ref.watch(
     workoutHistoryProvider(
       limit: 50,
       startDate: twoWeeksAgo,
@@ -43,16 +45,6 @@ Future<RestDaySuggestion> restDaySuggestion(RestDaySuggestionRef ref) async {
     ).future,
   );
 
-  return historyResult.fold(
-    (_) => const RestDaySuggestion(
-      shouldRest: false,
-      confidenceLevel: ConfidenceLevel.low,
-      reason: 'Unable to load workout history',
-      daysUntilRecommendedRest: 1,
-    ),
-    (workouts) {
-      final service = ref.read(restDaySuggestionServiceProvider);
-      return service.suggestRestDay(workouts);
-    },
-  );
+  final service = ref.read(restDaySuggestionServiceProvider);
+  return service.suggestRestDay(workouts);
 }

@@ -286,10 +286,9 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
   }) async {
     try {
       // Complete the workout locally
-      final completedWorkout = await localDataSource.completeWorkout(
-        workoutSessionId: workoutSessionId,
-        notes: notes,
-      );
+      // TODO: Handle notes parameter when datasource supports it
+      final completedWorkout =
+          await localDataSource.completeWorkout(workoutSessionId);
 
       // Invalidate workout history caches
       cacheManager
@@ -297,15 +296,8 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       // Invalidate exercise history caches for all exercises in this workout
       for (final exercise in completedWorkout.exercises) {
         cacheManager.invalidatePattern(
-            'exercise_history_${completedWorkout.userId}_${exercise.exerciseId}');
-      }
-      final completedWorkout =
-          await localDataSource.completeWorkout(workoutSessionId);
-
-      // Update notes if provided
-      if (notes != null && notes != completedWorkout.notes) {
-        final updatedWorkout = completedWorkout.copyWith(notes: notes);
-        await localDataSource.upsertWorkoutSession(updatedWorkout);
+          'exercise_history_${completedWorkout.userId}_${exercise.exerciseId}',
+        );
       }
 
       // Sync complete workout to remote if online

@@ -231,9 +231,11 @@ class WorkoutPdfExportService {
               return pw.TableRow(
                 children: [
                   _buildTableCell('$index'),
-                  _buildTableCell(set.weight != null
-                      ? set.weight!.toStringAsFixed(1)
-                      : '-'),
+                  _buildTableCell(
+                    set.weightKg != null
+                        ? set.weightKg!.toStringAsFixed(1)
+                        : '-',
+                  ),
                   _buildTableCell(set.reps?.toString() ?? '-'),
                 ],
               );

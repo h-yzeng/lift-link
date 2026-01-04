@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
-import 'package:intl/intl.dart';
 
 /// Advanced analytics dashboard with comprehensive workout metrics.
 ///
@@ -187,7 +186,7 @@ class _AdvancedAnalyticsDashboardState
 
       for (final exercise in workout.exercises) {
         for (final set in exercise.sets) {
-          final weight = set.weight ?? 0;
+          final weight = set.weightKg ?? 0;
           final reps = set.reps ?? 0;
           volume += weight * reps;
         }
@@ -519,7 +518,7 @@ class _AdvancedAnalyticsDashboardState
       for (final exercise in workout.exercises) {
         for (final set in exercise.sets) {
           totalSets++;
-          final weight = set.weight ?? 0;
+          final weight = set.weightKg ?? 0;
           final reps = set.reps ?? 0;
           totalVolume += weight * reps;
         }

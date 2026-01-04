@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'cache_manager.dart';
+import 'package:liftlink/core/caching/cache_manager.dart';
 
 part 'cache_provider.g.dart';
 

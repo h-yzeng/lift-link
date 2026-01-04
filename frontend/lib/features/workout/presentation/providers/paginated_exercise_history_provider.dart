@@ -132,7 +132,7 @@ class PaginatedExerciseHistoryNotifier
         (failure) {
           state = state.copyWith(
             isLoading: false,
-            error: failure.userMessage,
+            error: failure.toString(),
           );
         },
         (history) {

@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:liftlink/core/caching/cache_manager.dart';
 import 'package:liftlink/core/error/exceptions.dart';
 import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/core/network/network_info.dart';
@@ -18,6 +19,8 @@ class MockWorkoutRemoteDataSource extends Mock
 
 class MockNetworkInfo extends Mock implements NetworkInfo {}
 
+class MockCacheManager extends Mock implements CacheManager {}
+
 class FakeWorkoutSession extends Fake implements WorkoutSession {}
 
 class FakeWorkoutSet extends Fake implements WorkoutSet {}
@@ -27,6 +30,7 @@ void main() {
   late MockWorkoutLocalDataSource mockLocalDataSource;
   late MockWorkoutRemoteDataSource mockRemoteDataSource;
   late MockNetworkInfo mockNetworkInfo;
+  late MockCacheManager mockCacheManager;
 
   setUpAll(() {
     registerFallbackValue(FakeWorkoutSession());
@@ -37,10 +41,12 @@ void main() {
     mockLocalDataSource = MockWorkoutLocalDataSource();
     mockRemoteDataSource = MockWorkoutRemoteDataSource();
     mockNetworkInfo = MockNetworkInfo();
+    mockCacheManager = MockCacheManager();
     repository = WorkoutRepositoryImpl(
       localDataSource: mockLocalDataSource,
       remoteDataSource: mockRemoteDataSource,
       networkInfo: mockNetworkInfo,
+      cacheManager: mockCacheManager,
     );
   });
 
@@ -108,7 +114,8 @@ void main() {
       // Note: Remote sync happens in background, so we can't easily verify it
     });
 
-    test('should return CacheFailure when local datasource throws CacheException',
+    test(
+        'should return CacheFailure when local datasource throws CacheException',
         () async {
       // Arrange
       when(() => mockLocalDataSource.startWorkout(any()))
@@ -163,13 +170,15 @@ void main() {
 
     test('should return workouts from local datasource', () async {
       // Arrange
-      when(() => mockLocalDataSource.getWorkoutHistory(
-            userId: userId,
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => testWorkouts);
+      when(
+        () => mockLocalDataSource.getWorkoutHistory(
+          userId: userId,
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer((_) async => testWorkouts);
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => false);
 
       // Act
@@ -188,24 +197,28 @@ void main() {
           expect(workouts[1].id, 'workout-2');
         },
       );
-      verify(() => mockLocalDataSource.getWorkoutHistory(
-            userId: userId,
-            limit: 20,
-            offset: null,
-            startDate: null,
-            endDate: null,
-          ),).called(1);
+      verify(
+        () => mockLocalDataSource.getWorkoutHistory(
+          userId: userId,
+          limit: 20,
+          offset: null,
+          startDate: null,
+          endDate: null,
+        ),
+      ).called(1);
     });
 
     test('should support offset for pagination', () async {
       // Arrange
-      when(() => mockLocalDataSource.getWorkoutHistory(
-            userId: userId,
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => [testWorkouts[1]]);
+      when(
+        () => mockLocalDataSource.getWorkoutHistory(
+          userId: userId,
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer((_) async => [testWorkouts[1]]);
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => false);
 
       // Act
@@ -224,24 +237,28 @@ void main() {
           expect(workouts[0].id, 'workout-2');
         },
       );
-      verify(() => mockLocalDataSource.getWorkoutHistory(
-            userId: userId,
-            limit: 1,
-            offset: 1,
-            startDate: null,
-            endDate: null,
-          ),).called(1);
+      verify(
+        () => mockLocalDataSource.getWorkoutHistory(
+          userId: userId,
+          limit: 1,
+          offset: 1,
+          startDate: null,
+          endDate: null,
+        ),
+      ).called(1);
     });
 
     test('should return CacheFailure when datasource throws', () async {
       // Arrange
-      when(() => mockLocalDataSource.getWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenThrow(const CacheException(message: 'Query failed'));
+      when(
+        () => mockLocalDataSource.getWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenThrow(const CacheException(message: 'Query failed'));
 
       // Act
       final result = await repository.getWorkoutHistory(userId: userId);

@@ -15,103 +15,31 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-**A cross-platform fitness tracking app with offline-first architecture**
-
-_Version 2.5.0 • Production Ready • 331 Tests Passing (96.8%) • 0 Errors • 0 Warnings_
-
-[Features](#features) • [Screenshots](#screenshots) • [Tech Stack](#tech-stack) • [Getting Started](#getting-started) • [Architecture](#architecture)
-
-</div>
-
----
+A cross-platform fitness tracking app with offline-first architecture built with Flutter and Supabase.
 
 ## About
 
-LiftLink is a modern fitness tracking application that helps you log workouts, track progress, and connect with friends for motivation. Built with **Flutter** and **Supabase**, it features a robust offline-first architecture that ensures your workout data is always available, even without internet connectivity.
+LiftLink is a fitness tracking application featuring an offline-first architecture where the local Drift/SQLite database is the source of truth, with background sync to Supabase for cloud backup and social features.
 
-### Features
+**Key Features:**
 
-#### Core Tracking
-
-- **Workout Tracking** - Log exercises, sets, reps, weight, RPE, and RIR
-- **Automatic 1RM Calculation** - Real-time estimated one-rep max using Epley Formula
-- **Exercise Library** - 20+ pre-loaded exercises with smart sorting by recent usage
-- **Workout History** - View all past workout sessions with filtering
-- **Workout Templates** - Create and reuse workout routines
-- **Rest Timer** - Auto-start countdown timer with customizable intervals
-- **Plate Calculator** - Visual barbell loading calculator with color-coded plates
-- **Progressive Overload** - Smart weight increase suggestions (2.5% increments)
-- **Exercise Notes** - Quick notes per exercise during workouts
-- **Warmup Generator** - Automatic warmup set recommendations
-
-#### Analytics & Progress
-
-- **Personal Records** - Track PRs with automatic rank indicators (Bronze, Silver, Gold, Diamond)
-- **Progress Charts** - Visualize volume, 1RM, and muscle frequency over time
-- **Advanced Analytics Dashboard** - Comprehensive workout insights with heatmaps and trends
-- **Muscle Frequency Analysis** - Pie chart breakdown of muscle group training
-- **Volume Tracking** - Track total volume per muscle group over time
-- **PDF Export** - Export workouts as professional PDF documents with charts
-- **Data Export** - Export workout data in JSON or CSV format
-
-#### Social Features
-
-- **Friend System** - Send and accept friend requests
-- **Activity Feed** - See friends' recent workout activity
-- **User Search** - Find and connect with other users
-- **Profile Management** - Customizable username, display name, and bio
-- **Workout Sharing** - Generate and share workout summary cards
-- **Social Posts** - Share achievements on external platforms (4 formats)
-- **Smart Recommendations** - AI-like workout pattern analysis and suggestions
-- **Rest Day Suggestions** - Intelligent rest recommendations based on training patterns
-
-#### Technical Features
-
-- **Offline-First** - Full functionality without internet connection
-- **Cloud Sync** - Automatic synchronization when online
-- **Performance Optimized** - Database indexes on critical queries (2-10x faster)
-- **Query Caching** - In-memory cache with TTL for improved performance
-- **Lazy Loading** - Efficient pagination with ListView.builder for all lists
-- **WAL Mode** - Write-Ahead Logging enabled for better database concurrency
-- **Secure** - Row-level security with Supabase
-- **Cross-Platform** - Windows Desktop ✅, Web ✅, Android ✅, iOS ✅
-- **Progressive Web App** - Installable web app with IndexedDB offline support
-- **High Test Coverage** - 96.8% coverage with 331 passing tests
-- **API Documentation** - Comprehensive dartdoc for 204 libraries
-
-### Screenshots
-
-> Coming soon - App is currently in development
-
----
+- Workout tracking with automatic 1RM calculation
+- Offline-first with cloud sync
+- Social features (friends, activity feed)
+- Progress analytics and charts
+- Cross-platform (Windows, Web, Android, iOS)
 
 ## Tech Stack
 
-### Frontend
-
-- **Framework**: Flutter 3.38+
-- **Language**: Dart 3.2+
-- **State Management**: Riverpod with code generation
+- **Frontend**: Flutter 3.38+ / Dart 3.2+
+- **State Management**: Riverpod (code generation)
 - **Local Database**: Drift (SQLite wrapper)
-- **Data Classes**: Freezed for immutability
-- **JSON**: json_serializable
-- **PDF Generation**: pdf package
-- **Sharing**: share_plus package
+- **Backend**: Supabase (PostgreSQL + Auth + Realtime)
+- **Architecture**: Clean Architecture (3-layer)
+- **Data Classes**: Freezed + json_serializable
+- **Error Handling**: Dartz (`Either<Failure, Result>`)
 
-### Backend
-
-- **BaaS**: Supabase (PostgreSQL + Auth + Realtime)
-- **Database**: PostgreSQL 15+
-- **Authentication**: Supabase Auth
-- **Row-Level Security**: Enabled on all tables
-
-### Architecture
-
-- **Pattern**: Clean Architecture (3-layer)
-- **Offline Strategy**: Local-first with background sync
-- **Error Handling**: Functional programming with Dartz (`Either<Failure, Result>`)
-
----
+For detailed architecture and development guidelines, see [.claude/CLAUDE.md](.claude/CLAUDE.md).
 
 ## Getting Started
 
@@ -119,20 +47,19 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
 
 - [Flutter SDK](https://flutter.dev/docs/get-started/install) 3.2.0+
 - [Dart SDK](https://dart.dev/get-dart) 3.2.0+
-- [Supabase CLI](https://supabase.com/docs/guides/cli) (via Scoop or npm)
+- [Supabase CLI](https://supabase.com/docs/guides/cli)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop) (for local Supabase)
-- Git
 
 ### Installation
 
-1. **Clone the repository**
+1. Clone the repository
 
    ```bash
    git clone https://github.com/yourusername/LiftLink.git
    cd LiftLink
    ```
 
-2. **Set up Flutter project**
+2. Set up Flutter project
 
    ```bash
    cd frontend
@@ -140,7 +67,7 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
    flutter pub get
    ```
 
-3. **Start local Supabase**
+3. Start local Supabase
 
    ```bash
    cd ../backend/supabase
@@ -148,73 +75,38 @@ LiftLink is a modern fitness tracking application that helps you log workouts, t
    supabase db reset
    ```
 
-4. **Generate code**
+4. Generate code
 
    ```bash
    cd ../../frontend
    flutter pub run build_runner build --delete-conflicting-outputs
    ```
 
-5. **Run the app**
-
-   **For Windows Desktop:**
+5. Run the app
 
    ```bash
-   flutter run -d windows
-   ```
-
-   **For Web Browser:**
-
-   ```bash
-   flutter run -d chrome  # or 'edge' for Microsoft Edge
-   ```
-
-   **For Mobile:**
-
-   ```bash
-   flutter run -d <device>  # iOS/Android device or emulator
+   flutter run -d windows  # or chrome, edge, android, ios
    ```
 
 ### Building for Production
 
-**Windows Desktop (.exe):**
-
 ```bash
-cd frontend
+# Windows Desktop
 flutter build windows --release
-# Output: build/windows/x64/runner/Release/liftlink.exe
-# Distribution: Zip the entire Release folder (includes DLLs and dependencies)
-```
 
-> **Note**: The Windows build includes all necessary DLL files and the `data` folder. Share the entire `Release` directory, not just the .exe file.
-
-**Web (PWA):**
-
-```bash
-cd frontend
+# Web (PWA)
 flutter build web --release
-# Output: build/web/ (deploy to static hosting)
-# Features: PWA manifest, service worker, installable
-```
 
-**Note**: Web deployment requires database adapter changes (SQLite uses FFI which isn't supported on web). The app can run on web using Supabase-only mode or IndexedDB. See [docs/setup-guide.md](docs/setup-guide.md) for web configuration.
+# Android
+flutter build apk --release
 
-**Android (.apk / .aab):**
-
-```bash
-flutter build apk --release  # APK for direct installation
-flutter build appbundle      # AAB for Google Play Store
-```
-
-**iOS (.ipa):**
-
-```bash
-flutter build ios --release  # Requires Apple Developer account
+# iOS
+flutter build ios --release
 ```
 
 ### Configuration
 
-Set your Supabase credentials via environment variables:
+Set Supabase credentials via environment variables:
 
 ```bash
 flutter run \
@@ -224,33 +116,6 @@ flutter run \
 
 For production, replace with your Supabase Cloud URL and key.
 
----
-
-### Key Design Decisions
-
-**Offline-First Architecture**
-
-- Drift (SQLite) serves as the source of truth for the UI
-- All writes go to local database first for instant feedback
-- Background sync to Supabase when connectivity is available
-- Last-write-wins conflict resolution
-
-**1RM Calculation**
-
-- Calculated client-side using Epley Formula: `weight × (1 + reps/30)`
-- Never stored in database to allow formula updates without migration
-- Computed property on `WorkoutSet` entity
-
-**Security**
-
-- Row-Level Security (RLS) enforced at database level
-- Users can only access their own data
-- Accepted friends can view (but not modify) each other's workouts
-
-For detailed architecture documentation, see [docs/architecture.md](docs/architecture.md).
-
----
-
 ## Testing
 
 ```bash
@@ -259,32 +124,11 @@ flutter test
 
 # Run with coverage
 flutter test --coverage
-
-# Run specific test file
-flutter test test/unit/workout_set_test.dart
-
-# Run integration tests
-flutter test integration_test/app_test.dart
 ```
-
-**Current Test Coverage:**
-
-- **Overall**: 96.8% (331/342 tests passing)
-- **Unit Tests**: 100+ tests covering domain entities, use cases, and services
-- **Widget Tests**: 90+ tests covering all major pages and widgets
-- **Integration Tests**: Framework established for end-to-end testing
-
-**Test Suite Includes:**
-
-- Domain layer: 100% coverage (business logic)
-- Data layer: 85%+ coverage (repositories, data sources)
-- Presentation layer: 90%+ coverage (pages, widgets, providers)
-
----
 
 ## Contributing
 
-Contributions are welcome! This project follows Clean Architecture principles and uses Flutter best practices.
+Contributions are welcome! This project follows Clean Architecture principles and Flutter best practices.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -292,23 +136,15 @@ Contributions are welcome! This project follows Clean Architecture principles an
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-**Development Guidelines:**
+See [.claude/CLAUDE.md](.claude/CLAUDE.md) for detailed development guidelines and workflows.
 
-- Follow Clean Architecture layers
-- Use Freezed for data classes
-- Write tests for new features
-- Run code generation after model changes
-- Ensure RLS policies for new database tables
+## License
 
-See [docs/planning.md](docs/planning.md) for detailed development guidelines.
-
----
+This project is licensed under the MIT License.
 
 ## Author
 
 **Henry Zeng**
 
 - GitHub: [@h-yzeng](https://github.com/h-yzeng)
-- Email: thyzeng@gmail.com
-
-</div>
+- Email: <thyzeng@gmail.com>

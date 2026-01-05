@@ -1,5 +1,4 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:liftlink/core/sync/sync_provider.dart' as sync_core;
 import 'package:liftlink/core/sync/sync_queue_service.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/shared/database/database_provider.dart';
@@ -14,7 +13,7 @@ Future<String?> currentUserId(Ref ref) async {
 
 @riverpod
 Future<SyncQueueService> syncQueueService(Ref ref) async {
-  final networkInfo = ref.watch(sync_core.networkInfoProvider);
+  final networkInfo = ref.watch(networkInfoProvider);
   final database = ref.watch(databaseProvider);
   final userId = await ref.watch(currentUserIdProvider.future);
 

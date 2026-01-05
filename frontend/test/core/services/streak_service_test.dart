@@ -98,12 +98,12 @@ void main() {
 
     test('should handle multiple workouts on same day', () {
       // Arrange
-      // Use fixed dates to avoid timezone/time-of-day issues
-      final baseDate = DateTime(2026, 1, 3, 12, 0, 0); // Fixed date
+      final today = DateTime.now();
+      final yesterday = today.subtract(const Duration(days: 1));
       final workouts = [
-        _createWorkout('1', baseDate),
-        _createWorkout('2', baseDate.add(const Duration(hours: 1))),
-        _createWorkout('3', baseDate.subtract(const Duration(days: 1))),
+        _createWorkout('1', today),
+        _createWorkout('2', today.add(const Duration(hours: 1))),
+        _createWorkout('3', yesterday),
       ];
 
       // Act

@@ -13,6 +13,7 @@ class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
   void _showThemeSelector(BuildContext context, WidgetRef ref) {
+    final currentThemeMode = ref.watch(themeModeProvider).asData?.value;
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
@@ -30,7 +31,7 @@ class SettingsPage extends ConsumerWidget {
               (mode) => ListTile(
                 leading: Icon(mode.icon),
                 title: Text(mode.displayName),
-                trailing: ref.watch(themeModeProvider) == mode
+                trailing: currentThemeMode == mode
                     ? Icon(
                         Icons.check,
                         color: Theme.of(context).colorScheme.primary,
@@ -402,7 +403,7 @@ class SettingsPage extends ConsumerWidget {
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => _showThemeSelector(context, ref),
                     ),
-                    error: (_, __) => ListTile(
+                    error: (error, stack) => ListTile(
                       leading: const Icon(Icons.settings_suggest),
                       title: const Text('Theme'),
                       subtitle: const Text('System'),

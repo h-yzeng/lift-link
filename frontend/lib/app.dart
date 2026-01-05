@@ -21,7 +21,7 @@ class LiftLinkApp extends ConsumerWidget {
     final ThemeMode themeMode = themeModeAsync.when(
       data: (mode) => mode,
       loading: () => ThemeMode.system,
-      error: (_, __) => ThemeMode.system,
+      error: (error, stack) => ThemeMode.system,
     );
 
     return MaterialApp(

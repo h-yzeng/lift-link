@@ -48,7 +48,7 @@ AuthRemoteDataSource authRemoteDataSource(Ref ref) {
 @riverpod
 Future<AuthLocalDataSource> authLocalDataSource(Ref ref) async {
   final prefs = await ref.watch(sharedPreferencesProvider.future);
-  return AuthLocalDataSourceImpl(sharedPreferences: prefs as SharedPreferences);
+  return AuthLocalDataSourceImpl(sharedPreferences: prefs);
 }
 
 // Repository provider

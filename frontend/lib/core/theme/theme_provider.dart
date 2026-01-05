@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 
 part 'theme_provider.g.dart';

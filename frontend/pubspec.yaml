@@ -22,11 +22,11 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.18
   path_provider: ^2.1.2
   path: ^1.8.3
-  sqlite3: ^2.1.0
+  sqlite3: ^2.9.4
 
   # Code Generation
   freezed_annotation: ^3.1.0
-  json_annotation: ^4.8.1
+  json_annotation: ^4.9.0
 
   # Functional Programming
   dartz: ^0.10.1
@@ -71,7 +71,7 @@ dev_dependencies:
   # Code Generation
   build_runner: ^2.4.0
   freezed: ^3.2.3
-  json_serializable: ^6.7.1
+  json_serializable: ^6.11.2
   riverpod_generator: ^4.0.0+1
   riverpod_lint: ^3.1.0
   drift_dev: ^2.18.0

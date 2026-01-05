@@ -25,10 +25,6 @@
     <!-- Theme color for address bar (Chrome, Edge, Safari) -->
     <meta name="theme-color" content="#2196F3" />
 
-    <script>
-      // The value below is injected by flutter build, do not touch.
-      var serviceWorkerVersion = null;
-    </script>
     <!-- This script adds the flutter initialization JS code -->
     <script src="flutter.js" defer></script>
   </head>
@@ -36,9 +32,9 @@
     <script>
       window.addEventListener("load", function (ev) {
         // Download main.dart.js
-        _flutter.loader.loadEntrypoint({
-          serviceWorker: {
-            serviceWorkerVersion: serviceWorkerVersion,
+        _flutter.loader.load({
+          serviceWorkerSettings: {
+            serviceWorkerVersion: {{flutter_service_worker_version}},
           },
           onEntrypointLoaded: function (engineInitializer) {
             engineInitializer.initializeEngine().then(function (appRunner) {

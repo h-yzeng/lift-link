@@ -25,6 +25,11 @@ jobs:
           cd frontend
           flutter pub get
 
+      - name: Generate code with build_runner
+        run: |
+          cd frontend
+          dart run build_runner build --delete-conflicting-outputs
+
       - name: Build Flutter web
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

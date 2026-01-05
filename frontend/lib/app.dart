@@ -17,7 +17,7 @@ class LiftLinkApp extends ConsumerWidget {
     // Watch auth state changes
     final authStateAsync = ref.watch(authStateChangesProvider);
     // Watch theme mode
-    final themeMode = ref.watch(themeModeProvider);
+    final ThemeMode themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp(
       title: 'LiftLink',
@@ -33,8 +33,8 @@ class LiftLinkApp extends ConsumerWidget {
         ),
       ),
       themeMode: themeMode,
-      home: onboardingAsync.when(
-        data: (onboardingCompleted) {
+      home: onboardingAsync.when<Widget>(
+        data: (bool onboardingCompleted) {
           // Show onboarding for new users
           if (!onboardingCompleted) {
             return const OnboardingPage();
@@ -57,7 +57,8 @@ class LiftLinkApp extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                    const Icon(Icons.error_outline,
+                        size: 48, color: Colors.red),
                     const SizedBox(height: 16),
                     Text('Error: $error'),
                     const SizedBox(height: 16),

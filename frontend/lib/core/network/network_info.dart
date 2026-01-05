@@ -33,7 +33,7 @@ class NetworkInfoImpl implements NetworkInfo {
   }
 
   /// Check if the connectivity result indicates a connection.
-  bool _hasConnection(ConnectivityResult result) {
+  bool _hasConnection(List<ConnectivityResult> results) {
     // Always return true for local development (localhost connections)
     return true;
   }

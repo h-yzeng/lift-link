@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/core/services/streak_service.dart';
 import 'package:liftlink/core/theme/theme_provider.dart';
+import 'package:liftlink/features/auth/domain/entities/user.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
+import 'package:liftlink/features/profile/domain/entities/profile.dart';
 import 'package:liftlink/features/profile/presentation/pages/settings_page.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/social/presentation/pages/social_hub_page.dart';
+import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/presentation/pages/active_workout_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/exercise_list_page.dart';
 import 'package:liftlink/features/workout/presentation/pages/muscle_frequency_page.dart';
@@ -50,7 +54,7 @@ class HomePage extends ConsumerWidget {
 
     if (confirmed != true || !context.mounted) return;
 
-    final user = await ref.read(currentUserProvider.future);
+    final User? user = await ref.read(currentUserProvider.future);
     if (user == null) return;
 
     final useCase = ref.read(startWorkoutUseCaseProvider);
@@ -60,14 +64,14 @@ class HomePage extends ConsumerWidget {
     );
 
     result.fold(
-      (failure) {
+      (Failure failure) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(failure.message ?? 'Failed to start workout')),
+            SnackBar(content: Text(failure.userMessage)),
           );
         }
       },
-      (workout) {
+      (WorkoutSession workout) {
         if (context.mounted) {
           ref.invalidate(activeWorkoutProvider);
           Navigator.of(context).push(
@@ -115,13 +119,13 @@ class HomePage extends ConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: profileAsync.when(
-          data: (profile) {
+        child: profileAsync.when<Widget>(
+          data: (Profile? profile) {
             final greeting = _getGreeting();
             final displayName = profile?.displayNameOrUsername ?? 'there';
 
-            return activeWorkoutAsync.when(
-              data: (activeWorkout) {
+            return activeWorkoutAsync.when<Widget>(
+              data: (WorkoutSession? activeWorkout) {
                 if (activeWorkout != null) {
                   // Active workout view
                   return SingleChildScrollView(
@@ -154,12 +158,15 @@ class HomePage extends ConsumerWidget {
                         // Workout Streak Card
                         Consumer(
                           builder: (context, ref, child) {
-                            final streakAsync = ref.watch(workoutStreakProvider);
-                            return streakAsync.when(
-                              data: (streakData) {
-                                if (streakData.currentStreak > 0 || streakData.longestStreak > 0) {
+                            final streakAsync =
+                                ref.watch(workoutStreakProvider);
+                            return streakAsync.when<Widget>(
+                              data: (StreakData streakData) {
+                                if (streakData.currentStreak > 0 ||
+                                    streakData.longestStreak > 0) {
                                   return Padding(
-                                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(16, 0, 16, 8),
                                     child: _StreakCard(streakData: streakData),
                                   );
                                 }
@@ -182,15 +189,16 @@ class HomePage extends ConsumerWidget {
                                 onTap: () {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          ActiveWorkoutPage(workout: activeWorkout),
+                                      builder: (context) => ActiveWorkoutPage(
+                                          workout: activeWorkout),
                                     ),
                                   );
                                 },
                               ),
                               const SizedBox(height: 16),
                               _QuickActionsGrid(
-                                onStartNewWorkout: () => _startWorkout(context, ref),
+                                onStartNewWorkout: () =>
+                                    _startWorkout(context, ref),
                               ),
                             ],
                           ),
@@ -232,11 +240,13 @@ class HomePage extends ConsumerWidget {
                       Consumer(
                         builder: (context, ref, child) {
                           final streakAsync = ref.watch(workoutStreakProvider);
-                          return streakAsync.when(
-                            data: (streakData) {
-                              if (streakData.currentStreak > 0 || streakData.longestStreak > 0) {
+                          return streakAsync.when<Widget>(
+                            data: (StreakData streakData) {
+                              if (streakData.currentStreak > 0 ||
+                                  streakData.longestStreak > 0) {
                                 return Padding(
-                                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 8),
                                   child: _StreakCard(streakData: streakData),
                                 );
                               }
@@ -259,7 +269,8 @@ class HomePage extends ConsumerWidget {
                             ),
                             const SizedBox(height: 24),
                             _QuickActionsGrid(
-                              onStartNewWorkout: () => _startWorkout(context, ref),
+                              onStartNewWorkout: () =>
+                                  _startWorkout(context, ref),
                               showStartWorkout: false,
                             ),
                           ],
@@ -320,7 +331,8 @@ class _ActiveWorkoutCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Semantics(
-      label: 'Active workout: ${workout.title}. ${workout.exerciseCount} exercises, ${workout.totalSets} sets, ${workout.formattedDuration} duration. Tap to continue.',
+      label:
+          'Active workout: ${workout.title}. ${workout.exerciseCount} exercises, ${workout.totalSets} sets, ${workout.formattedDuration} duration. Tap to continue.',
       button: true,
       child: Card(
         elevation: 4,
@@ -373,47 +385,47 @@ class _ActiveWorkoutCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  _WorkoutStat(
-                    icon: Icons.fitness_center,
-                    label: '${workout.exerciseCount}',
-                    subtitle: 'Exercises',
-                  ),
-                  const SizedBox(width: 20),
-                  _WorkoutStat(
-                    icon: Icons.format_list_numbered,
-                    label: '${workout.totalSets}',
-                    subtitle: 'Sets',
-                  ),
-                  const SizedBox(width: 20),
-                  _WorkoutStat(
-                    icon: Icons.timer,
-                    label: workout.formattedDuration as String,
-                    subtitle: 'Duration',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ExcludeSemantics(
-                child: FilledButton(
-                  onPressed: onTap,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: theme.colorScheme.onPrimary,
-                    minimumSize: const Size(double.infinity, 48),
-                  ),
-                  child: const Text('Continue Workout'),
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    _WorkoutStat(
+                      icon: Icons.fitness_center,
+                      label: '${workout.exerciseCount}',
+                      subtitle: 'Exercises',
+                    ),
+                    const SizedBox(width: 20),
+                    _WorkoutStat(
+                      icon: Icons.format_list_numbered,
+                      label: '${workout.totalSets}',
+                      subtitle: 'Sets',
+                    ),
+                    const SizedBox(width: 20),
+                    _WorkoutStat(
+                      icon: Icons.timer,
+                      label: workout.formattedDuration as String,
+                      subtitle: 'Duration',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ExcludeSemantics(
+                  child: FilledButton(
+                    onPressed: onTap,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      minimumSize: const Size(double.infinity, 48),
+                    ),
+                    child: const Text('Continue Workout'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    ),
     );
   }
 }
@@ -456,7 +468,8 @@ class _WorkoutStat extends StatelessWidget {
             Text(
               subtitle,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                color:
+                    theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
               ),
             ),
           ],

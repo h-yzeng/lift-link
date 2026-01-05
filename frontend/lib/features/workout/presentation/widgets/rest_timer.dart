@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/providers/core_providers.dart';
 import 'package:liftlink/features/workout/presentation/providers/rest_timer_notifier.dart';
+import 'package:liftlink/features/workout/presentation/providers/rest_timer_state.dart';
 
 /// A rest timer widget that counts down between sets.
 class RestTimer extends ConsumerWidget {
@@ -47,8 +48,9 @@ class RestTimer extends ConsumerWidget {
       onShowNotification: () => _showCompletionNotification(ref),
     );
 
-    final state = ref.watch(restTimerProvider(params));
-    final notifier = ref.read(restTimerProvider(params).notifier);
+    final RestTimerState state = ref.watch(restTimerProvider(params));
+    final RestTimerNotifier notifier =
+        ref.read(restTimerProvider(params).notifier);
 
     // Request permissions on first start
     if (state.isRunning && !state.permissionsRequested) {

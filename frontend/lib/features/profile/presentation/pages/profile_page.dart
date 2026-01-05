@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liftlink/features/profile/domain/entities/profile.dart';
 import 'package:liftlink/features/profile/presentation/pages/settings_page.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
 import 'package:liftlink/features/workout/presentation/pages/personal_records_page.dart';
@@ -31,8 +32,8 @@ class ProfilePage extends ConsumerWidget {
           ),
         ],
       ),
-      body: profileAsync.when(
-        data: (profile) {
+      body: profileAsync.when<Widget>(
+        data: (Profile? profile) {
           if (profile == null) {
             return const Center(
               child: Text('Profile not found'),

@@ -48,5 +48,11 @@
         });
       });
     </script>
+    <script>
+      // Load sqlite3.wasm before Flutter app
+      var scriptTag = document.createElement('script');
+      scriptTag.src = 'sqlite3.wasm.js';
+      document.head.appendChild(scriptTag);
+    </script>
   </body>
 </html>

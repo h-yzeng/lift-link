@@ -1,167 +1,128 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter/foundation.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 /// Service for managing local notifications
-///
-/// Handles initialization, permission requests, and showing notifications
-/// for features like rest timer completion.
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
   NotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _notificationsPlugin =
+  final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
 
   bool _initialized = false;
-  bool get isInitialized => _initialized;
 
   /// Initialize the notification service
-  ///
-  /// This should be called during app startup.
-  /// Returns true if initialization was successful.
-  Future<bool> initialize() async {
-    if (_initialized) return true;
+  Future<void> initialize() async {
+    if (_initialized) return;
 
-    try {
-      // Android initialization settings
-      const androidSettings =
-          AndroidInitializationSettings('@mipmap/ic_launcher');
+    // Initialize timezone data
+    tz.initializeTimeZones();
 
-      // iOS initialization settings
-      const iosSettings = DarwinInitializationSettings(
-        requestAlertPermission: false, // We'll request explicitly
-        requestBadgePermission: false,
-        requestSoundPermission: false,
-      );
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
 
-      const initSettings = InitializationSettings(
-        android: androidSettings,
-        iOS: iosSettings,
-      );
+    const settings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
 
-      final initialized = await _notificationsPlugin.initialize(
-        initSettings,
-        onDidReceiveNotificationResponse: _onNotificationTapped,
-      );
+    await _notifications.initialize(
+      settings,
+      onDidReceiveNotificationResponse: _onNotificationTapped,
+    );
 
-      _initialized = initialized ?? false;
-      return _initialized;
-    } catch (e) {
-      debugPrint('Failed to initialize notifications: $e');
-      return false;
-    }
+    _initialized = true;
   }
 
-  /// Request notification permissions (iOS only, Android grants automatically)
-  ///
-  /// Returns true if permissions were granted.
-  Future<bool> requestPermissions() async {
-    if (!_initialized) {
-      await initialize();
-    }
-
-    try {
-      // Android doesn't need runtime permission request for notifications
-      if (defaultTargetPlatform == TargetPlatform.android) {
-        return true;
-      }
-
-      // Request iOS permissions
-      final granted = await _notificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>()
-          ?.requestPermissions(
-            alert: true,
-            badge: true,
-            sound: true,
-          );
-
-      return granted ?? false;
-    } catch (e) {
-      debugPrint('Failed to request notification permissions: $e');
-      return false;
-    }
-  }
-
-  /// Show a notification for rest timer completion
-  ///
-  /// Parameters:
-  /// - [exerciseName]: Name of the exercise that just completed rest
-  /// - [restSeconds]: Number of seconds that were rested
-  Future<void> showRestTimerNotification({
-    required String exerciseName,
-    required int restSeconds,
-  }) async {
-    if (!_initialized) {
-      await initialize();
-    }
-
-    try {
-      const notificationId = 1; // Use same ID to replace previous notifications
-
-      // Android notification details
-      const androidDetails = AndroidNotificationDetails(
-        'rest_timer_channel',
-        'Rest Timer',
-        channelDescription: 'Notifications for rest timer completion',
-        importance: Importance.high,
-        priority: Priority.high,
-        enableVibration: true,
-        playSound: true,
-      );
-
-      // iOS notification details
-      const iosDetails = DarwinNotificationDetails(
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true,
-      );
-
-      const notificationDetails = NotificationDetails(
-        android: androidDetails,
-        iOS: iosDetails,
-      );
-
-      const title = 'Rest Complete!';
-      final body = 'Time to get back to $exerciseName';
-
-      await _notificationsPlugin.show(
-        notificationId,
-        title,
-        body,
-        notificationDetails,
-      );
-    } catch (e) {
-      debugPrint('Failed to show rest timer notification: $e');
-    }
-  }
-
-  /// Cancel all pending notifications
-  Future<void> cancelAll() async {
-    try {
-      await _notificationsPlugin.cancelAll();
-    } catch (e) {
-      debugPrint('Failed to cancel notifications: $e');
-    }
-  }
-
-  /// Cancel a specific notification by ID
-  Future<void> cancel(int id) async {
-    try {
-      await _notificationsPlugin.cancel(id);
-    } catch (e) {
-      debugPrint('Failed to cancel notification $id: $e');
-    }
-  }
-
-  /// Handle notification tap
-  ///
-  /// When user taps a notification, this callback is invoked.
-  /// Currently, it just brings the app to foreground.
   void _onNotificationTapped(NotificationResponse response) {
-    debugPrint('Notification tapped: ${response.payload}');
-    // The app will automatically come to foreground
-    // Additional navigation logic can be added here if needed
+    // Handle notification tap
+  }
+
+  /// Request notification permissions (iOS)
+  Future<bool> requestPermissions() async {
+    final result = await _notifications
+        .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+
+    return result ?? true;
+  }
+
+  /// Schedule daily workout reminder
+  Future<void> scheduleDailyReminder({
+    required int id,
+    required String title,
+    required String body,
+    required int hour,
+    required int minute,
+  }) async {
+    await _notifications.zonedSchedule(
+      id,
+      title,
+      body,
+      _nextInstanceOfTime(hour, minute),
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'daily_reminders',
+          'Daily Workout Reminders',
+          channelDescription: 'Daily reminders to workout',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+  tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduledDate = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day,
+      hour,
+      minute,
+    );
+
+    if (scheduledDate.isBefore(now)) {
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+
+    return scheduledDate;
+  }
+
+  /// Cancel a specific notification
+  Future<void> cancelNotification(int id) async {
+    await _notifications.cancel(id);
+  }
+
+  /// Cancel all notifications
+  Future<void> cancelAllNotifications() async {
+    await _notifications.cancelAll();
+  }
+
+  /// Get pending notifications
+  Future<List<PendingNotificationRequest>> getPendingNotifications() async {
+    return await _notifications.pendingNotificationRequests();
   }
 }

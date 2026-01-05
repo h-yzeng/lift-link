@@ -384,12 +384,33 @@ class SettingsPage extends ConsumerWidget {
             children: [
               // Appearance Section
               _buildSectionHeader('Appearance'),
-              ListTile(
-                leading: Icon(ref.watch(themeModeProvider).icon),
-                title: const Text('Theme'),
-                subtitle: Text(ref.watch(themeModeProvider).displayName),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () => _showThemeSelector(context, ref),
+              Builder(
+                builder: (context) {
+                  final themeAsync = ref.watch(themeModeProvider);
+                  return themeAsync.when(
+                    data: (mode) => ListTile(
+                      leading: Icon(mode.icon),
+                      title: const Text('Theme'),
+                      subtitle: Text(mode.displayName),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => _showThemeSelector(context, ref),
+                    ),
+                    loading: () => ListTile(
+                      leading: const Icon(Icons.settings_suggest),
+                      title: const Text('Theme'),
+                      subtitle: const Text('Loading...'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => _showThemeSelector(context, ref),
+                    ),
+                    error: (_, __) => ListTile(
+                      leading: const Icon(Icons.settings_suggest),
+                      title: const Text('Theme'),
+                      subtitle: const Text('System'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => _showThemeSelector(context, ref),
+                    ),
+                  );
+                },
               ),
               const Divider(),
 

@@ -13,11 +13,16 @@ class LiftLinkApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch onboarding state
-    final onboardingAsync = ref.watch(onboardingCompletedProvider);
+    final onboardingAsync = ref.watch(onboardingProvider);
     // Watch auth state changes
     final authStateAsync = ref.watch(authStateChangesProvider);
     // Watch theme mode
-    final ThemeMode themeMode = ref.watch(themeModeProvider);
+    final themeModeAsync = ref.watch(themeModeProvider);
+    final ThemeMode themeMode = themeModeAsync.when(
+      data: (mode) => mode,
+      loading: () => ThemeMode.system,
+      error: (_, __) => ThemeMode.system,
+    );
 
     return MaterialApp(
       title: 'LiftLink',
@@ -48,17 +53,18 @@ class LiftLinkApp extends ConsumerWidget {
               return user != null ? const MainScaffold() : const LoginPage();
             },
             loading: () => const Scaffold(
-              body: Center(
-                child: CircularProgressIndicator(),
-              ),
+              body: Center(child: CircularProgressIndicator()),
             ),
             error: (error, stack) => Scaffold(
               body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline,
-                        size: 48, color: Colors.red),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: Colors.red,
+                    ),
                     const SizedBox(height: 16),
                     Text('Error: $error'),
                     const SizedBox(height: 16),
@@ -75,16 +81,10 @@ class LiftLinkApp extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        ),
-        error: (error, stack) => const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
-          ),
-        ),
+        loading: () =>
+            const Scaffold(body: Center(child: CircularProgressIndicator())),
+        error: (error, stack) =>
+            const Scaffold(body: Center(child: CircularProgressIndicator())),
       ),
     );
   }

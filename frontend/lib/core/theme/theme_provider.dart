@@ -1,53 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 
 part 'theme_provider.g.dart';
 
 const _themeModeKey = 'theme_mode';
 
-/// Provider for SharedPreferences.
-@Riverpod(keepAlive: true)
-Future<SharedPreferences> sharedPreferences(Ref ref) async {
-  return SharedPreferences.getInstance();
-}
-
 /// Provider for the current theme mode.
 @Riverpod(keepAlive: true)
 class ThemeModeNotifier extends _$ThemeModeNotifier {
-  bool _isInitialized = false;
-
   @override
-  ThemeMode build() {
-    _loadThemeMode();
-    return ThemeMode.system;
-  }
-
-  Future<void> _loadThemeMode() async {
-    if (_isInitialized) return;
-
+  FutureOr<ThemeMode> build() async {
     try {
-      final prefs = await ref.read(sharedPreferencesProvider.future);
+      final prefs = await ref.watch(sharedPreferencesProvider.future);
       final themeModeString = prefs.getString(_themeModeKey);
 
       if (themeModeString != null) {
-        state = _stringToThemeMode(themeModeString);
+        return _stringToThemeMode(themeModeString);
       }
-      _isInitialized = true;
+      return ThemeMode.system;
     } catch (e) {
-      // Default to system if loading fails
-      state = ThemeMode.system;
+      return ThemeMode.system;
     }
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
-    state = mode;
+    // Update state optimistically
+    state = AsyncValue.data(mode);
 
     try {
       final prefs = await ref.read(sharedPreferencesProvider.future);
       await prefs.setString(_themeModeKey, _themeModeToString(mode));
     } catch (e) {
-      // Ignore save errors
+      // If save fails, reload from preferences
+      ref.invalidateSelf();
     }
   }
 

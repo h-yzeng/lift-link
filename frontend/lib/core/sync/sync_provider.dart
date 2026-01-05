@@ -1,17 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:liftlink/core/network/network_info.dart';
 import 'package:liftlink/core/sync/sync_service.dart';
 import 'package:liftlink/features/workout/presentation/providers/exercise_providers.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 
 /// Provider for the network info.
-final networkInfoProvider = Provider<NetworkInfo>((ref) {
-  return NetworkInfoImpl();
+final networkInfoSyncProvider = Provider<NetworkInfo>((ref) {
+  return NetworkInfoImpl(connectivity: Connectivity());
 });
 
 /// Provider for the sync service.
 final syncServiceProvider = Provider<SyncService>((ref) {
-  final networkInfo = ref.watch(networkInfoProvider);
+  final networkInfo = ref.watch(networkInfoSyncProvider);
   final exerciseRepository = ref.watch(exerciseRepositoryProvider);
   final workoutRepository = ref.watch(workoutRepositoryProvider);
 

@@ -31,7 +31,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     try {
       final loginUseCase = await ref.read(loginWithEmailUseCaseProvider.future);
-      final result = await loginUseCase(
+      final result = await loginUseCase.call(
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
@@ -59,8 +59,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Future<void> _handleForgotPassword() async {
-    final emailController =
-        TextEditingController(text: _emailController.text.trim());
+    final emailController = TextEditingController(
+      text: _emailController.text.trim(),
+    );
 
     final email = await showDialog<String>(
       context: context,
@@ -70,7 +71,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-                'Enter your email address and we\'ll send you a password reset link.',),
+              'Enter your email address and we\'ll send you a password reset link.',
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: emailController,
@@ -100,9 +102,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
     if (email == null || email.isEmpty || !mounted) return;
 
-    final resetPasswordUseCase =
-        await ref.read(resetPasswordUseCaseProvider.future);
-    final result = await resetPasswordUseCase(email);
+    final resetPasswordUseCase = await ref.read(
+      resetPasswordUseCaseProvider.future,
+    );
+    final result = await resetPasswordUseCase.call(email);
 
     if (!mounted) return;
 
@@ -148,8 +151,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   Text(
                     'LiftLink',
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
@@ -171,8 +174,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
                       }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                          .hasMatch(value)) {
+                      if (!RegExp(
+                        r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                      ).hasMatch(value)) {
                         return 'Please enter a valid email';
                       }
                       return null;

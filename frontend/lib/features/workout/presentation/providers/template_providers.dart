@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/workout/data/datasources/template_local_data_source.dart';
 import 'package:liftlink/features/workout/data/repositories/template_repository_impl.dart';
@@ -10,7 +11,9 @@ import 'package:liftlink/features/workout/domain/usecases/get_templates.dart';
 import 'package:liftlink/shared/database/database_provider.dart';
 
 /// Provider for template local data source.
-final templateLocalDataSourceProvider = Provider<TemplateLocalDataSource>((ref) {
+final templateLocalDataSourceProvider = Provider<TemplateLocalDataSource>((
+  ref,
+) {
   final database = ref.watch(databaseProvider);
   return TemplateLocalDataSource(database);
 });
@@ -49,8 +52,10 @@ final templatesProvider = FutureProvider<List<WorkoutTemplate>>((ref) async {
   final useCase = ref.watch(getTemplatesUseCaseProvider);
   final result = await useCase(userId: user.id);
 
-  return result.fold(
-    (failure) => throw Exception(failure.message),
-    (templates) => templates,
-  );
+  return result.fold((failure) {
+    if (failure is ServerFailure) {
+      throw Exception(failure.message);
+    }
+    throw Exception('Failed to load templates');
+  }, (templates) => templates);
 });

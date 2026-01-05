@@ -24,31 +24,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Theme color for address bar (Chrome, Edge, Safari) -->
     <meta name="theme-color" content="#2196F3" />
-
-    <!-- This script adds the flutter initialization JS code -->
-    <script src="flutter.js" defer></script>
   </head>
   <body>
-    <script>
-      window.addEventListener("load", function (ev) {
-        // Download main.dart.js
-        _flutter.loader.load({
-          serviceWorkerSettings: {
-            serviceWorkerVersion: {{flutter_service_worker_version}},
-          },
-          onEntrypointLoaded: function (engineInitializer) {
-            engineInitializer.initializeEngine().then(function (appRunner) {
-              appRunner.runApp();
-            });
-          },
-        });
-      });
-    </script>
-    <script>
-      // Load sqlite3.wasm before Flutter app
-      var scriptTag = document.createElement('script');
-      scriptTag.src = 'sqlite3.wasm.js';
-      document.head.appendChild(scriptTag);
-    </script>
+    <script src="flutter_bootstrap.js" async></script>
   </body>
 </html>

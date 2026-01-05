@@ -220,23 +220,6 @@ For production, replace with your Supabase Cloud URL and key.
 
 ---
 
-## Architecture
-
-LiftLink follows **Clean Architecture** principles with strict separation of concerns:
-
-```
-┌─────────────────────────────────────┐
-│      Presentation Layer             │  ← Flutter UI, Riverpod
-├─────────────────────────────────────┤
-│        Domain Layer                 │  ← Business Logic, Entities
-├─────────────────────────────────────┤
-│         Data Layer                  │  ← Repositories, Data Sources
-│    ┌──────────┬──────────┐          │
-│    │  Drift   │ Supabase │          │  ← Local & Remote
-│    └──────────┴──────────┘          │
-└─────────────────────────────────────┘
-```
-
 ### Key Design Decisions
 
 **Offline-First Architecture**
@@ -259,28 +242,6 @@ LiftLink follows **Clean Architecture** principles with strict separation of con
 - Accepted friends can view (but not modify) each other's workouts
 
 For detailed architecture documentation, see [docs/architecture.md](docs/architecture.md).
-
----
-
-## Project Structure
-
-```
-LiftLink/
-├── frontend/              # Flutter application
-│   ├── lib/
-│   │   ├── features/     # Feature modules (auth, workout, social, profile)
-│   │   ├── core/         # Shared infrastructure
-│   │   └── shared/       # Shared components
-│   └── test/             # Unit, widget, and integration tests
-├── backend/
-│   └── supabase/
-│       └── migrations/   # Database migrations with RLS policies
-└── docs/                 # Documentation
-    ├── planning.md       # Project planning
-    ├── task.md          # Task tracking
-    ├── architecture.md  # Architecture details
-    └── setup-guide.md   # Development setup
-```
 
 ---
 

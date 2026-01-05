@@ -1,5 +1,4 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:liftlink/core/error/failures.dart';
@@ -26,9 +25,7 @@ NetworkInfo networkInfo(Ref ref) {
 // Data source providers
 @riverpod
 ExerciseLocalDataSource exerciseLocalDataSource(Ref ref) {
-  return ExerciseLocalDataSourceImpl(
-    database: ref.watch(databaseProvider),
-  );
+  return ExerciseLocalDataSourceImpl(database: ref.watch(databaseProvider));
 }
 
 @riverpod
@@ -82,36 +79,32 @@ Future<List<Exercise>> exerciseList(
     userId: user?.id,
   );
 
-  return result.fold(
-    (failure) => throw Exception(failure.userMessage),
-    (exercises) {
-      // Sort by recent usage: recently used exercises first, then by name
-      final sorted = List<Exercise>.from(exercises);
-      sorted.sort((a, b) {
-        // If both have lastUsedAt, sort by most recent first
-        if (a.lastUsedAt != null && b.lastUsedAt != null) {
-          return b.lastUsedAt!.compareTo(a.lastUsedAt!);
-        }
-        // Recently used exercises come first
-        if (a.lastUsedAt != null) return -1;
-        if (b.lastUsedAt != null) return 1;
-        // If neither used recently, sort by usage count then name
-        if (a.usageCount != b.usageCount) {
-          return b.usageCount.compareTo(a.usageCount);
-        }
-        return a.name.compareTo(b.name);
-      });
-      return sorted;
-    },
-  );
+  return result.fold((failure) => throw Exception(failure.userMessage), (
+    exercises,
+  ) {
+    // Sort by recent usage: recently used exercises first, then by name
+    final sorted = List<Exercise>.from(exercises);
+    sorted.sort((a, b) {
+      // If both have lastUsedAt, sort by most recent first
+      if (a.lastUsedAt != null && b.lastUsedAt != null) {
+        return b.lastUsedAt!.compareTo(a.lastUsedAt!);
+      }
+      // Recently used exercises come first
+      if (a.lastUsedAt != null) return -1;
+      if (b.lastUsedAt != null) return 1;
+      // If neither used recently, sort by usage count then name
+      if (a.usageCount != b.usageCount) {
+        return b.usageCount.compareTo(a.usageCount);
+      }
+      return a.name.compareTo(b.name);
+    });
+    return sorted;
+  });
 }
 
 // Search results provider
 @riverpod
-Future<List<Exercise>> exerciseSearchResults(
-  Ref ref,
-  String query,
-) async {
+Future<List<Exercise>> exerciseSearchResults(Ref ref, String query) async {
   if (query.trim().isEmpty) {
     return [];
   }
@@ -119,10 +112,7 @@ Future<List<Exercise>> exerciseSearchResults(
   final user = await ref.watch(currentUserProvider.future);
   final useCase = ref.watch(searchExercisesUseCaseProvider);
 
-  final result = await useCase(
-    query: query,
-    userId: user?.id,
-  );
+  final result = await useCase(query: query, userId: user?.id);
 
   return result.fold(
     (failure) => throw Exception(failure.userMessage),

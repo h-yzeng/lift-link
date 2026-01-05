@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:liftlink/core/caching/cache_provider.dart';
@@ -33,9 +32,7 @@ part 'workout_providers.g.dart';
 // Data source providers
 @riverpod
 WorkoutLocalDataSource workoutLocalDataSource(Ref ref) {
-  return WorkoutLocalDataSourceImpl(
-    database: ref.watch(databaseProvider),
-  );
+  return WorkoutLocalDataSourceImpl(database: ref.watch(databaseProvider));
 }
 
 @riverpod
@@ -227,18 +224,12 @@ Future<List<PersonalRecord>> personalRecords(Ref ref) async {
 
 // Exercise PR provider - gets PR for a specific exercise
 @riverpod
-Future<PersonalRecord?> exercisePR(
-  Ref ref,
-  String exerciseId,
-) async {
+Future<PersonalRecord?> exercisePR(Ref ref, String exerciseId) async {
   final user = await ref.watch(currentUserProvider.future);
   if (user == null) return null;
 
   final useCase = ref.watch(getExercisePRUseCaseProvider);
-  final result = await useCase(
-    userId: user.id,
-    exerciseId: exerciseId,
-  );
+  final result = await useCase(userId: user.id, exerciseId: exerciseId);
 
   return result.fold(
     (failure) => throw Exception(failure.userMessage),

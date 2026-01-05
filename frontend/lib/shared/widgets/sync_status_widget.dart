@@ -7,10 +7,7 @@ import 'package:liftlink/core/sync/sync_service.dart';
 class SyncStatusWidget extends ConsumerWidget {
   final bool showLabel;
 
-  const SyncStatusWidget({
-    super.key,
-    this.showLabel = true,
-  });
+  const SyncStatusWidget({super.key, this.showLabel = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,7 +16,7 @@ class SyncStatusWidget extends ConsumerWidget {
     return syncStatusAsync.when(
       data: (status) => _buildStatusIndicator(context, ref, status),
       loading: () => _buildStatusIndicator(context, ref, SyncResult.idle()),
-      error: (_, __) => _buildStatusIndicator(
+      error: (_, _) => _buildStatusIndicator(
         context,
         ref,
         SyncResult.error('Unknown error'),
@@ -66,10 +63,7 @@ class SyncStatusWidget extends ConsumerWidget {
           ? SizedBox(
               width: 24,
               height: 24,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: color,
-              ),
+              child: CircularProgressIndicator(strokeWidth: 2, color: color),
             )
           : Icon(icon, color: color),
       onPressed: result.status == SyncStatus.syncing
@@ -138,10 +132,7 @@ class SyncStatusCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.sync,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.sync, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
                 Text(
                   'Data Sync',
@@ -154,12 +145,9 @@ class SyncStatusCard extends ConsumerWidget {
             const SizedBox(height: 16),
             syncStatusAsync.when(
               data: (status) => _buildStatusDetails(context, ref, status),
-              loading: () => _buildStatusDetails(
-                context,
-                ref,
-                SyncResult.idle(),
-              ),
-              error: (_, __) => _buildStatusDetails(
+              loading: () =>
+                  _buildStatusDetails(context, ref, SyncResult.idle()),
+              error: (_, _) => _buildStatusDetails(
                 context,
                 ref,
                 SyncResult.error('Unknown error'),
@@ -214,9 +202,7 @@ class SyncStatusCard extends ConsumerWidget {
             Expanded(
               child: Text(
                 statusText,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: statusColor,
-                ),
+                style: theme.textTheme.bodyMedium?.copyWith(color: statusColor),
               ),
             ),
           ],

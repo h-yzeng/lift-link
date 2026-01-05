@@ -4,24 +4,14 @@ part 'sync_queue_item.freezed.dart';
 part 'sync_queue_item.g.dart';
 
 /// Types of sync operations
-enum SyncOperationType {
-  create,
-  update,
-  delete,
-}
+enum SyncOperationType { create, update, delete }
 
 /// Types of entities that can be synced
-enum SyncEntityType {
-  workout,
-  set,
-  exercise,
-  profile,
-  friendship,
-}
+enum SyncEntityType { workout, set, exercise, profile, friendship }
 
 /// Represents a pending sync operation in the queue
 @freezed
-class SyncQueueItem with _$SyncQueueItem {
+abstract class SyncQueueItem with _$SyncQueueItem {
   const factory SyncQueueItem({
     required String id,
     required String userId,
@@ -60,8 +50,10 @@ extension SyncQueueItemX on SyncQueueItem {
     const maxDelaySeconds = 300; // 5 minutes
 
     // Exponential backoff: 5s, 10s, 20s, 40s, 80s, 160s (capped at 300s)
-    final delaySeconds = (baseDelaySeconds * (1 << retryCount))
-        .clamp(baseDelaySeconds, maxDelaySeconds);
+    final delaySeconds = (baseDelaySeconds * (1 << retryCount)).clamp(
+      baseDelaySeconds,
+      maxDelaySeconds,
+    );
 
     return Duration(seconds: delaySeconds);
   }
@@ -81,8 +73,6 @@ extension SyncQueueItemX on SyncQueueItem {
 
   /// Mark this item as successfully synced (for deletion)
   SyncQueueItem markAsCompleted() {
-    return copyWith(
-      updatedAt: DateTime.now(),
-    );
+    return copyWith(updatedAt: DateTime.now());
   }
 }

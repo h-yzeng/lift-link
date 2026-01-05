@@ -45,7 +45,7 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
 
     if (sets == null) return;
 
-    ref.read(createTemplateNotifierProvider.notifier).addExercise(
+    ref.read(createTemplateProvider.notifier).addExercise(
           TemplateExercise(
             exerciseId: exercise['id']!,
             exerciseName: exercise['name']!,
@@ -55,19 +55,19 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
   }
 
   void _removeExercise(int index) {
-    ref.read(createTemplateNotifierProvider.notifier).removeExercise(index);
+    ref.read(createTemplateProvider.notifier).removeExercise(index);
   }
 
   void _reorderExercises(int oldIndex, int newIndex) {
     ref
-        .read(createTemplateNotifierProvider.notifier)
+        .read(createTemplateProvider.notifier)
         .reorderExercises(oldIndex, newIndex);
   }
 
   Future<void> _saveTemplate() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final templateState = ref.read(createTemplateNotifierProvider);
+    final templateState = ref.read(createTemplateProvider);
     if (!templateState.hasExercises) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Add at least one exercise')),
@@ -78,7 +78,7 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
     final user = await ref.read(currentUserProvider.future);
     if (user == null) return;
 
-    final notifier = ref.read(createTemplateNotifierProvider.notifier);
+    final notifier = ref.read(createTemplateProvider.notifier);
     notifier.setSaving(true);
 
     try {
@@ -119,7 +119,7 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
 
   @override
   Widget build(BuildContext context) {
-    final templateState = ref.watch(createTemplateNotifierProvider);
+    final templateState = ref.watch(createTemplateProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -208,10 +208,9 @@ class _CreateTemplatePageState extends ConsumerState<CreateTemplatePage> {
                       const SizedBox(height: 8),
                       Text(
                         'No exercises added',
-                        style:
-                            Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.outline,
-                                ),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
                       ),
                       const SizedBox(height: 16),
                       OutlinedButton.icon(
@@ -290,9 +289,8 @@ class _SetCountDialogState extends State<_SetCountDialog> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    onPressed: sets > 1
-                        ? () => _setsNotifier.value = sets - 1
-                        : null,
+                    onPressed:
+                        sets > 1 ? () => _setsNotifier.value = sets - 1 : null,
                     icon: const Icon(Icons.remove),
                   ),
                   Container(
@@ -310,9 +308,8 @@ class _SetCountDialogState extends State<_SetCountDialog> {
                     ),
                   ),
                   IconButton(
-                    onPressed: sets < 10
-                        ? () => _setsNotifier.value = sets + 1
-                        : null,
+                    onPressed:
+                        sets < 10 ? () => _setsNotifier.value = sets + 1 : null,
                     icon: const Icon(Icons.add),
                   ),
                 ],

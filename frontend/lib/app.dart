@@ -41,7 +41,7 @@ class LiftLinkApp extends ConsumerWidget {
           }
 
           // After onboarding, check auth state
-          return authStateAsync.when(
+          return authStateAsync.when<Widget>(
             data: (user) {
               // If user is logged in, show main scaffold with bottom navigation
               // Otherwise, show login page

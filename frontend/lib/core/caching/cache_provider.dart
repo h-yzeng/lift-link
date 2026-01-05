@@ -22,6 +22,6 @@ part 'cache_provider.g.dart';
 /// cache.set('recent_workouts', data, Duration(minutes: 5));
 /// ```
 @Riverpod(keepAlive: true)
-CacheManager cacheManager(CacheManagerRef ref) {
+CacheManager cacheManager(Ref ref) {
   return CacheManager();
 }

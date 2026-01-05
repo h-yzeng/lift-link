@@ -4,15 +4,11 @@ part 'undo_action.freezed.dart';
 part 'undo_action.g.dart';
 
 /// Types of undo actions
-enum UndoActionType {
-  deleteSet,
-  removeExercise,
-  deleteWorkout,
-}
+enum UndoActionType { deleteSet, removeExercise, deleteWorkout }
 
 /// Represents an action that can be undone
 @freezed
-class UndoAction with _$UndoAction {
+abstract class UndoAction with _$UndoAction {
   const factory UndoAction({
     required String id,
     required UndoActionType type,

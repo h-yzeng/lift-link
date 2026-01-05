@@ -128,8 +128,7 @@ class _FriendWorkoutsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(currentProfileProvider);
-    final useImperialUnits =
-        profileAsync.valueOrNull?.usesImperialUnits ?? true;
+    final useImperialUnits = profileAsync.value?.usesImperialUnits ?? true;
 
     // Get friend's workout history
     final workoutsAsync = ref.watch(

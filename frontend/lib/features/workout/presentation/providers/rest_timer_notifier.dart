@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:liftlink/features/workout/presentation/providers/rest_timer_state.dart';
 
 /// StateNotifier for managing rest timer state.
@@ -14,11 +14,11 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
     this.onComplete,
     this.onShowNotification,
   }) : super(
-          RestTimerState(
-            initialSeconds: initialSeconds,
-            remainingSeconds: initialSeconds,
-          ),
-        );
+         RestTimerState(
+           initialSeconds: initialSeconds,
+           remainingSeconds: initialSeconds,
+         ),
+       );
 
   @override
   void dispose() {
@@ -29,11 +29,7 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
   void start() {
     if (!state.canStart && !state.canResume) return;
 
-    state = state.copyWith(
-      isRunning: true,
-      isPaused: false,
-      isComplete: false,
-    );
+    state = state.copyWith(isRunning: true, isPaused: false, isComplete: false);
 
     // Request permissions on first start
     if (!state.permissionsRequested) {
@@ -45,9 +41,7 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
 
   void _onTick(Timer timer) {
     if (state.remainingSeconds > 0) {
-      state = state.copyWith(
-        remainingSeconds: state.remainingSeconds - 1,
-      );
+      state = state.copyWith(remainingSeconds: state.remainingSeconds - 1);
 
       // Haptic feedback at 3, 2, 1
       if (state.remainingSeconds <= 3 && state.remainingSeconds > 0) {
@@ -57,10 +51,7 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
       _timer?.cancel();
       HapticFeedback.heavyImpact();
 
-      state = state.copyWith(
-        isRunning: false,
-        isComplete: true,
-      );
+      state = state.copyWith(isRunning: false, isComplete: true);
 
       // Trigger notification
       onShowNotification?.call();
@@ -93,32 +84,25 @@ class RestTimerNotifier extends StateNotifier<RestTimerState> {
   }
 
   void addTime(int seconds) {
-    state = state.copyWith(
-      remainingSeconds: state.remainingSeconds + seconds,
-    );
+    state = state.copyWith(remainingSeconds: state.remainingSeconds + seconds);
   }
 
   void cancel() {
     _timer?.cancel();
-    state = state.copyWith(
-      isRunning: false,
-      isPaused: false,
-    );
+    state = state.copyWith(isRunning: false, isPaused: false);
   }
 }
 
 /// Provider family for rest timer, keyed by initial seconds.
 /// Using autoDispose so timer is cleaned up when widget is removed.
 final restTimerProvider = StateNotifierProvider.autoDispose
-    .family<RestTimerNotifier, RestTimerState, RestTimerParams>(
-  (ref, params) {
-    return RestTimerNotifier(
-      initialSeconds: params.initialSeconds,
-      onComplete: params.onComplete,
-      onShowNotification: params.onShowNotification,
-    );
-  },
-);
+    .family<RestTimerNotifier, RestTimerState, RestTimerParams>((ref, params) {
+      return RestTimerNotifier(
+        initialSeconds: params.initialSeconds,
+        onComplete: params.onComplete,
+        onShowNotification: params.onShowNotification,
+      );
+    });
 
 /// Parameters for the rest timer provider.
 class RestTimerParams {

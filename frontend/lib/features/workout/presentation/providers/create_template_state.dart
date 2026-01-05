@@ -5,7 +5,7 @@ part 'create_template_state.freezed.dart';
 
 /// Immutable state for template creation.
 @freezed
-class CreateTemplateState with _$CreateTemplateState {
+abstract class CreateTemplateState with _$CreateTemplateState {
   const factory CreateTemplateState({
     @Default([]) List<TemplateExercise> exercises,
     @Default(false) bool isSaving,

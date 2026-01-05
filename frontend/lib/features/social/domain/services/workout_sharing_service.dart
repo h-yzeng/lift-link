@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:share_plus/share_plus.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:intl/intl.dart';
@@ -29,17 +31,11 @@ class WorkoutSharingService {
   }) async {
     final summary = generateWorkoutSummary(workout, useImperialUnits);
 
-    await Share.share(
-      summary,
-      subject: '${workout.title} - LiftLink Workout',
-    );
+    await Share.share(summary, subject: '${workout.title} - LiftLink Workout');
   }
 
   /// Generates a formatted text summary of a workout.
-  String generateWorkoutSummary(
-    WorkoutSession workout,
-    bool useImperialUnits,
-  ) {
+  String generateWorkoutSummary(WorkoutSession workout, bool useImperialUnits) {
     final buffer = StringBuffer();
     final dateFormat = DateFormat('EEEE, MMMM d, yyyy');
     final weightUnit = useImperialUnits ? 'lbs' : 'kg';
@@ -124,10 +120,7 @@ class WorkoutSharingService {
       useImperialUnits: useImperialUnits,
     );
 
-    await Share.share(
-      post,
-      subject: 'My Workout Achievement! 🎉',
-    );
+    await Share.share(post, subject: 'My Workout Achievement! 🎉');
   }
 
   /// Generates an achievement post with emojis and highlights.
@@ -202,7 +195,8 @@ class WorkoutSharingService {
       }
     }
 
-    final message = '💪 Just crushed ${workout.title}!\n'
+    final message =
+        '💪 Just crushed ${workout.title}!\n'
         '⏱️ ${workout.durationMinutes} min | '
         '🏋️ ${workout.exercises.length} exercises | '
         '📈 ${totalVolume.toStringAsFixed(0)} $weightUnit volume\n\n'
@@ -223,10 +217,7 @@ class WorkoutSharingService {
       useImperialUnits,
     );
 
-    await Share.share(
-      comparison,
-      subject: 'My Workout Progress 📈',
-    );
+    await Share.share(comparison, subject: 'My Workout Progress 📈');
   }
 
   /// Generates a progress comparison post.

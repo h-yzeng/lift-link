@@ -6,7 +6,7 @@ part 'search_history_provider.g.dart';
 
 @riverpod
 Future<SearchHistoryService> searchHistoryService(
-  SearchHistoryServiceRef ref,
+  Ref ref,
 ) async {
   final prefs = await ref.watch(sharedPreferencesProvider.future);
   return SearchHistoryService(prefs);
@@ -14,7 +14,7 @@ Future<SearchHistoryService> searchHistoryService(
 
 @riverpod
 Future<List<String>> recentSearches(
-  RecentSearchesRef ref, {
+  Ref ref, {
   int limit = 10,
 }) async {
   final service = await ref.watch(searchHistoryServiceProvider.future);
@@ -23,7 +23,7 @@ Future<List<String>> recentSearches(
 
 @riverpod
 Future<List<String>> searchSuggestions(
-  SearchSuggestionsRef ref, {
+  Ref ref, {
   required String query,
   int limit = 5,
 }) async {

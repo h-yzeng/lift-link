@@ -5,7 +5,7 @@ part 'workout_template.g.dart';
 
 /// Represents a workout template that can be reused.
 @freezed
-class WorkoutTemplate with _$WorkoutTemplate {
+abstract class WorkoutTemplate with _$WorkoutTemplate {
   const WorkoutTemplate._();
 
   const factory WorkoutTemplate({
@@ -32,7 +32,7 @@ class WorkoutTemplate with _$WorkoutTemplate {
 
 /// Represents an exercise within a workout template.
 @freezed
-class TemplateExercise with _$TemplateExercise {
+abstract class TemplateExercise with _$TemplateExercise {
   const factory TemplateExercise({
     required String exerciseId,
     required String exerciseName,

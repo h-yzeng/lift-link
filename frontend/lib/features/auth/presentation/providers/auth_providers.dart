@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
@@ -108,8 +107,5 @@ Stream<User?> authStateChanges(Ref ref) {
 Future<User?> currentUser(Ref ref) async {
   final useCase = await ref.watch(getCurrentUserUseCaseProvider.future);
   final result = await useCase();
-  return result.fold(
-    (failure) => null,
-    (user) => user,
-  );
+  return result.fold((failure) => null, (user) => user);
 }

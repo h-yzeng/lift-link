@@ -5,7 +5,7 @@ part 'profile.g.dart';
 
 /// Represents a user's profile information.
 @freezed
-class Profile with _$Profile {
+abstract class Profile with _$Profile {
   const Profile._(); // Required for custom getters
 
   const factory Profile({
@@ -23,8 +23,7 @@ class Profile with _$Profile {
       _$ProfileFromJson(json);
 
   /// Returns the display name or falls back to username or "User"
-  String get displayNameOrUsername =>
-      displayName ?? username ?? 'User';
+  String get displayNameOrUsername => displayName ?? username ?? 'User';
 
   /// Whether the user has set a username
   bool get hasUsername => username != null && username!.isNotEmpty;

@@ -49,8 +49,8 @@ class ExerciseListSection extends ConsumerWidget {
                 Text(
                   'Tap the + button to add exercises to your workout.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -142,7 +142,7 @@ class _ExerciseCard extends ConsumerWidget {
                 return _buildPreviousPerformance(context, lastSession);
               },
               loading: () => const SizedBox.shrink(),
-              error: (_, __) => const SizedBox.shrink(),
+              error: (_, _) => const SizedBox.shrink(),
             ),
 
             // Sets list
@@ -212,30 +212,27 @@ class _ExerciseCard extends ConsumerWidget {
     final workingSets = session.sets.where((s) => !s.isWarmup).toList();
     if (workingSets.isEmpty) return const SizedBox.shrink();
 
-    final avgReps = workingSets.fold<int>(
-          0,
-          (sum, set) => sum + set.reps,
-        ) /
+    final avgReps =
+        workingSets.fold<int>(0, (sum, set) => sum + set.reps) /
         workingSets.length;
-    final avgWeight = workingSets.fold<double>(
-          0.0,
-          (sum, set) => sum + set.weightKg,
-        ) /
+    final avgWeight =
+        workingSets.fold<double>(0.0, (sum, set) => sum + set.weightKg) /
         workingSets.length;
 
     // Calculate progressive overload suggestion (2.5% increase or smallest increment)
     final smallIncrement = useImperialUnits ? 2.5 : 1.25;
-    final suggestedIncrease =
-        (avgWeight * 0.025).clamp(smallIncrement, double.infinity);
+    final suggestedIncrease = (avgWeight * 0.025).clamp(
+      smallIncrement,
+      double.infinity,
+    );
     final suggestedWeight = avgWeight + suggestedIncrease;
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context)
-            .colorScheme
-            .surfaceContainerHighest
-            .withValues(alpha: 0.5),
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -247,15 +244,15 @@ class _ExerciseCard extends ConsumerWidget {
               Text(
                 'Previous:',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               Text(
                 session.formattedDate,
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ],
           ),
@@ -284,9 +281,9 @@ class _ExerciseCard extends ConsumerWidget {
                 Text(
                   'Try ${UnitConversion.formatWeight(suggestedWeight, useImperialUnits)} (+${UnitConversion.formatWeightValue(suggestedIncrease, useImperialUnits)})',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -308,13 +305,10 @@ class _ExerciseCard extends ConsumerWidget {
       weightKg: 0.0,
     );
 
-    result.fold(
-      (failure) => HapticService.error(),
-      (_) {
-        HapticService.success();
-        ref.invalidate(activeWorkoutProvider);
-      },
-    );
+    result.fold((failure) => HapticService.error(), (_) {
+      HapticService.success();
+      ref.invalidate(activeWorkoutProvider);
+    });
   }
 
   Future<void> _updateSet(
@@ -336,17 +330,14 @@ class _ExerciseCard extends ConsumerWidget {
       rir: rir,
     );
 
-    result.fold(
-      (failure) => HapticService.error(),
-      (_) {
-        HapticService.success();
-        ref.invalidate(activeWorkoutProvider);
-        // Auto-start rest timer if enabled (only for non-warmup sets)
-        if (!isWarmup && context.mounted) {
-          maybeAutoStartRestTimer(context: context, ref: ref);
-        }
-      },
-    );
+    result.fold((failure) => HapticService.error(), (_) {
+      HapticService.success();
+      ref.invalidate(activeWorkoutProvider);
+      // Auto-start rest timer if enabled (only for non-warmup sets)
+      if (!isWarmup && context.mounted) {
+        maybeAutoStartRestTimer(context: context, ref: ref);
+      }
+    });
   }
 
   Future<void> _updateExerciseNotes(WidgetRef ref, String notes) async {
@@ -362,12 +353,9 @@ class _ExerciseCard extends ConsumerWidget {
     final useCase = ref.read(deleteSetUseCaseProvider);
     final result = await useCase(setId: setId);
 
-    result.fold(
-      (failure) => HapticService.error(),
-      (_) {
-        HapticService.success();
-        ref.invalidate(activeWorkoutProvider);
-      },
-    );
+    result.fold((failure) => HapticService.error(), (_) {
+      HapticService.success();
+      ref.invalidate(activeWorkoutProvider);
+    });
   }
 }

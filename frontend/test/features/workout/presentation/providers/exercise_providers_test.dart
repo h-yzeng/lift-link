@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/auth/domain/entities/user.dart';
-import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise.dart';
 import 'package:liftlink/features/workout/domain/usecases/filter_exercises.dart';
 import 'package:liftlink/features/workout/domain/usecases/search_exercises.dart';
@@ -76,7 +75,6 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           filterExercisesUseCaseProvider.overrideWithValue(mockFilterExercises),
         ],
       );
@@ -114,7 +112,6 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           filterExercisesUseCaseProvider.overrideWithValue(mockFilterExercises),
         ],
       );
@@ -153,7 +150,6 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           filterExercisesUseCaseProvider.overrideWithValue(mockFilterExercises),
         ],
       );
@@ -184,7 +180,6 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           filterExercisesUseCaseProvider.overrideWithValue(mockFilterExercises),
         ],
       );
@@ -214,7 +209,6 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           filterExercisesUseCaseProvider.overrideWithValue(mockFilterExercises),
         ],
       );
@@ -260,7 +254,6 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(null)),
           filterExercisesUseCaseProvider.overrideWithValue(mockFilterExercises),
         ],
       );
@@ -297,7 +290,6 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           filterExercisesUseCaseProvider.overrideWithValue(mockFilterExercises),
         ],
       );
@@ -319,15 +311,11 @@ void main() {
       final searchResults = [testExercises[0]];
 
       when(
-        () => mockSearchExercises(
-          query: query,
-          userId: testUser.id,
-        ),
+        () => mockSearchExercises(query: query, userId: testUser.id),
       ).thenAnswer((_) async => Right(searchResults));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           searchExercisesUseCaseProvider.overrideWithValue(mockSearchExercises),
         ],
       );
@@ -340,10 +328,7 @@ void main() {
       // Assert
       expect(result, searchResults);
       verify(
-        () => mockSearchExercises(
-          query: query,
-          userId: testUser.id,
-        ),
+        () => mockSearchExercises(query: query, userId: testUser.id),
       ).called(1);
 
       container.dispose();
@@ -354,7 +339,6 @@ void main() {
       const query = '';
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           searchExercisesUseCaseProvider.overrideWithValue(mockSearchExercises),
         ],
       );
@@ -381,7 +365,6 @@ void main() {
       const query = '   ';
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           searchExercisesUseCaseProvider.overrideWithValue(mockSearchExercises),
         ],
       );
@@ -417,7 +400,6 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           searchExercisesUseCaseProvider.overrideWithValue(mockSearchExercises),
         ],
       );
@@ -431,10 +413,7 @@ void main() {
       expect(result, searchResults);
       // The query gets trimmed in the check, so actual call uses original
       verify(
-        () => mockSearchExercises(
-          query: query,
-          userId: testUser.id,
-        ),
+        () => mockSearchExercises(query: query, userId: testUser.id),
       ).called(1);
 
       container.dispose();
@@ -446,15 +425,11 @@ void main() {
       final systemExercises = testExercises.sublist(0, 2);
 
       when(
-        () => mockSearchExercises(
-          query: query,
-          userId: null,
-        ),
+        () => mockSearchExercises(query: query, userId: null),
       ).thenAnswer((_) async => Right(systemExercises));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(null)),
           searchExercisesUseCaseProvider.overrideWithValue(mockSearchExercises),
         ],
       );
@@ -466,12 +441,7 @@ void main() {
 
       // Assert
       expect(result, systemExercises);
-      verify(
-        () => mockSearchExercises(
-          query: query,
-          userId: null,
-        ),
-      ).called(1);
+      verify(() => mockSearchExercises(query: query, userId: null)).called(1);
 
       container.dispose();
     });
@@ -482,15 +452,11 @@ void main() {
       final searchResults = [testExercises[0]];
 
       when(
-        () => mockSearchExercises(
-          query: query,
-          userId: testUser.id,
-        ),
+        () => mockSearchExercises(query: query, userId: testUser.id),
       ).thenAnswer((_) async => Right(searchResults));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           searchExercisesUseCaseProvider.overrideWithValue(mockSearchExercises),
         ],
       );
@@ -510,17 +476,13 @@ void main() {
       // Arrange
       const query = 'test';
       when(
-        () => mockSearchExercises(
-          query: query,
-          userId: testUser.id,
-        ),
+        () => mockSearchExercises(query: query, userId: testUser.id),
       ).thenAnswer(
         (_) async => const Left(CacheFailure(message: 'Search failed')),
       );
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           searchExercisesUseCaseProvider.overrideWithValue(mockSearchExercises),
         ],
       );
@@ -538,15 +500,11 @@ void main() {
       // Arrange
       const query = 'exercise';
       when(
-        () => mockSearchExercises(
-          query: query,
-          userId: testUser.id,
-        ),
+        () => mockSearchExercises(query: query, userId: testUser.id),
       ).thenAnswer((_) async => Right(testExercises));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           searchExercisesUseCaseProvider.overrideWithValue(mockSearchExercises),
         ],
       );
@@ -567,15 +525,11 @@ void main() {
       // Arrange
       const query = 'nonexistent';
       when(
-        () => mockSearchExercises(
-          query: query,
-          userId: testUser.id,
-        ),
+        () => mockSearchExercises(query: query, userId: testUser.id),
       ).thenAnswer((_) async => const Right([]));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           searchExercisesUseCaseProvider.overrideWithValue(mockSearchExercises),
         ],
       );

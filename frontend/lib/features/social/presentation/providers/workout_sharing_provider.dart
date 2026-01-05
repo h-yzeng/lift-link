@@ -13,6 +13,6 @@ part 'workout_sharing_provider.g.dart';
 /// await sharingService.shareWorkoutSummary(workout);
 /// ```
 @Riverpod(keepAlive: true)
-WorkoutSharingService workoutSharingService(WorkoutSharingServiceRef ref) {
+WorkoutSharingService workoutSharingService(Ref ref) {
   return WorkoutSharingService();
 }

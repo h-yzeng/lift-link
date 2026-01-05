@@ -9,7 +9,7 @@ import 'package:drift/drift.dart';
 part 'weight_log_providers.g.dart';
 
 @riverpod
-Stream<List<WeightLog>> weightLogs(WeightLogsRef ref, {int? limit}) async* {
+Stream<List<WeightLog>> weightLogs(Ref ref, {int? limit}) async* {
   final user = await ref.watch(currentUserProvider.future);
   if (user == null) {
     yield [];
@@ -23,7 +23,7 @@ Stream<List<WeightLog>> weightLogs(WeightLogsRef ref, {int? limit}) async* {
 }
 
 @riverpod
-Future<WeightLog?> latestWeightLog(LatestWeightLogRef ref) async {
+Future<WeightLog?> latestWeightLog(Ref ref) async {
   final user = await ref.watch(currentUserProvider.future);
   if (user == null) return null;
 

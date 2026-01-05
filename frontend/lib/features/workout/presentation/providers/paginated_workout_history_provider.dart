@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
@@ -41,13 +42,13 @@ class PaginatedWorkoutHistoryState {
 class PaginatedWorkoutHistoryNotifier
     extends StateNotifier<PaginatedWorkoutHistoryState> {
   PaginatedWorkoutHistoryNotifier(this.ref)
-      : super(
-          const PaginatedWorkoutHistoryState(
-            workouts: [],
-            isLoading: false,
-            hasMore: true,
-          ),
-        );
+    : super(
+        const PaginatedWorkoutHistoryState(
+          workouts: [],
+          isLoading: false,
+          hasMore: true,
+        ),
+      );
 
   final Ref ref;
   static const int _pageSize = 20;
@@ -56,10 +57,7 @@ class PaginatedWorkoutHistoryNotifier
   DateTime? _endDate;
 
   /// Load the first page of workouts
-  Future<void> loadFirstPage({
-    DateTime? startDate,
-    DateTime? endDate,
-  }) async {
+  Future<void> loadFirstPage({DateTime? startDate, DateTime? endDate}) async {
     _startDate = startDate;
     _endDate = endDate;
 
@@ -85,10 +83,7 @@ class PaginatedWorkoutHistoryNotifier
 
   /// Refresh the current data
   Future<void> refresh() async {
-    await loadFirstPage(
-      startDate: _startDate,
-      endDate: _endDate,
-    );
+    await loadFirstPage(startDate: _startDate, endDate: _endDate);
   }
 
   Future<void> _loadPage(int page) async {
@@ -115,14 +110,12 @@ class PaginatedWorkoutHistoryNotifier
 
       result.fold(
         (failure) {
-          state = state.copyWith(
-            isLoading: false,
-            error: failure.userMessage,
-          );
+          state = state.copyWith(isLoading: false, error: failure.userMessage);
         },
         (newWorkouts) {
-          final allWorkouts =
-              page == 0 ? newWorkouts : [...state.workouts, ...newWorkouts];
+          final allWorkouts = page == 0
+              ? newWorkouts
+              : [...state.workouts, ...newWorkouts];
 
           state = state.copyWith(
             workouts: allWorkouts,
@@ -133,16 +126,16 @@ class PaginatedWorkoutHistoryNotifier
         },
       );
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 }
 
 /// Provider for paginated workout history
-final paginatedWorkoutHistoryProvider = StateNotifierProvider<
-    PaginatedWorkoutHistoryNotifier, PaginatedWorkoutHistoryState>((ref) {
-  return PaginatedWorkoutHistoryNotifier(ref);
-});
+final paginatedWorkoutHistoryProvider =
+    StateNotifierProvider<
+      PaginatedWorkoutHistoryNotifier,
+      PaginatedWorkoutHistoryState
+    >((ref) {
+      return PaginatedWorkoutHistoryNotifier(ref);
+    });

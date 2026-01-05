@@ -19,8 +19,8 @@ class SearchSuggestionsList extends ConsumerWidget {
       searchSuggestionsProvider(query: query, limit: 5),
     );
 
-    return suggestionsAsync.when(
-      data: (suggestions) {
+    return suggestionsAsync.when<Widget>(
+      data: (List<String> suggestions) {
         if (suggestions.isEmpty) {
           return const SizedBox.shrink();
         }
@@ -44,7 +44,7 @@ class SearchSuggestionsList extends ConsumerWidget {
                 itemCount: suggestions.length,
                 separatorBuilder: (context, index) => const Divider(height: 1),
                 itemBuilder: (context, index) {
-                  final suggestion = suggestions[index];
+                  final String suggestion = suggestions[index];
                   return ListTile(
                     dense: true,
                     leading: Icon(
@@ -61,7 +61,7 @@ class SearchSuggestionsList extends ConsumerWidget {
         );
       },
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 }

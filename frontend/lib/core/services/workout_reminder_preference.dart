@@ -1,15 +1,12 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:liftlink/core/services/notification_service.dart';
+
+part 'workout_reminder_preference.g.dart';
 
 const _reminderEnabledKey = 'workout_reminder_enabled';
 const _reminderHourKey = 'workout_reminder_hour';
 const _reminderMinuteKey = 'workout_reminder_minute';
-
-/// Provider for workout reminder preferences
-final workoutReminderProvider = StateNotifierProvider<WorkoutReminderNotifier, WorkoutReminderState>((ref) {
-  return WorkoutReminderNotifier();
-});
 
 class WorkoutReminderState {
   final bool enabled;
@@ -35,10 +32,13 @@ class WorkoutReminderState {
   }
 }
 
-class WorkoutReminderNotifier extends StateNotifier<WorkoutReminderState> {
-  WorkoutReminderNotifier()
-      : super(WorkoutReminderState(enabled: false, hour: 18, minute: 0)) {
+/// Provider for workout reminder preferences
+@Riverpod(keepAlive: true)
+class WorkoutReminderNotifier extends _$WorkoutReminderNotifier {
+  @override
+  WorkoutReminderState build() {
     _loadPreferences();
+    return WorkoutReminderState(enabled: false, hour: 18, minute: 0);
   }
 
   Future<void> _loadPreferences() async {

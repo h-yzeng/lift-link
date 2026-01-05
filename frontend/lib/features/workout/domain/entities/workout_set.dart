@@ -8,7 +8,7 @@ part 'workout_set.g.dart';
 /// Contains the weight, reps, and metadata for a single set.
 /// The 1RM is calculated client-side only using the Epley Formula.
 @freezed
-class WorkoutSet with _$WorkoutSet {
+abstract class WorkoutSet with _$WorkoutSet {
   const WorkoutSet._(); // Required for custom getters
 
   const factory WorkoutSet({

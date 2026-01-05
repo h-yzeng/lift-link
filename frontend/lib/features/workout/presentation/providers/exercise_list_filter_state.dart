@@ -4,7 +4,7 @@ part 'exercise_list_filter_state.freezed.dart';
 
 /// Immutable state for exercise list filtering and search.
 @freezed
-class ExerciseListFilterState with _$ExerciseListFilterState {
+abstract class ExerciseListFilterState with _$ExerciseListFilterState {
   const factory ExerciseListFilterState({
     String? selectedMuscleGroup,
     String? selectedEquipmentType,

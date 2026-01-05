@@ -1,19 +1,18 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+part 'rest_timer_preference.g.dart';
 
 const _restTimerKey = 'default_rest_timer_seconds';
 const _defaultRestSeconds = 90;
 
 /// Provider for default rest timer duration in seconds.
-final defaultRestTimerSecondsProvider =
-    StateNotifierProvider<DefaultRestTimerNotifier, int>((ref) {
-  return DefaultRestTimerNotifier();
-});
-
-/// Notifier for managing default rest timer duration.
-class DefaultRestTimerNotifier extends StateNotifier<int> {
-  DefaultRestTimerNotifier() : super(_defaultRestSeconds) {
+@Riverpod(keepAlive: true)
+class DefaultRestTimerNotifier extends _$DefaultRestTimerNotifier {
+  @override
+  int build() {
     _loadValue();
+    return _defaultRestSeconds;
   }
 
   Future<void> _loadValue() async {
@@ -41,6 +40,9 @@ class DefaultRestTimerNotifier extends StateNotifier<int> {
     }
   }
 }
+
+/// Legacy provider for backward compatibility
+final defaultRestTimerSecondsProvider = defaultRestTimerProvider;
 
 /// Common rest timer presets.
 class RestTimerPresets {

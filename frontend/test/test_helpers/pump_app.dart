@@ -6,10 +6,10 @@ import 'package:flutter_test/flutter_test.dart';
 Future<void> pumpApp(
   WidgetTester tester,
   Widget widget, {
-  List<Override> overrides = const [],
+  List<Object> overrides = const [],
   ThemeMode themeMode = ThemeMode.light,
 }) async {
-  final container = ProviderContainer(overrides: overrides);
+  final container = ProviderContainer(overrides: overrides.cast());
 
   await tester.pumpWidget(
     UncontrolledProviderScope(
@@ -28,11 +28,11 @@ Future<void> pumpApp(
 Future<void> pumpAppWithNavigator(
   WidgetTester tester,
   Widget widget, {
-  List<Override> overrides = const [],
+  List<Object> overrides = const [],
   ThemeMode themeMode = ThemeMode.light,
   List<NavigatorObserver>? observers,
 }) async {
-  final container = ProviderContainer(overrides: overrides);
+  final container = ProviderContainer(overrides: overrides.cast());
 
   await tester.pumpWidget(
     UncontrolledProviderScope(

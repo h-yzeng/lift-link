@@ -8,7 +8,7 @@ part 'exercise_history.g.dart';
 /// Used to show users their previous performance when adding sets
 /// to an exercise in an active workout.
 @freezed
-class HistoricalSet with _$HistoricalSet {
+abstract class HistoricalSet with _$HistoricalSet {
   const factory HistoricalSet({
     required int setNumber,
     required int reps,
@@ -25,7 +25,7 @@ class HistoricalSet with _$HistoricalSet {
 ///
 /// Contains the workout metadata and all sets performed for that exercise.
 @freezed
-class ExerciseHistorySession with _$ExerciseHistorySession {
+abstract class ExerciseHistorySession with _$ExerciseHistorySession {
   const ExerciseHistorySession._();
 
   const factory ExerciseHistorySession({
@@ -74,7 +74,7 @@ class ExerciseHistorySession with _$ExerciseHistorySession {
 /// Contains up to N previous sessions (typically 3) to show the user
 /// their recent performance history.
 @freezed
-class ExerciseHistory with _$ExerciseHistory {
+abstract class ExerciseHistory with _$ExerciseHistory {
   const ExerciseHistory._();
 
   const factory ExerciseHistory({

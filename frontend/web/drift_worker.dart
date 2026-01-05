@@ -1,5 +1,3 @@
-import 'package:drift/web/worker.dart';
+import 'package:drift/wasm.dart';
 
-void main() {
-  driftWorkerMain(() {});
-}
+void main() => WasmDatabase.workerMainForOpen();

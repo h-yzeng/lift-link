@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/core/services/streak_service.dart';
 import 'package:liftlink/core/theme/theme_provider.dart';
-import 'package:liftlink/features/auth/domain/entities/user.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/profile/domain/entities/profile.dart';
 import 'package:liftlink/features/profile/presentation/pages/settings_page.dart';
@@ -54,21 +53,21 @@ class HomePage extends ConsumerWidget {
 
     if (confirmed != true || !context.mounted) return;
 
-    final User? user = await ref.read(currentUserProvider.future);
-    if (user == null) return;
+    final userAsync = ref.read(currentUserProvider);
+    if (userAsync.value == null) return;
 
     final useCase = ref.read(startWorkoutUseCaseProvider);
     final result = await useCase(
-      userId: user.id,
+      userId: userAsync.value!.id,
       title: titleController.text.isEmpty ? 'Workout' : titleController.text,
     );
 
     result.fold(
       (Failure failure) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(failure.userMessage)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(failure.userMessage)));
         }
       },
       (WorkoutSession workout) {
@@ -158,22 +157,27 @@ class HomePage extends ConsumerWidget {
                         // Workout Streak Card
                         Consumer(
                           builder: (context, ref, child) {
-                            final streakAsync =
-                                ref.watch(workoutStreakProvider);
+                            final streakAsync = ref.watch(
+                              workoutStreakProvider,
+                            );
                             return streakAsync.when<Widget>(
                               data: (StreakData streakData) {
                                 if (streakData.currentStreak > 0 ||
                                     streakData.longestStreak > 0) {
                                   return Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      0,
+                                      16,
+                                      8,
+                                    ),
                                     child: _StreakCard(streakData: streakData),
                                   );
                                 }
                                 return const SizedBox.shrink();
                               },
                               loading: () => const SizedBox.shrink(),
-                              error: (_, __) => const SizedBox.shrink(),
+                              error: (_, _) => const SizedBox.shrink(),
                             );
                           },
                         ),
@@ -190,7 +194,8 @@ class HomePage extends ConsumerWidget {
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
                                       builder: (context) => ActiveWorkoutPage(
-                                          workout: activeWorkout),
+                                        workout: activeWorkout,
+                                      ),
                                     ),
                                   );
                                 },
@@ -245,15 +250,19 @@ class HomePage extends ConsumerWidget {
                               if (streakData.currentStreak > 0 ||
                                   streakData.longestStreak > 0) {
                                 return Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                                  padding: const EdgeInsets.fromLTRB(
+                                    16,
+                                    0,
+                                    16,
+                                    8,
+                                  ),
                                   child: _StreakCard(streakData: streakData),
                                 );
                               }
                               return const SizedBox.shrink();
                             },
                             loading: () => const SizedBox.shrink(),
-                            error: (_, __) => const SizedBox.shrink(),
+                            error: (_, _) => const SizedBox.shrink(),
                           );
                         },
                       ),
@@ -281,7 +290,7 @@ class HomePage extends ConsumerWidget {
                 );
               },
               loading: () => const _HomePageSkeleton(),
-              error: (_, __) => Center(
+              error: (_, _) => Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: FilledButton.icon(
@@ -294,7 +303,7 @@ class HomePage extends ConsumerWidget {
             );
           },
           loading: () => const _HomePageSkeleton(),
-          error: (_, __) => Center(
+          error: (_, _) => Center(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: FilledButton.icon(
@@ -321,10 +330,7 @@ class _ActiveWorkoutCard extends StatelessWidget {
   final dynamic workout;
   final VoidCallback onTap;
 
-  const _ActiveWorkoutCard({
-    required this.workout,
-    required this.onTap,
-  });
+  const _ActiveWorkoutCard({required this.workout, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -468,8 +474,9 @@ class _WorkoutStat extends StatelessWidget {
             Text(
               subtitle,
               style: theme.textTheme.bodySmall?.copyWith(
-                color:
-                    theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                color: theme.colorScheme.onPrimaryContainer.withValues(
+                  alpha: 0.7,
+                ),
               ),
             ),
           ],
@@ -515,10 +522,7 @@ class _StreakCard extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Text(
-                    streakEmoji,
-                    style: const TextStyle(fontSize: 32),
-                  ),
+                  Text(streakEmoji, style: const TextStyle(fontSize: 32)),
                   const SizedBox(height: 4),
                   Text(
                     '$currentStreak',
@@ -601,9 +605,7 @@ class _StreakCard extends StatelessWidget {
 class _StartWorkoutHero extends StatelessWidget {
   final VoidCallback onStartWorkout;
 
-  const _StartWorkoutHero({
-    required this.onStartWorkout,
-  });
+  const _StartWorkoutHero({required this.onStartWorkout});
 
   @override
   Widget build(BuildContext context) {
@@ -693,9 +695,9 @@ class _QuickActionsGrid extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Text(
             'Quick Actions',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: 12),
@@ -804,9 +806,7 @@ class _QuickActionsGrid extends StatelessWidget {
               color: Colors.grey,
               onTap: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const SettingsPage(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
                 );
               },
             ),
@@ -853,11 +853,7 @@ class _QuickActionCard extends StatelessWidget {
                       color: color.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
-                      icon,
-                      size: 32,
-                      color: color,
-                    ),
+                    child: Icon(icon, size: 32, color: color),
                   ),
                 ),
                 const SizedBox(height: 12),

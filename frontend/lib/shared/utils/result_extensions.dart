@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:liftlink/core/error/failures.dart';
 
-/// Extension methods for handling Either<Failure, T> results with UI feedback.
+/// Extension methods for handling Either&lt;Failure, T&gt; results with UI feedback.
 extension ResultExtensions<T> on Either<Failure, T> {
   /// Shows appropriate snackbar based on result and returns the success value or null.
   T? showResultSnackBar(
@@ -30,10 +30,7 @@ extension ResultExtensions<T> on Either<Failure, T> {
       (success) {
         if (successMessage != null && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(successMessage),
-              duration: duration,
-            ),
+            SnackBar(content: Text(successMessage), duration: duration),
           );
         }
         return success;
@@ -48,32 +45,27 @@ extension ResultExtensions<T> on Either<Failure, T> {
     void Function(Failure failure)? onFailure,
     String? failurePrefix,
   }) {
-    fold(
-      (failure) {
-        if (context.mounted) {
-          final message = failurePrefix != null
-              ? '$failurePrefix: ${failure.userMessage}'
-              : failure.userMessage;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
-        }
-        onFailure?.call(failure);
-      },
-      onSuccess,
-    );
+    fold((failure) {
+      if (context.mounted) {
+        final message = failurePrefix != null
+            ? '$failurePrefix: ${failure.userMessage}'
+            : failure.userMessage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+      onFailure?.call(failure);
+    }, onSuccess);
   }
 }
 
 /// Extension for showing simple snackbars.
 extension SnackBarExtension on BuildContext {
   void showSuccessSnackBar(String message) {
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(this).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void showErrorSnackBar(String message) {

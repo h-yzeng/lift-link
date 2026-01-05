@@ -7,7 +7,8 @@ part 'rest_day_provider.g.dart';
 /// Provider for the rest day suggestion service.
 @Riverpod(keepAlive: true)
 RestDaySuggestionService restDaySuggestionService(
-    RestDaySuggestionServiceRef ref,) {
+  Ref ref,
+) {
   return RestDaySuggestionService();
 }
 
@@ -30,7 +31,7 @@ RestDaySuggestionService restDaySuggestionService(
 /// );
 /// ```
 @riverpod
-Future<RestDaySuggestion> restDaySuggestion(RestDaySuggestionRef ref) async {
+Future<RestDaySuggestion> restDaySuggestion(Ref ref) async {
   // Get workout history for the last 14 days
   final now = DateTime.now();
   final twoWeeksAgo = now.subtract(const Duration(days: 14));

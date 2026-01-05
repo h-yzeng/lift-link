@@ -10,7 +10,7 @@ part 'exercise_performance.g.dart';
 /// Contains multiple [WorkoutSet]s and provides aggregate calculations
 /// like max 1RM and total volume.
 @freezed
-class ExercisePerformance with _$ExercisePerformance {
+abstract class ExercisePerformance with _$ExercisePerformance {
   const ExercisePerformance._(); // Required for custom getters
 
   const factory ExercisePerformance({
@@ -80,8 +80,10 @@ class ExercisePerformance with _$ExercisePerformance {
 
   /// Heaviest weight lifted in working sets
   double? get maxWeight {
-    final weights =
-        sets.where((set) => !set.isWarmup).map((set) => set.weightKg).toList();
+    final weights = sets
+        .where((set) => !set.isWarmup)
+        .map((set) => set.weightKg)
+        .toList();
     if (weights.isEmpty) return null;
     return weights.reduce((a, b) => a > b ? a : b);
   }

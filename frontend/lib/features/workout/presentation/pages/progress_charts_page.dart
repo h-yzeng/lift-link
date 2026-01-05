@@ -68,9 +68,7 @@ class _VolumeChartTab extends ConsumerWidget {
     return workoutsAsync.when(
       data: (workouts) {
         if (workouts.isEmpty) {
-          return const Center(
-            child: Text('No workout data available'),
-          );
+          return const Center(child: Text('No workout data available'));
         }
 
         // Prepare chart data - most recent workouts first, reverse for chronological
@@ -98,9 +96,9 @@ class _VolumeChartTab extends ConsumerWidget {
                   const SizedBox(height: 8),
                   Text(
                     'Last ${sortedWorkouts.length} workouts',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                   ),
                   const SizedBox(height: 24),
                   Expanded(
@@ -143,8 +141,9 @@ class _VolumeChartTab extends ConsumerWidget {
                                   return const Text('');
                                 }
                                 final workout = sortedWorkouts[index];
-                                final date =
-                                    DateFormat('M/d').format(workout.startedAt);
+                                final date = DateFormat(
+                                  'M/d',
+                                ).format(workout.startedAt);
                                 return Text(
                                   date,
                                   style: const TextStyle(fontSize: 10),
@@ -169,10 +168,9 @@ class _VolumeChartTab extends ConsumerWidget {
                             dotData: const FlDotData(show: true),
                             belowBarData: BarAreaData(
                               show: true,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withValues(alpha: 0.1),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.1),
                             ),
                           ),
                         ],
@@ -202,13 +200,11 @@ class _VolumeChartTab extends ConsumerWidget {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, __) => const Center(child: Text('Error loading profile')),
+          error: (_, _) => const Center(child: Text('Error loading profile')),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, __) => Center(
-        child: Text('Error: $error'),
-      ),
+      error: (error, _) => Center(child: Text('Error: $error')),
     );
   }
 }
@@ -232,9 +228,7 @@ class _OneRMChartTabState extends ConsumerState<_OneRMChartTab> {
     return workoutsAsync.when(
       data: (workouts) {
         if (workouts.isEmpty) {
-          return const Center(
-            child: Text('No workout data available'),
-          );
+          return const Center(child: Text('No workout data available'));
         }
 
         // Get all unique exercises from workouts
@@ -246,9 +240,7 @@ class _OneRMChartTabState extends ConsumerState<_OneRMChartTab> {
         }
 
         if (exerciseMap.isEmpty) {
-          return const Center(
-            child: Text('No exercises found in workouts'),
-          );
+          return const Center(child: Text('No exercises found in workouts'));
         }
 
         // Set default selected exercise if none selected
@@ -256,8 +248,9 @@ class _OneRMChartTabState extends ConsumerState<_OneRMChartTab> {
 
         // Filter workouts that contain the selected exercise
         final exerciseWorkouts = workouts.where((workout) {
-          return workout.exercises
-              .any((e) => e.exerciseId == _selectedExerciseId);
+          return workout.exercises.any(
+            (e) => e.exerciseId == _selectedExerciseId,
+          );
         }).toList();
 
         // Sort chronologically
@@ -267,8 +260,9 @@ class _OneRMChartTabState extends ConsumerState<_OneRMChartTab> {
         final spots = <FlSpot>[];
         for (var i = 0; i < exerciseWorkouts.length; i++) {
           final workout = exerciseWorkouts[i];
-          final exercise = workout.exercises
-              .firstWhere((e) => e.exerciseId == _selectedExerciseId);
+          final exercise = workout.exercises.firstWhere(
+            (e) => e.exerciseId == _selectedExerciseId,
+          );
 
           final maxOneRM = exercise.maxOneRM;
           if (maxOneRM != null) {
@@ -345,8 +339,9 @@ class _OneRMChartTabState extends ConsumerState<_OneRMChartTab> {
                                   return const Text('');
                                 }
                                 final workout = exerciseWorkouts[index];
-                                final date =
-                                    DateFormat('M/d').format(workout.startedAt);
+                                final date = DateFormat(
+                                  'M/d',
+                                ).format(workout.startedAt);
                                 return Text(
                                   date,
                                   style: const TextStyle(fontSize: 10),
@@ -401,13 +396,11 @@ class _OneRMChartTabState extends ConsumerState<_OneRMChartTab> {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, __) => const Center(child: Text('Error loading profile')),
+          error: (_, _) => const Center(child: Text('Error loading profile')),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, __) => Center(
-        child: Text('Error: $error'),
-      ),
+      error: (error, _) => Center(child: Text('Error: $error')),
     );
   }
 
@@ -422,10 +415,7 @@ class _OneRMChartTabState extends ConsumerState<_OneRMChartTab> {
         border: OutlineInputBorder(),
       ),
       items: entries.map((entry) {
-        return DropdownMenuItem(
-          value: entry.key,
-          child: Text(entry.value),
-        );
+        return DropdownMenuItem(value: entry.key, child: Text(entry.value));
       }).toList(),
       onChanged: (value) {
         setState(() {
@@ -447,9 +437,7 @@ class _FrequencyChartTab extends ConsumerWidget {
     return workoutsAsync.when(
       data: (workouts) {
         if (workouts.isEmpty) {
-          return const Center(
-            child: Text('No workout data available'),
-          );
+          return const Center(child: Text('No workout data available'));
         }
 
         // Group workouts by week
@@ -477,9 +465,7 @@ class _FrequencyChartTab extends ConsumerWidget {
           ..sort((a, b) => a.compareTo(b));
 
         if (sortedWeeks.isEmpty) {
-          return const Center(
-            child: Text('No completed workouts found'),
-          );
+          return const Center(child: Text('No completed workouts found'));
         }
 
         // Build bar chart data
@@ -517,9 +503,9 @@ class _FrequencyChartTab extends ConsumerWidget {
               const SizedBox(height: 8),
               Text(
                 'Workouts per week over time',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
               ),
               const SizedBox(height: 24),
               Expanded(
@@ -595,9 +581,7 @@ class _FrequencyChartTab extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, __) => Center(
-        child: Text('Error: $error'),
-      ),
+      error: (error, _) => Center(child: Text('Error: $error')),
     );
   }
 }

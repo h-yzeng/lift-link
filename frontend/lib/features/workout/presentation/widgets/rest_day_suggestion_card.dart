@@ -17,7 +17,7 @@ class RestDaySuggestionCard extends ConsumerWidget {
     return suggestionAsync.when(
       data: (suggestion) => _buildSuggestionCard(context, suggestion),
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 
@@ -38,8 +38,9 @@ class RestDaySuggestionCard extends ConsumerWidget {
         : theme.colorScheme.onPrimaryContainer;
 
     final icon = shouldRest ? Icons.spa : Icons.fitness_center;
-    final iconColor =
-        shouldRest ? theme.colorScheme.tertiary : theme.colorScheme.primary;
+    final iconColor = shouldRest
+        ? theme.colorScheme.tertiary
+        : theme.colorScheme.primary;
 
     // Confidence indicator
     final confidenceText = _getConfidenceText(suggestion.confidenceLevel);
@@ -93,9 +94,7 @@ class RestDaySuggestionCard extends ConsumerWidget {
             // Reason
             Text(
               suggestion.reason,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: textColor,
-              ),
+              style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
             ),
 
             // Days until rest (if not resting today)

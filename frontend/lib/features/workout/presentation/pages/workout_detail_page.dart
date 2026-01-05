@@ -22,8 +22,7 @@ class WorkoutDetailPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final profileAsync = ref.watch(currentProfileProvider);
-    final useImperialUnits =
-        profileAsync.valueOrNull?.usesImperialUnits ?? true;
+    final useImperialUnits = profileAsync.value?.usesImperialUnits ?? true;
 
     return Scaffold(
       appBar: AppBar(
@@ -135,7 +134,10 @@ class WorkoutDetailPage extends ConsumerWidget {
   }
 
   Widget _buildHeader(
-      BuildContext context, ThemeData theme, bool useImperialUnits,) {
+    BuildContext context,
+    ThemeData theme,
+    bool useImperialUnits,
+  ) {
     final duration = workout.duration;
 
     return Padding(
@@ -226,7 +228,10 @@ class WorkoutDetailPage extends ConsumerWidget {
   }
 
   Widget _buildExercisesList(
-      BuildContext context, ThemeData theme, bool useImperialUnits,) {
+    BuildContext context,
+    ThemeData theme,
+    bool useImperialUnits,
+  ) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -512,9 +517,8 @@ class _SetRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final oneRM = set.calculated1RM;
-    final weight = useImperialUnits
-        ? UnitConversion.kgToLbs(set.weightKg)
-        : set.weightKg;
+    final weight =
+        useImperialUnits ? UnitConversion.kgToLbs(set.weightKg) : set.weightKg;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

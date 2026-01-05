@@ -41,18 +41,12 @@ class PersonalRecordsPage extends ConsumerWidget {
                   const SizedBox(height: 16),
                   const Text(
                     'No Personal Records Yet',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Complete workouts to track your PRs',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                 ],
               ),
@@ -84,7 +78,7 @@ class PersonalRecordsPage extends ConsumerWidget {
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, __) {
+            error: (_, _) {
               // Default to imperial if profile load fails
               return RefreshIndicator(
                 onRefresh: () async {
@@ -113,11 +107,7 @@ class PersonalRecordsPage extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.error_outline,
-                size: 60,
-                color: Colors.red,
-              ),
+              const Icon(Icons.error_outline, size: 60, color: Colors.red),
               const SizedBox(height: 16),
               Text('Error: $error'),
               const SizedBox(height: 16),
@@ -186,11 +176,7 @@ class _PersonalRecordCard extends StatelessWidget {
                 color: _getRankColor(),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                _getRankIcon(),
-                color: Colors.white,
-                size: 24,
-              ),
+              child: Icon(_getRankIcon(), color: Colors.white, size: 24),
             ),
             const SizedBox(width: 16),
 
@@ -209,18 +195,12 @@ class _PersonalRecordCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     '${record.reps} reps @ ${UnitConversion.formatWeight(record.weight, useImperial)}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[700],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     dateFormat.format(record.achievedAt),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -228,10 +208,7 @@ class _PersonalRecordCard extends StatelessWidget {
 
             // 1RM display
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(8),

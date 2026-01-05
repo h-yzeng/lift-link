@@ -47,26 +47,25 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
     // Start new timer (300ms debounce)
     _debounce = Timer(const Duration(milliseconds: 300), () {
       ref
-          .read(exerciseListFilterNotifierProvider.notifier)
+          .read(exerciseListFilterProvider.notifier)
           .setSearchQuery(_searchController.text);
     });
   }
 
   void _clearFilters() {
     _searchController.clear();
-    ref.read(exerciseListFilterNotifierProvider.notifier).clearAll();
+    ref.read(exerciseListFilterProvider.notifier).clearAll();
   }
 
   void _clearSearch() {
     _searchController.clear();
-    ref.read(exerciseListFilterNotifierProvider.notifier).clearSearch();
+    ref.read(exerciseListFilterProvider.notifier).clearSearch();
   }
 
   @override
   Widget build(BuildContext context) {
-    final filterState = ref.watch(exerciseListFilterNotifierProvider);
-    final filterNotifier =
-        ref.read(exerciseListFilterNotifierProvider.notifier);
+    final filterState = ref.watch(exerciseListFilterProvider);
+    final filterNotifier = ref.read(exerciseListFilterProvider.notifier);
 
     final exercisesAsync =
         filterState.isSearching && filterState.searchQuery.isNotEmpty

@@ -34,7 +34,9 @@ class _WeightLogPageState extends ConsumerState<WeightLogPage> {
       return;
     }
 
-    await ref.read(weightLogNotifierProvider.notifier).logWeight(
+    await ref
+        .read(weightLogProvider.notifier)
+        .logWeight(
           weight: weight,
           unit: _selectedUnit,
           notes: _notesController.text.trim().isEmpty
@@ -58,9 +60,7 @@ class _WeightLogPageState extends ConsumerState<WeightLogPage> {
     final latestWeightAsync = ref.watch(latestWeightLogProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Body Weight'),
-      ),
+      appBar: AppBar(title: const Text('Body Weight')),
       body: Column(
         children: [
           // Latest weight display
@@ -98,7 +98,7 @@ class _WeightLogPageState extends ConsumerState<WeightLogPage> {
               );
             },
             loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
           ),
 
           // Log weight form
@@ -288,7 +288,7 @@ class _WeightLogPageState extends ConsumerState<WeightLogPage> {
     );
 
     if (confirmed == true && mounted) {
-      await ref.read(weightLogNotifierProvider.notifier).deleteWeight(id);
+      await ref.read(weightLogProvider.notifier).deleteWeight(id);
     }
   }
 }

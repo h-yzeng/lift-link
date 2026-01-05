@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'weight_log.freezed.dart';
 
 @freezed
-class WeightLog with _$WeightLog {
+abstract class WeightLog with _$WeightLog {
   const factory WeightLog({
     required String id,
     required String userId,

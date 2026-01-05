@@ -10,7 +10,7 @@ part 'workout_session.g.dart';
 /// Contains multiple [ExercisePerformance]s and provides aggregate
 /// statistics for the entire workout.
 @freezed
-class WorkoutSession with _$WorkoutSession {
+abstract class WorkoutSession with _$WorkoutSession {
   const WorkoutSession._(); // Required for custom getters
 
   const factory WorkoutSession({
@@ -63,7 +63,9 @@ class WorkoutSession with _$WorkoutSession {
   /// Total number of working sets (excluding warmups)
   int get totalWorkingSets {
     return exercises.fold(
-        0, (sum, exercise) => sum + exercise.workingSetsCount,);
+      0,
+      (sum, exercise) => sum + exercise.workingSetsCount,
+    );
   }
 
   /// Total volume across all exercises
@@ -98,8 +100,10 @@ class WorkoutSession with _$WorkoutSession {
 
   /// Get the highest 1RM across all exercises in this workout
   double? get highestOneRM {
-    final allOneRMs =
-        exercises.map((e) => e.maxOneRM).whereType<double>().toList();
+    final allOneRMs = exercises
+        .map((e) => e.maxOneRM)
+        .whereType<double>()
+        .toList();
     if (allOneRMs.isEmpty) return null;
     return allOneRMs.reduce((a, b) => a > b ? a : b);
   }

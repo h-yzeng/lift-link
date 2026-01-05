@@ -31,9 +31,7 @@ class MuscleFrequencyPage extends ConsumerWidget {
       body: workoutsAsync.when(
         data: (workouts) {
           if (workouts.isEmpty) {
-            return const Center(
-              child: Text('No workout data available'),
-            );
+            return const Center(child: Text('No workout data available'));
           }
 
           return exercisesAsync.when(
@@ -74,8 +72,10 @@ class MuscleFrequencyPage extends ConsumerWidget {
               final sortedEntries = muscleGroupCounts.entries.toList()
                 ..sort((a, b) => b.value.compareTo(a.value));
 
-              final total =
-                  sortedEntries.fold<int>(0, (sum, entry) => sum + entry.value);
+              final total = sortedEntries.fold<int>(
+                0,
+                (sum, entry) => sum + entry.value,
+              );
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -89,9 +89,9 @@ class MuscleFrequencyPage extends ConsumerWidget {
                     const SizedBox(height: 8),
                     Text(
                       'Based on last ${workouts.where((w) => w.isCompleted).length} workouts',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
                     ),
                     const SizedBox(height: 32),
 
@@ -121,8 +121,8 @@ class MuscleFrequencyPage extends ConsumerWidget {
                     Card(
                       child: Column(
                         children: sortedEntries.map((entry) {
-                          final percentage =
-                              ((entry.value / total) * 100).toStringAsFixed(1);
+                          final percentage = ((entry.value / total) * 100)
+                              .toStringAsFixed(1);
                           final color = _getMuscleGroupColor(entry.key);
 
                           return ListTile(
@@ -137,8 +137,9 @@ class MuscleFrequencyPage extends ConsumerWidget {
                             title: Text(
                               entry.key[0].toUpperCase() +
                                   entry.key.substring(1),
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             trailing: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -204,21 +205,16 @@ class MuscleFrequencyPage extends ConsumerWidget {
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, __) => Center(
-              child: Text('Error loading exercises: $error'),
-            ),
+            error: (error, _) =>
+                Center(child: Text('Error loading exercises: $error')),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, __) => Center(
+        error: (error, _) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                Icons.error_outline,
-                size: 60,
-                color: Colors.red,
-              ),
+              const Icon(Icons.error_outline, size: 60, color: Colors.red),
               const SizedBox(height: 16),
               Text('Error: $error'),
               const SizedBox(height: 16),

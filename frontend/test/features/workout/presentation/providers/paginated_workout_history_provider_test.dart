@@ -2,8 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:liftlink/core/error/failures.dart';
-import 'package:liftlink/features/auth/domain/entities/user.dart';
-import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
 import 'package:liftlink/features/workout/domain/usecases/get_workout_history.dart';
 import 'package:liftlink/features/workout/presentation/providers/paginated_workout_history_provider.dart';
@@ -23,14 +21,8 @@ void main() {
 
     container = ProviderContainer(
       overrides: [
-        getWorkoutHistoryUseCaseProvider
-            .overrideWithValue(mockGetWorkoutHistory),
-        currentUserProvider.overrideWith(
-          (ref) async => User(
-            id: 'test-user-id',
-            email: 'test@example.com',
-            createdAt: DateTime(2025, 1, 1),
-          ),
+        getWorkoutHistoryUseCaseProvider.overrideWithValue(
+          mockGetWorkoutHistory,
         ),
       ],
     );
@@ -74,13 +66,15 @@ void main() {
 
     test('should load first page successfully', () async {
       // Arrange
-      when(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => Right(testWorkouts));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer((_) async => Right(testWorkouts));
 
       final notifier = container.read(paginatedWorkoutHistoryProvider.notifier);
 
@@ -95,13 +89,15 @@ void main() {
       expect(state.error, isNull);
       expect(state.currentPage, 0);
 
-      verify(() => mockGetWorkoutHistory(
-            userId: 'test-user-id',
-            limit: 20,
-            offset: 0,
-            startDate: null,
-            endDate: null,
-          ),).called(1);
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: 'test-user-id',
+          limit: 20,
+          offset: 0,
+          startDate: null,
+          endDate: null,
+        ),
+      ).called(1);
     });
 
     test('should load first page with date filters', () async {
@@ -109,34 +105,35 @@ void main() {
       final startDate = DateTime(2025, 1, 1);
       final endDate = DateTime(2025, 1, 31);
 
-      when(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => Right(testWorkouts.take(10).toList()));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer((_) async => Right(testWorkouts.take(10).toList()));
 
       final notifier = container.read(paginatedWorkoutHistoryProvider.notifier);
 
       // Act
-      await notifier.loadFirstPage(
-        startDate: startDate,
-        endDate: endDate,
-      );
+      await notifier.loadFirstPage(startDate: startDate, endDate: endDate);
 
       // Assert
       final state = container.read(paginatedWorkoutHistoryProvider);
       expect(state.workouts.length, 10);
       expect(state.hasMore, false); // Less than 20 items
 
-      verify(() => mockGetWorkoutHistory(
-            userId: 'test-user-id',
-            limit: 20,
-            offset: 0,
-            startDate: startDate,
-            endDate: endDate,
-          ),).called(1);
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: 'test-user-id',
+          limit: 20,
+          offset: 0,
+          startDate: startDate,
+          endDate: endDate,
+        ),
+      ).called(1);
     });
 
     test('should load next page successfully', () async {
@@ -158,21 +155,25 @@ void main() {
         ),
       );
 
-      when(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: 0,
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => Right(firstPageWorkouts));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: 0,
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer((_) async => Right(firstPageWorkouts));
 
-      when(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: 20,
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => Right(secondPageWorkouts));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: 20,
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer((_) async => Right(secondPageWorkouts));
 
       final notifier = container.read(paginatedWorkoutHistoryProvider.notifier);
 
@@ -190,53 +191,61 @@ void main() {
       expect(state.isLoading, false);
       expect(state.error, isNull);
 
-      verify(() => mockGetWorkoutHistory(
-            userId: 'test-user-id',
-            limit: 20,
-            offset: 20,
-            startDate: null,
-            endDate: null,
-          ),).called(1);
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: 'test-user-id',
+          limit: 20,
+          offset: 20,
+          startDate: null,
+          endDate: null,
+        ),
+      ).called(1);
     });
 
-    test('should set hasMore to false when receiving less than page size',
-        () async {
-      // Arrange
-      final partialPage = testWorkouts.take(10).toList();
-      when(() => mockGetWorkoutHistory(
+    test(
+      'should set hasMore to false when receiving less than page size',
+      () async {
+        // Arrange
+        final partialPage = testWorkouts.take(10).toList();
+        when(
+          () => mockGetWorkoutHistory(
             userId: any(named: 'userId'),
             limit: any(named: 'limit'),
             offset: any(named: 'offset'),
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => Right(partialPage));
+          ),
+        ).thenAnswer((_) async => Right(partialPage));
 
-      final notifier = container.read(paginatedWorkoutHistoryProvider.notifier);
+        final notifier = container.read(
+          paginatedWorkoutHistoryProvider.notifier,
+        );
 
-      // Act
-      await notifier.loadFirstPage();
+        // Act
+        await notifier.loadFirstPage();
 
-      // Assert
-      final state = container.read(paginatedWorkoutHistoryProvider);
-      expect(state.workouts.length, 10);
-      expect(state.hasMore, false); // Less than 20 items
-      expect(state.isLoading, false);
-    });
+        // Assert
+        final state = container.read(paginatedWorkoutHistoryProvider);
+        expect(state.workouts.length, 10);
+        expect(state.hasMore, false); // Less than 20 items
+        expect(state.isLoading, false);
+      },
+    );
 
     test('should not load next page when already loading', () async {
       // Arrange
-      when(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer(
-        (_) async {
-          await Future.delayed(const Duration(milliseconds: 100));
-          return Right(testWorkouts);
-        },
-      );
+      when(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer((_) async {
+        await Future.delayed(const Duration(milliseconds: 100));
+        return Right(testWorkouts);
+      });
 
       final notifier = container.read(paginatedWorkoutHistoryProvider.notifier);
       await notifier.loadFirstPage();
@@ -248,25 +257,29 @@ void main() {
       await Future.wait([future1, future2]);
 
       // Assert - Should only call once for the next page (plus once for first page)
-      verify(() => mockGetWorkoutHistory(
-            userId: 'test-user-id',
-            limit: 20,
-            offset: any(named: 'offset'),
-            startDate: null,
-            endDate: null,
-          ),).called(2); // Once for first page, once for next page
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: 'test-user-id',
+          limit: 20,
+          offset: any(named: 'offset'),
+          startDate: null,
+          endDate: null,
+        ),
+      ).called(2); // Once for first page, once for next page
     });
 
     test('should not load next page when hasMore is false', () async {
       // Arrange
       final partialPage = testWorkouts.take(10).toList();
-      when(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => Right(partialPage));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer((_) async => Right(partialPage));
 
       final notifier = container.read(paginatedWorkoutHistoryProvider.notifier);
       await notifier.loadFirstPage();
@@ -275,24 +288,28 @@ void main() {
       await notifier.loadNextPage();
 
       // Assert - Should only call once for the first page
-      verify(() => mockGetWorkoutHistory(
-            userId: 'test-user-id',
-            limit: 20,
-            offset: any(named: 'offset'),
-            startDate: null,
-            endDate: null,
-          ),).called(1);
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: 'test-user-id',
+          limit: 20,
+          offset: any(named: 'offset'),
+          startDate: null,
+          endDate: null,
+        ),
+      ).called(1);
     });
 
     test('should handle error when loading first page', () async {
       // Arrange
-      when(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer(
+      when(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer(
         (_) async => const Left(CacheFailure(message: 'Database error')),
       );
 
@@ -310,21 +327,25 @@ void main() {
 
     test('should handle error when loading next page', () async {
       // Arrange
-      when(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: 0,
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => Right(testWorkouts));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: 0,
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer((_) async => Right(testWorkouts));
 
-      when(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: 20,
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer(
+      when(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: 20,
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer(
         (_) async => const Left(CacheFailure(message: 'Load more failed')),
       );
 
@@ -346,84 +367,96 @@ void main() {
       final startDate = DateTime(2025, 1, 1);
       final endDate = DateTime(2025, 1, 31);
 
-      when(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => Right(testWorkouts));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer((_) async => Right(testWorkouts));
 
       final notifier = container.read(paginatedWorkoutHistoryProvider.notifier);
 
       // Load first page with filters
-      await notifier.loadFirstPage(
-        startDate: startDate,
-        endDate: endDate,
-      );
+      await notifier.loadFirstPage(startDate: startDate, endDate: endDate);
 
       // Act - Refresh
       await notifier.refresh();
 
       // Assert - Should call with same date filters
-      verify(() => mockGetWorkoutHistory(
-            userId: 'test-user-id',
-            limit: 20,
-            offset: 0,
-            startDate: startDate,
-            endDate: endDate,
-          ),).called(2); // Once for initial load, once for refresh
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: 'test-user-id',
+          limit: 20,
+          offset: 0,
+          startDate: startDate,
+          endDate: endDate,
+        ),
+      ).called(2); // Once for initial load, once for refresh
     });
 
-    test('should clear workouts when loading first page after previous data',
-        () async {
-      // Arrange
-      when(() => mockGetWorkoutHistory(
+    test(
+      'should clear workouts when loading first page after previous data',
+      () async {
+        // Arrange
+        when(
+          () => mockGetWorkoutHistory(
             userId: any(named: 'userId'),
             limit: any(named: 'limit'),
             offset: any(named: 'offset'),
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => Right(testWorkouts));
+          ),
+        ).thenAnswer((_) async => Right(testWorkouts));
 
-      final notifier = container.read(paginatedWorkoutHistoryProvider.notifier);
+        final notifier = container.read(
+          paginatedWorkoutHistoryProvider.notifier,
+        );
 
-      // Load first page
-      await notifier.loadFirstPage();
-      expect(container.read(paginatedWorkoutHistoryProvider).workouts.length,
-          20,);
+        // Load first page
+        await notifier.loadFirstPage();
+        expect(
+          container.read(paginatedWorkoutHistoryProvider).workouts.length,
+          20,
+        );
 
-      // Act - Load first page again (simulating a filter change)
-      final newWorkouts = [testWorkouts.first];
-      when(() => mockGetWorkoutHistory(
+        // Act - Load first page again (simulating a filter change)
+        final newWorkouts = [testWorkouts.first];
+        when(
+          () => mockGetWorkoutHistory(
             userId: any(named: 'userId'),
             limit: any(named: 'limit'),
             offset: any(named: 'offset'),
             startDate: any(named: 'startDate'),
             endDate: any(named: 'endDate'),
-          ),).thenAnswer((_) async => Right(newWorkouts));
+          ),
+        ).thenAnswer((_) async => Right(newWorkouts));
 
-      await notifier.loadFirstPage();
+        await notifier.loadFirstPage();
 
-      // Assert - Should replace old data, not append
-      final state = container.read(paginatedWorkoutHistoryProvider);
-      expect(state.workouts.length, 1);
-      expect(state.currentPage, 0);
-      expect(state.hasMore, false);
-    });
+        // Assert - Should replace old data, not append
+        final state = container.read(paginatedWorkoutHistoryProvider);
+        expect(state.workouts.length, 1);
+        expect(state.currentPage, 0);
+        expect(state.hasMore, false);
+      },
+    );
 
     test('should handle user not authenticated error', () async {
       // Arrange
       final unauthContainer = ProviderContainer(
         overrides: [
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
-          currentUserProvider.overrideWith((ref) async => null),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
         ],
       );
 
-      final notifier =
-          unauthContainer.read(paginatedWorkoutHistoryProvider.notifier);
+      final notifier = unauthContainer.read(
+        paginatedWorkoutHistoryProvider.notifier,
+      );
 
       // Act
       await notifier.loadFirstPage();
@@ -440,13 +473,15 @@ void main() {
 
     test('should handle unexpected exceptions', () async {
       // Arrange
-      when(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenThrow(Exception('Unexpected error'));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenThrow(Exception('Unexpected error'));
 
       final notifier = container.read(paginatedWorkoutHistoryProvider.notifier);
 

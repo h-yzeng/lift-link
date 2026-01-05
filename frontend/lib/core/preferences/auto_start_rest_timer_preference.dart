@@ -1,19 +1,18 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+part 'auto_start_rest_timer_preference.g.dart';
 
 const _autoStartRestTimerKey = 'auto_start_rest_timer';
 const _defaultAutoStart = false;
 
 /// Provider for auto-start rest timer setting.
-final autoStartRestTimerProvider =
-    StateNotifierProvider<AutoStartRestTimerNotifier, bool>((ref) {
-  return AutoStartRestTimerNotifier();
-});
-
-/// Notifier for managing auto-start rest timer preference.
-class AutoStartRestTimerNotifier extends StateNotifier<bool> {
-  AutoStartRestTimerNotifier() : super(_defaultAutoStart) {
+@Riverpod(keepAlive: true)
+class AutoStartRestTimerNotifier extends _$AutoStartRestTimerNotifier {
+  @override
+  bool build() {
     _loadValue();
+    return _defaultAutoStart;
   }
 
   Future<void> _loadValue() async {

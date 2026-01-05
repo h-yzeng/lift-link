@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -74,9 +76,9 @@ class _ExportDataPageState extends ConsumerState<ExportDataPage> {
 
     await Clipboard.setData(ClipboardData(text: data));
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Copied to clipboard!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Copied to clipboard!')));
     }
   }
 
@@ -87,18 +89,18 @@ class _ExportDataPageState extends ConsumerState<ExportDataPage> {
     try {
       // Save to temporary file
       final tempDir = await getTemporaryDirectory();
-      final extension =
-          _selectedFormatNotifier.value == ExportFormat.json ? 'json' : 'csv';
+      final extension = _selectedFormatNotifier.value == ExportFormat.json
+          ? 'json'
+          : 'csv';
       final fileName =
           'liftlink_export_${DateTime.now().millisecondsSinceEpoch}.$extension';
       final file = File('${tempDir.path}/$fileName');
       await file.writeAsString(data);
 
       // Share the file
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        subject: 'LiftLink Workout Export',
-      );
+      await Share.shareXFiles([
+        XFile(file.path),
+      ], subject: 'LiftLink Workout Export');
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -114,8 +116,9 @@ class _ExportDataPageState extends ConsumerState<ExportDataPage> {
 
     try {
       final documentsDir = await getApplicationDocumentsDirectory();
-      final extension =
-          _selectedFormatNotifier.value == ExportFormat.json ? 'json' : 'csv';
+      final extension = _selectedFormatNotifier.value == ExportFormat.json
+          ? 'json'
+          : 'csv';
       final fileName =
           'liftlink_export_${DateTime.now().millisecondsSinceEpoch}.$extension';
       final file = File('${documentsDir.path}/$fileName');
@@ -141,9 +144,7 @@ class _ExportDataPageState extends ConsumerState<ExportDataPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Export Data'),
-      ),
+      appBar: AppBar(title: const Text('Export Data')),
       body: ValueListenableBuilder<ExportFormat>(
         valueListenable: _selectedFormatNotifier,
         builder: (context, selectedFormat, _) {
@@ -164,12 +165,8 @@ class _ExportDataPageState extends ConsumerState<ExportDataPage> {
                             // Format selection
                             Text(
                               'Export Format',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 8),
                             Row(
@@ -227,26 +224,27 @@ class _ExportDataPageState extends ConsumerState<ExportDataPage> {
                             if (error != null) ...[
                               const SizedBox(height: 16),
                               Card(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .errorContainer,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.errorContainer,
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
                                   child: Row(
                                     children: [
                                       Icon(
                                         Icons.error_outline,
-                                        color:
-                                            Theme.of(context).colorScheme.error,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.error,
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: Text(
                                           error,
                                           style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onErrorContainer,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onErrorContainer,
                                           ),
                                         ),
                                       ),
@@ -292,26 +290,20 @@ class _ExportDataPageState extends ConsumerState<ExportDataPage> {
                               // Preview
                               Text(
                                 'Preview',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
                               Container(
                                 width: double.infinity,
                                 height: 300,
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceContainerHighest,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .outline
+                                    color: Theme.of(context).colorScheme.outline
                                         .withValues(alpha: 0.3),
                                   ),
                                 ),
@@ -335,12 +327,11 @@ class _ExportDataPageState extends ConsumerState<ExportDataPage> {
                               const SizedBox(height: 12),
                               Text(
                                 'Size: ${(exportedData.length / 1024).toStringAsFixed(1)} KB',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
+                                style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
-                                      color:
-                                          Theme.of(context).colorScheme.outline,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.outline,
                                     ),
                               ),
                             ],

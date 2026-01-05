@@ -5,7 +5,6 @@ import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/core/providers/core_providers.dart';
 import 'package:liftlink/core/services/streak_service.dart';
 import 'package:liftlink/features/auth/domain/entities/user.dart';
-import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_history.dart';
 import 'package:liftlink/features/workout/domain/entities/personal_record.dart';
 import 'package:liftlink/features/workout/domain/entities/workout_session.dart';
@@ -84,13 +83,15 @@ void main() {
   group('activeWorkout provider', () {
     test('should return active workout when user is authenticated', () async {
       // Arrange
-      when(() => mockGetActiveWorkout(userId: testUser.id))
-          .thenAnswer((_) async => Right(testWorkout));
+      when(
+        () => mockGetActiveWorkout(userId: testUser.id),
+      ).thenAnswer((_) async => Right(testWorkout));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getActiveWorkoutUseCaseProvider.overrideWithValue(mockGetActiveWorkout),
+          getActiveWorkoutUseCaseProvider.overrideWithValue(
+            mockGetActiveWorkout,
+          ),
         ],
       );
 
@@ -108,8 +109,9 @@ void main() {
       // Arrange
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(null)),
-          getActiveWorkoutUseCaseProvider.overrideWithValue(mockGetActiveWorkout),
+          getActiveWorkoutUseCaseProvider.overrideWithValue(
+            mockGetActiveWorkout,
+          ),
         ],
       );
 
@@ -125,13 +127,15 @@ void main() {
 
     test('should return null when no active workout exists', () async {
       // Arrange
-      when(() => mockGetActiveWorkout(userId: testUser.id))
-          .thenAnswer((_) async => const Right(null));
+      when(
+        () => mockGetActiveWorkout(userId: testUser.id),
+      ).thenAnswer((_) async => const Right(null));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getActiveWorkoutUseCaseProvider.overrideWithValue(mockGetActiveWorkout),
+          getActiveWorkoutUseCaseProvider.overrideWithValue(
+            mockGetActiveWorkout,
+          ),
         ],
       );
 
@@ -152,8 +156,9 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getActiveWorkoutUseCaseProvider.overrideWithValue(mockGetActiveWorkout),
+          getActiveWorkoutUseCaseProvider.overrideWithValue(
+            mockGetActiveWorkout,
+          ),
         ],
       );
 
@@ -170,19 +175,21 @@ void main() {
   group('workoutHistory provider', () {
     test('should return workout history for authenticated user', () async {
       // Arrange
-      when(() => mockGetWorkoutHistory(
-            userId: testUser.id,
-            limit: null,
-            offset: null,
-            startDate: null,
-            endDate: null,
-          ),).thenAnswer((_) async => Right(completedWorkouts));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: testUser.id,
+          limit: null,
+          offset: null,
+          startDate: null,
+          endDate: null,
+        ),
+      ).thenAnswer((_) async => Right(completedWorkouts));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
         ],
       );
 
@@ -191,13 +198,15 @@ void main() {
 
       // Assert
       expect(result, completedWorkouts);
-      verify(() => mockGetWorkoutHistory(
-            userId: testUser.id,
-            limit: null,
-            offset: null,
-            startDate: null,
-            endDate: null,
-          ),).called(1);
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: testUser.id,
+          limit: null,
+          offset: null,
+          startDate: null,
+          endDate: null,
+        ),
+      ).called(1);
 
       container.dispose();
     });
@@ -206,9 +215,9 @@ void main() {
       // Arrange
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(null)),
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
         ],
       );
 
@@ -217,13 +226,15 @@ void main() {
 
       // Assert
       expect(result, isEmpty);
-      verifyNever(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),);
+      verifyNever(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      );
 
       container.dispose();
     });
@@ -231,19 +242,21 @@ void main() {
     test('should support pagination with limit and offset', () async {
       // Arrange
       final paginatedWorkouts = completedWorkouts.take(5).toList();
-      when(() => mockGetWorkoutHistory(
-            userId: testUser.id,
-            limit: 5,
-            offset: 10,
-            startDate: null,
-            endDate: null,
-          ),).thenAnswer((_) async => Right(paginatedWorkouts));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: testUser.id,
+          limit: 5,
+          offset: 10,
+          startDate: null,
+          endDate: null,
+        ),
+      ).thenAnswer((_) async => Right(paginatedWorkouts));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
         ],
       );
 
@@ -254,13 +267,15 @@ void main() {
 
       // Assert
       expect(result.length, 5);
-      verify(() => mockGetWorkoutHistory(
-            userId: testUser.id,
-            limit: 5,
-            offset: 10,
-            startDate: null,
-            endDate: null,
-          ),).called(1);
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: testUser.id,
+          limit: 5,
+          offset: 10,
+          startDate: null,
+          endDate: null,
+        ),
+      ).called(1);
 
       container.dispose();
     });
@@ -271,19 +286,21 @@ void main() {
       final endDate = DateTime(2025, 1, 31);
       final filteredWorkouts = completedWorkouts.take(3).toList();
 
-      when(() => mockGetWorkoutHistory(
-            userId: testUser.id,
-            limit: null,
-            offset: null,
-            startDate: startDate,
-            endDate: endDate,
-          ),).thenAnswer((_) async => Right(filteredWorkouts));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: testUser.id,
+          limit: null,
+          offset: null,
+          startDate: startDate,
+          endDate: endDate,
+        ),
+      ).thenAnswer((_) async => Right(filteredWorkouts));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
         ],
       );
 
@@ -294,34 +311,38 @@ void main() {
 
       // Assert
       expect(result.length, 3);
-      verify(() => mockGetWorkoutHistory(
-            userId: testUser.id,
-            limit: null,
-            offset: null,
-            startDate: startDate,
-            endDate: endDate,
-          ),).called(1);
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: testUser.id,
+          limit: null,
+          offset: null,
+          startDate: startDate,
+          endDate: endDate,
+        ),
+      ).called(1);
 
       container.dispose();
     });
 
     test('should throw exception when use case fails', () async {
       // Arrange
-      when(() => mockGetWorkoutHistory(
-            userId: testUser.id,
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer(
+      when(
+        () => mockGetWorkoutHistory(
+          userId: testUser.id,
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer(
         (_) async => const Left(CacheFailure(message: 'Query failed')),
       );
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
         ],
       );
 
@@ -339,18 +360,21 @@ void main() {
     test('should return workout history for specified user', () async {
       // Arrange
       const otherUserId = 'other-user-id';
-      when(() => mockGetWorkoutHistory(
-            userId: otherUserId,
-            limit: null,
-            offset: null,
-            startDate: null,
-            endDate: null,
-          ),).thenAnswer((_) async => Right(completedWorkouts));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: otherUserId,
+          limit: null,
+          offset: null,
+          startDate: null,
+          endDate: null,
+        ),
+      ).thenAnswer((_) async => Right(completedWorkouts));
 
       final container = ProviderContainer(
         overrides: [
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
         ],
       );
 
@@ -361,13 +385,15 @@ void main() {
 
       // Assert
       expect(result, completedWorkouts);
-      verify(() => mockGetWorkoutHistory(
-            userId: otherUserId,
-            limit: null,
-            offset: null,
-            startDate: null,
-            endDate: null,
-          ),).called(1);
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: otherUserId,
+          limit: null,
+          offset: null,
+          startDate: null,
+          endDate: null,
+        ),
+      ).called(1);
 
       container.dispose();
     });
@@ -378,18 +404,21 @@ void main() {
       final startDate = DateTime(2025, 1, 1);
       final endDate = DateTime(2025, 1, 31);
 
-      when(() => mockGetWorkoutHistory(
-            userId: otherUserId,
-            limit: 10,
-            offset: null,
-            startDate: startDate,
-            endDate: endDate,
-          ),).thenAnswer((_) async => Right(completedWorkouts));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: otherUserId,
+          limit: 10,
+          offset: null,
+          startDate: startDate,
+          endDate: endDate,
+        ),
+      ).thenAnswer((_) async => Right(completedWorkouts));
 
       final container = ProviderContainer(
         overrides: [
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
         ],
       );
 
@@ -405,13 +434,15 @@ void main() {
 
       // Assert
       expect(result, completedWorkouts);
-      verify(() => mockGetWorkoutHistory(
-            userId: otherUserId,
-            limit: 10,
-            offset: null,
-            startDate: startDate,
-            endDate: endDate,
-          ),).called(1);
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: otherUserId,
+          limit: 10,
+          offset: null,
+          startDate: startDate,
+          endDate: endDate,
+        ),
+      ).called(1);
 
       container.dispose();
     });
@@ -419,20 +450,23 @@ void main() {
     test('should throw exception when use case fails', () async {
       // Arrange
       const otherUserId = 'other-user-id';
-      when(() => mockGetWorkoutHistory(
-            userId: otherUserId,
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),).thenAnswer(
+      when(
+        () => mockGetWorkoutHistory(
+          userId: otherUserId,
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      ).thenAnswer(
         (_) async => const Left(CacheFailure(message: 'Query failed')),
       );
 
       final container = ProviderContainer(
         overrides: [
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
         ],
       );
 
@@ -475,17 +509,19 @@ void main() {
 
     test('should return exercise history for authenticated user', () async {
       // Arrange
-      when(() => mockGetExerciseHistory(
-            userId: testUser.id,
-            exerciseId: 'exercise-1',
-            limit: 3,
-          ),).thenAnswer((_) async => Right(testExerciseHistory));
+      when(
+        () => mockGetExerciseHistory(
+          userId: testUser.id,
+          exerciseId: 'exercise-1',
+          limit: 3,
+        ),
+      ).thenAnswer((_) async => Right(testExerciseHistory));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getExerciseHistoryUseCaseProvider
-              .overrideWithValue(mockGetExerciseHistory),
+          getExerciseHistoryUseCaseProvider.overrideWithValue(
+            mockGetExerciseHistory,
+          ),
         ],
       );
 
@@ -496,57 +532,65 @@ void main() {
 
       // Assert
       expect(result, testExerciseHistory);
-      verify(() => mockGetExerciseHistory(
-            userId: testUser.id,
-            exerciseId: 'exercise-1',
-            limit: 3,
-          ),).called(1);
+      verify(
+        () => mockGetExerciseHistory(
+          userId: testUser.id,
+          exerciseId: 'exercise-1',
+          limit: 3,
+        ),
+      ).called(1);
 
       container.dispose();
     });
 
-    test('should return empty history when user is not authenticated',
-        () async {
-      // Arrange
-      final container = ProviderContainer(
-        overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(null)),
-          getExerciseHistoryUseCaseProvider
-              .overrideWithValue(mockGetExerciseHistory),
-        ],
-      );
+    test(
+      'should return empty history when user is not authenticated',
+      () async {
+        // Arrange
+        final container = ProviderContainer(
+          overrides: [
+            getExerciseHistoryUseCaseProvider.overrideWithValue(
+              mockGetExerciseHistory,
+            ),
+          ],
+        );
 
-      // Act
-      final result = await container.read(
-        exerciseHistoryProvider(exerciseId: 'exercise-1').future,
-      );
+        // Act
+        final result = await container.read(
+          exerciseHistoryProvider(exerciseId: 'exercise-1').future,
+        );
 
-      // Assert
-      expect(result.exerciseId, 'exercise-1');
-      expect(result.userId, '');
-      expect(result.sessions, isEmpty);
-      verifyNever(() => mockGetExerciseHistory(
+        // Assert
+        expect(result.exerciseId, 'exercise-1');
+        expect(result.userId, '');
+        expect(result.sessions, isEmpty);
+        verifyNever(
+          () => mockGetExerciseHistory(
             userId: any(named: 'userId'),
             exerciseId: any(named: 'exerciseId'),
             limit: any(named: 'limit'),
-          ),);
+          ),
+        );
 
-      container.dispose();
-    });
+        container.dispose();
+      },
+    );
 
     test('should support custom limit parameter', () async {
       // Arrange
-      when(() => mockGetExerciseHistory(
-            userId: testUser.id,
-            exerciseId: 'exercise-1',
-            limit: 5,
-          ),).thenAnswer((_) async => Right(testExerciseHistory));
+      when(
+        () => mockGetExerciseHistory(
+          userId: testUser.id,
+          exerciseId: 'exercise-1',
+          limit: 5,
+        ),
+      ).thenAnswer((_) async => Right(testExerciseHistory));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getExerciseHistoryUseCaseProvider
-              .overrideWithValue(mockGetExerciseHistory),
+          getExerciseHistoryUseCaseProvider.overrideWithValue(
+            mockGetExerciseHistory,
+          ),
         ],
       );
 
@@ -557,30 +601,34 @@ void main() {
 
       // Assert
       expect(result, testExerciseHistory);
-      verify(() => mockGetExerciseHistory(
-            userId: testUser.id,
-            exerciseId: 'exercise-1',
-            limit: 5,
-          ),).called(1);
+      verify(
+        () => mockGetExerciseHistory(
+          userId: testUser.id,
+          exerciseId: 'exercise-1',
+          limit: 5,
+        ),
+      ).called(1);
 
       container.dispose();
     });
 
     test('should throw exception when use case fails', () async {
       // Arrange
-      when(() => mockGetExerciseHistory(
-            userId: testUser.id,
-            exerciseId: 'exercise-1',
-            limit: any(named: 'limit'),
-          ),).thenAnswer(
+      when(
+        () => mockGetExerciseHistory(
+          userId: testUser.id,
+          exerciseId: 'exercise-1',
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
         (_) async => const Left(CacheFailure(message: 'Query failed')),
       );
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getExerciseHistoryUseCaseProvider
-              .overrideWithValue(mockGetExerciseHistory),
+          getExerciseHistoryUseCaseProvider.overrideWithValue(
+            mockGetExerciseHistory,
+          ),
         ],
       );
 
@@ -622,14 +670,15 @@ void main() {
 
     test('should return personal records for authenticated user', () async {
       // Arrange
-      when(() => mockGetPersonalRecords(userId: testUser.id))
-          .thenAnswer((_) async => Right(testRecords));
+      when(
+        () => mockGetPersonalRecords(userId: testUser.id),
+      ).thenAnswer((_) async => Right(testRecords));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getPersonalRecordsUseCaseProvider
-              .overrideWithValue(mockGetPersonalRecords),
+          getPersonalRecordsUseCaseProvider.overrideWithValue(
+            mockGetPersonalRecords,
+          ),
         ],
       );
 
@@ -647,9 +696,9 @@ void main() {
       // Arrange
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(null)),
-          getPersonalRecordsUseCaseProvider
-              .overrideWithValue(mockGetPersonalRecords),
+          getPersonalRecordsUseCaseProvider.overrideWithValue(
+            mockGetPersonalRecords,
+          ),
         ],
       );
 
@@ -658,8 +707,7 @@ void main() {
 
       // Assert
       expect(result, isEmpty);
-      verifyNever(
-          () => mockGetPersonalRecords(userId: any(named: 'userId')),);
+      verifyNever(() => mockGetPersonalRecords(userId: any(named: 'userId')));
 
       container.dispose();
     });
@@ -672,9 +720,9 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getPersonalRecordsUseCaseProvider
-              .overrideWithValue(mockGetPersonalRecords),
+          getPersonalRecordsUseCaseProvider.overrideWithValue(
+            mockGetPersonalRecords,
+          ),
         ],
       );
 
@@ -702,28 +750,26 @@ void main() {
 
     test('should return PR for specific exercise', () async {
       // Arrange
-      when(() => mockGetExercisePR(
-            userId: testUser.id,
-            exerciseId: 'exercise-1',
-          ),).thenAnswer((_) async => Right(testRecord));
+      when(
+        () => mockGetExercisePR(userId: testUser.id, exerciseId: 'exercise-1'),
+      ).thenAnswer((_) async => Right(testRecord));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           getExercisePRUseCaseProvider.overrideWithValue(mockGetExercisePR),
         ],
       );
 
       // Act
-      final result =
-          await container.read(exercisePRProvider('exercise-1').future);
+      final result = await container.read(
+        exercisePRProvider('exercise-1').future,
+      );
 
       // Assert
       expect(result, testRecord);
-      verify(() => mockGetExercisePR(
-            userId: testUser.id,
-            exerciseId: 'exercise-1',
-          ),).called(1);
+      verify(
+        () => mockGetExercisePR(userId: testUser.id, exerciseId: 'exercise-1'),
+      ).called(1);
 
       container.dispose();
     });
@@ -732,42 +778,43 @@ void main() {
       // Arrange
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(null)),
           getExercisePRUseCaseProvider.overrideWithValue(mockGetExercisePR),
         ],
       );
 
       // Act
-      final result =
-          await container.read(exercisePRProvider('exercise-1').future);
+      final result = await container.read(
+        exercisePRProvider('exercise-1').future,
+      );
 
       // Assert
       expect(result, isNull);
-      verifyNever(() => mockGetExercisePR(
-            userId: any(named: 'userId'),
-            exerciseId: any(named: 'exerciseId'),
-          ),);
+      verifyNever(
+        () => mockGetExercisePR(
+          userId: any(named: 'userId'),
+          exerciseId: any(named: 'exerciseId'),
+        ),
+      );
 
       container.dispose();
     });
 
     test('should return null when no PR exists for exercise', () async {
       // Arrange
-      when(() => mockGetExercisePR(
-            userId: testUser.id,
-            exerciseId: 'exercise-1',
-          ),).thenAnswer((_) async => const Right(null));
+      when(
+        () => mockGetExercisePR(userId: testUser.id, exerciseId: 'exercise-1'),
+      ).thenAnswer((_) async => const Right(null));
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           getExercisePRUseCaseProvider.overrideWithValue(mockGetExercisePR),
         ],
       );
 
       // Act
-      final result =
-          await container.read(exercisePRProvider('exercise-1').future);
+      final result = await container.read(
+        exercisePRProvider('exercise-1').future,
+      );
 
       // Assert
       expect(result, isNull);
@@ -777,16 +824,14 @@ void main() {
 
     test('should throw exception when use case fails', () async {
       // Arrange
-      when(() => mockGetExercisePR(
-            userId: testUser.id,
-            exerciseId: 'exercise-1',
-          ),).thenAnswer(
+      when(
+        () => mockGetExercisePR(userId: testUser.id, exerciseId: 'exercise-1'),
+      ).thenAnswer(
         (_) async => const Left(CacheFailure(message: 'Query failed')),
       );
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
           getExercisePRUseCaseProvider.overrideWithValue(mockGetExercisePR),
         ],
       );
@@ -810,22 +855,25 @@ void main() {
 
     test('should calculate streak for authenticated user', () async {
       // Arrange
-      when(() => mockGetWorkoutHistory(
-            userId: testUser.id,
-            limit: 365,
-            offset: null,
-            startDate: null,
-            endDate: null,
-          ),).thenAnswer((_) async => Right(completedWorkouts));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: testUser.id,
+          limit: 365,
+          offset: null,
+          startDate: null,
+          endDate: null,
+        ),
+      ).thenAnswer((_) async => Right(completedWorkouts));
 
-      when(() => mockStreakService.calculateStreak(completedWorkouts))
-          .thenReturn(testStreakData);
+      when(
+        () => mockStreakService.calculateStreak(completedWorkouts),
+      ).thenReturn(testStreakData);
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
           streakServiceProvider.overrideWithValue(mockStreakService),
         ],
       );
@@ -835,15 +883,18 @@ void main() {
 
       // Assert
       expect(result, testStreakData);
-      verify(() => mockGetWorkoutHistory(
-            userId: testUser.id,
-            limit: 365,
-            offset: null,
-            startDate: null,
-            endDate: null,
-          ),).called(1);
-      verify(() => mockStreakService.calculateStreak(completedWorkouts))
-          .called(1);
+      verify(
+        () => mockGetWorkoutHistory(
+          userId: testUser.id,
+          limit: 365,
+          offset: null,
+          startDate: null,
+          endDate: null,
+        ),
+      ).called(1);
+      verify(
+        () => mockStreakService.calculateStreak(completedWorkouts),
+      ).called(1);
 
       container.dispose();
     });
@@ -852,9 +903,9 @@ void main() {
       // Arrange
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(null)),
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
           streakServiceProvider.overrideWithValue(mockStreakService),
         ],
       );
@@ -866,13 +917,15 @@ void main() {
       expect(result.currentStreak, 0);
       expect(result.longestStreak, 0);
       expect(result.lastWorkoutDate, isNull);
-      verifyNever(() => mockGetWorkoutHistory(
-            userId: any(named: 'userId'),
-            limit: any(named: 'limit'),
-            offset: any(named: 'offset'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-          ),);
+      verifyNever(
+        () => mockGetWorkoutHistory(
+          userId: any(named: 'userId'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+        ),
+      );
       verifyNever(() => mockStreakService.calculateStreak(any()));
 
       container.dispose();
@@ -880,26 +933,29 @@ void main() {
 
     test('should handle empty workout history', () async {
       // Arrange
-      when(() => mockGetWorkoutHistory(
-            userId: testUser.id,
-            limit: 365,
-            offset: null,
-            startDate: null,
-            endDate: null,
-          ),).thenAnswer((_) async => const Right([]));
+      when(
+        () => mockGetWorkoutHistory(
+          userId: testUser.id,
+          limit: 365,
+          offset: null,
+          startDate: null,
+          endDate: null,
+        ),
+      ).thenAnswer((_) async => const Right([]));
 
-      when(() => mockStreakService.calculateStreak([]))
-          .thenReturn(const StreakData(
-        currentStreak: 0,
-        longestStreak: 0,
-        lastWorkoutDate: null,
-      ),);
+      when(() => mockStreakService.calculateStreak([])).thenReturn(
+        const StreakData(
+          currentStreak: 0,
+          longestStreak: 0,
+          lastWorkoutDate: null,
+        ),
+      );
 
       final container = ProviderContainer(
         overrides: [
-          currentUserProvider.overrideWith((ref) => Future.value(testUser)),
-          getWorkoutHistoryUseCaseProvider
-              .overrideWithValue(mockGetWorkoutHistory),
+          getWorkoutHistoryUseCaseProvider.overrideWithValue(
+            mockGetWorkoutHistory,
+          ),
           streakServiceProvider.overrideWithValue(mockStreakService),
         ],
       );

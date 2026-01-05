@@ -7,7 +7,7 @@ part 'personal_record.g.dart';
 ///
 /// Tracks the best performance (highest 1RM) for a specific exercise.
 @freezed
-class PersonalRecord with _$PersonalRecord {
+abstract class PersonalRecord with _$PersonalRecord {
   const PersonalRecord._();
 
   const factory PersonalRecord({

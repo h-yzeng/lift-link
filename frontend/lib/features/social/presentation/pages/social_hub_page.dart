@@ -18,12 +18,12 @@ class SocialHubPage extends ConsumerWidget {
     return currentUserAsync.when(
       data: (user) {
         if (user == null) {
-          return const Scaffold(
-            body: Center(child: Text('Please log in')),
-          );
+          return const Scaffold(body: Center(child: Text('Please log in')));
         }
 
-        final pendingRequestsAsync = ref.watch(pendingRequestsListProvider(user.id));
+        final pendingRequestsAsync = ref.watch(
+          pendingRequestsListProvider(user.id),
+        );
 
         return Scaffold(
           appBar: AppBar(
@@ -97,7 +97,7 @@ class SocialHubPage extends ConsumerWidget {
                       );
                     },
                     loading: () => const SizedBox.shrink(),
-                    error: (_, __) => const SizedBox.shrink(),
+                    error: (_, _) => const SizedBox.shrink(),
                   ),
                 ],
               ),
@@ -134,7 +134,9 @@ class SocialHubPage extends ConsumerWidget {
                     margin: const EdgeInsets.all(16),
                     child: ListTile(
                       leading: const Icon(Icons.person_add, color: Colors.blue),
-                      title: Text('$receivedCount new friend ${receivedCount == 1 ? 'request' : 'requests'}'),
+                      title: Text(
+                        '$receivedCount new friend ${receivedCount == 1 ? 'request' : 'requests'}',
+                      ),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
                         Navigator.of(context).push(
@@ -147,21 +149,17 @@ class SocialHubPage extends ConsumerWidget {
                   );
                 },
                 loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
-              const Expanded(
-                child: FriendsListContent(),
-              ),
+              const Expanded(child: FriendsListContent()),
             ],
           ),
         );
       },
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, stack) => Scaffold(
-        body: Center(child: Text('Error: $error')),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, stack) =>
+          Scaffold(body: Center(child: Text('Error: $error'))),
     );
   }
 }

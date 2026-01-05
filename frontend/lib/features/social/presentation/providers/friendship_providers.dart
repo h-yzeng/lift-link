@@ -26,7 +26,7 @@ part 'friendship_providers.g.dart';
 
 @riverpod
 FriendshipLocalDataSource friendshipLocalDataSource(
-  FriendshipLocalDataSourceRef ref,
+  Ref ref,
 ) {
   final database = ref.watch(databaseProvider);
   return FriendshipLocalDataSource(database);
@@ -34,7 +34,7 @@ FriendshipLocalDataSource friendshipLocalDataSource(
 
 @riverpod
 FriendshipRemoteDataSource friendshipRemoteDataSource(
-  FriendshipRemoteDataSourceRef ref,
+  Ref ref,
 ) {
   final client = ref.watch(supabaseClientProvider);
   return FriendshipRemoteDataSource(client);
@@ -45,7 +45,7 @@ FriendshipRemoteDataSource friendshipRemoteDataSource(
 // ============================================================================
 
 @riverpod
-FriendshipRepository friendshipRepository(FriendshipRepositoryRef ref) {
+FriendshipRepository friendshipRepository(Ref ref) {
   return FriendshipRepositoryImpl(
     localDataSource: ref.watch(friendshipLocalDataSourceProvider),
     remoteDataSource: ref.watch(friendshipRemoteDataSourceProvider),
@@ -58,37 +58,37 @@ FriendshipRepository friendshipRepository(FriendshipRepositoryRef ref) {
 // ============================================================================
 
 @riverpod
-SendFriendRequest sendFriendRequest(SendFriendRequestRef ref) {
+SendFriendRequest sendFriendRequest(Ref ref) {
   return SendFriendRequest(ref.watch(friendshipRepositoryProvider));
 }
 
 @riverpod
-AcceptFriendRequest acceptFriendRequest(AcceptFriendRequestRef ref) {
+AcceptFriendRequest acceptFriendRequest(Ref ref) {
   return AcceptFriendRequest(ref.watch(friendshipRepositoryProvider));
 }
 
 @riverpod
-RejectFriendRequest rejectFriendRequest(RejectFriendRequestRef ref) {
+RejectFriendRequest rejectFriendRequest(Ref ref) {
   return RejectFriendRequest(ref.watch(friendshipRepositoryProvider));
 }
 
 @riverpod
-RemoveFriendship removeFriendship(RemoveFriendshipRef ref) {
+RemoveFriendship removeFriendship(Ref ref) {
   return RemoveFriendship(ref.watch(friendshipRepositoryProvider));
 }
 
 @riverpod
-GetFriends getFriends(GetFriendsRef ref) {
+GetFriends getFriends(Ref ref) {
   return GetFriends(ref.watch(friendshipRepositoryProvider));
 }
 
 @riverpod
-GetPendingRequests getPendingRequests(GetPendingRequestsRef ref) {
+GetPendingRequests getPendingRequests(Ref ref) {
   return GetPendingRequests(ref.watch(friendshipRepositoryProvider));
 }
 
 @riverpod
-GetFriendsWorkouts getFriendsWorkouts(GetFriendsWorkoutsRef ref) {
+GetFriendsWorkouts getFriendsWorkouts(Ref ref) {
   return GetFriendsWorkouts(
     friendshipRepository: ref.watch(friendshipRepositoryProvider),
     workoutRepository: ref.watch(workoutRepositoryProvider),
@@ -96,7 +96,7 @@ GetFriendsWorkouts getFriendsWorkouts(GetFriendsWorkoutsRef ref) {
 }
 
 @riverpod
-UpdateFriendNickname updateFriendNickname(UpdateFriendNicknameRef ref) {
+UpdateFriendNickname updateFriendNickname(Ref ref) {
   return UpdateFriendNickname(ref.watch(friendshipRepositoryProvider));
 }
 
@@ -107,7 +107,7 @@ UpdateFriendNickname updateFriendNickname(UpdateFriendNicknameRef ref) {
 /// Watch all friendships for the current user
 @riverpod
 Stream<List<Friendship>> watchFriendships(
-  WatchFriendshipsRef ref,
+  Ref ref,
   String userId,
 ) {
   final repository = ref.watch(friendshipRepositoryProvider);
@@ -116,7 +116,7 @@ Stream<List<Friendship>> watchFriendships(
 
 /// Fetch friends list for the current user
 @riverpod
-Future<List<Friendship>> friendsList(FriendsListRef ref, String userId) async {
+Future<List<Friendship>> friendsList(Ref ref, String userId) async {
   final useCase = ref.watch(getFriendsProvider);
   final result = await useCase(userId);
 
@@ -129,7 +129,7 @@ Future<List<Friendship>> friendsList(FriendsListRef ref, String userId) async {
 /// Fetch pending requests for the current user
 @riverpod
 Future<List<Friendship>> pendingRequestsList(
-  PendingRequestsListRef ref,
+  Ref ref,
   String userId,
 ) async {
   final useCase = ref.watch(getPendingRequestsProvider);
@@ -144,7 +144,7 @@ Future<List<Friendship>> pendingRequestsList(
 /// Fetch recent workouts from friends
 @riverpod
 Future<List<WorkoutSession>> friendsWorkoutsFeed(
-  FriendsWorkoutsFeedRef ref,
+  Ref ref,
   String userId,
 ) async {
   final useCase = ref.watch(getFriendsWorkoutsProvider);

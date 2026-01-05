@@ -1,5 +1,4 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:liftlink/core/network/network_info.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
@@ -25,9 +24,7 @@ NetworkInfo profileNetworkInfo(Ref ref) {
 // Data source providers
 @riverpod
 ProfileLocalDataSource profileLocalDataSource(Ref ref) {
-  return ProfileLocalDataSourceImpl(
-    database: ref.watch(databaseProvider),
-  );
+  return ProfileLocalDataSourceImpl(database: ref.watch(databaseProvider));
 }
 
 @riverpod

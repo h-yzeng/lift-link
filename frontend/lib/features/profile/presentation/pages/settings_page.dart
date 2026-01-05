@@ -26,17 +26,22 @@ class SettingsPage extends ConsumerWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
-            ...ThemeMode.values.map((mode) => ListTile(
-                  leading: Icon(mode.icon),
-                  title: Text(mode.displayName),
-                  trailing: ref.watch(themeModeProvider) == mode
-                      ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
-                      : null,
-                  onTap: () {
-                    ref.read(themeModeProvider.notifier).setThemeMode(mode);
-                    Navigator.pop(context);
-                  },
-                ),),
+            ...ThemeMode.values.map(
+              (mode) => ListTile(
+                leading: Icon(mode.icon),
+                title: Text(mode.displayName),
+                trailing: ref.watch(themeModeProvider) == mode
+                    ? Icon(
+                        Icons.check,
+                        color: Theme.of(context).colorScheme.primary,
+                      )
+                    : null,
+                onTap: () {
+                  ref.read(themeModeProvider.notifier).setThemeMode(mode);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
             const SizedBox(height: 16),
           ],
         ),
@@ -60,17 +65,24 @@ class SettingsPage extends ConsumerWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
-            ...RestTimerPresets.values.map((seconds) => ListTile(
-                  leading: const Icon(Icons.timer),
-                  title: Text(RestTimerPresets.formatDuration(seconds)),
-                  trailing: currentValue == seconds
-                      ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
-                      : null,
-                  onTap: () {
-                    ref.read(defaultRestTimerSecondsProvider.notifier).setDuration(seconds);
-                    Navigator.pop(context);
-                  },
-                ),),
+            ...RestTimerPresets.values.map(
+              (seconds) => ListTile(
+                leading: const Icon(Icons.timer),
+                title: Text(RestTimerPresets.formatDuration(seconds)),
+                trailing: currentValue == seconds
+                    ? Icon(
+                        Icons.check,
+                        color: Theme.of(context).colorScheme.primary,
+                      )
+                    : null,
+                onTap: () {
+                  ref
+                      .read(defaultRestTimerSecondsProvider.notifier)
+                      .setDuration(seconds);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
             const SizedBox(height: 16),
           ],
         ),
@@ -78,7 +90,12 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 
-  Future<void> _editUsername(BuildContext context, WidgetRef ref, String? currentUsername, String userId) async {
+  Future<void> _editUsername(
+    BuildContext context,
+    WidgetRef ref,
+    String? currentUsername,
+    String userId,
+  ) async {
     final controller = TextEditingController(text: currentUsername);
 
     final username = await showDialog<String>(
@@ -130,17 +147,20 @@ class SettingsPage extends ConsumerWidget {
         );
       },
       (_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Username updated'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Username updated')));
         ref.invalidate(currentProfileProvider);
       },
     );
   }
 
-  Future<void> _editDisplayName(BuildContext context, WidgetRef ref, String? currentDisplayName, String userId) async {
+  Future<void> _editDisplayName(
+    BuildContext context,
+    WidgetRef ref,
+    String? currentDisplayName,
+    String userId,
+  ) async {
     final controller = TextEditingController(text: currentDisplayName);
 
     final displayName = await showDialog<String>(
@@ -191,11 +211,9 @@ class SettingsPage extends ConsumerWidget {
         );
       },
       (_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Display name updated'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Display name updated')));
         ref.invalidate(currentProfileProvider);
       },
     );
@@ -239,7 +257,8 @@ class SettingsPage extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () {
-              if (newPasswordController.text != confirmPasswordController.text) {
+              if (newPasswordController.text !=
+                  confirmPasswordController.text) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Passwords do not match'),
@@ -258,8 +277,12 @@ class SettingsPage extends ConsumerWidget {
 
     if (result != true || !context.mounted) return;
 
-    final updatePasswordUseCase = await ref.read(updatePasswordUseCaseProvider.future);
-    final updateResult = await updatePasswordUseCase(newPasswordController.text);
+    final updatePasswordUseCase = await ref.read(
+      updatePasswordUseCaseProvider.future,
+    );
+    final updateResult = await updatePasswordUseCase(
+      newPasswordController.text,
+    );
 
     if (!context.mounted) return;
 
@@ -274,15 +297,18 @@ class SettingsPage extends ConsumerWidget {
       },
       (_) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password changed successfully'),
-          ),
+          const SnackBar(content: Text('Password changed successfully')),
         );
       },
     );
   }
 
-  Future<void> _editBio(BuildContext context, WidgetRef ref, String? currentBio, String userId) async {
+  Future<void> _editBio(
+    BuildContext context,
+    WidgetRef ref,
+    String? currentBio,
+    String userId,
+  ) async {
     final controller = TextEditingController(text: currentBio);
 
     final bio = await showDialog<String>(
@@ -318,10 +344,7 @@ class SettingsPage extends ConsumerWidget {
 
     final updateUseCase = ref.read(updateProfileProvider);
     final result = await updateUseCase(
-      UpdateProfileParams(
-        userId: userId,
-        bio: bio.isEmpty ? null : bio,
-      ),
+      UpdateProfileParams(userId: userId, bio: bio.isEmpty ? null : bio),
     );
 
     if (!context.mounted) return;
@@ -336,11 +359,9 @@ class SettingsPage extends ConsumerWidget {
         );
       },
       (_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Bio updated'),
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Bio updated')));
         ref.invalidate(currentProfileProvider);
       },
     );
@@ -352,15 +373,11 @@ class SettingsPage extends ConsumerWidget {
     final userAsync = ref.watch(currentUserProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
+      appBar: AppBar(title: const Text('Settings')),
       body: profileAsync.when(
         data: (profile) {
           if (profile == null) {
-            return const Center(
-              child: Text('Profile not found'),
-            );
+            return const Center(child: Text('Profile not found'));
           }
 
           return ListView(
@@ -404,7 +421,7 @@ class SettingsPage extends ConsumerWidget {
                       }
                     },
                     loading: () {},
-                    error: (_, __) {},
+                    error: (_, _) {},
                   );
                 },
               ),
@@ -444,7 +461,12 @@ class SettingsPage extends ConsumerWidget {
                 onTap: () {
                   userAsync.whenData((user) {
                     if (user != null) {
-                      _editDisplayName(context, ref, profile.displayName, user.id);
+                      _editDisplayName(
+                        context,
+                        ref,
+                        profile.displayName,
+                        user.id,
+                      );
                     }
                   });
                 },
@@ -560,8 +582,9 @@ class SettingsPage extends ConsumerWidget {
                         ),
                         TextButton(
                           onPressed: () async {
-                            final logoutUseCase =
-                                await ref.read(logoutUseCaseProvider.future);
+                            final logoutUseCase = await ref.read(
+                              logoutUseCaseProvider.future,
+                            );
                             await logoutUseCase();
                             if (context.mounted) {
                               Navigator.pop(context);
@@ -578,9 +601,7 @@ class SettingsPage extends ConsumerWidget {
             ],
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -4,7 +4,7 @@ part 'rest_timer_state.freezed.dart';
 
 /// Immutable state for the rest timer widget.
 @freezed
-class RestTimerState with _$RestTimerState {
+abstract class RestTimerState with _$RestTimerState {
   const factory RestTimerState({
     required int initialSeconds,
     required int remainingSeconds,

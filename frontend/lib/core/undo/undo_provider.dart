@@ -5,7 +5,7 @@ import 'package:liftlink/features/auth/presentation/providers/auth_providers.dar
 part 'undo_provider.g.dart';
 
 @riverpod
-Future<UndoService> undoService(UndoServiceRef ref) async {
+Future<UndoService> undoService(Ref ref) async {
   final prefs = await ref.watch(sharedPreferencesProvider.future);
   return UndoService(prefs);
 }

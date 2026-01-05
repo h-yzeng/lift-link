@@ -30,7 +30,7 @@ class _WorkoutHistoryPageState extends ConsumerState<WorkoutHistoryPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final profileAsync = ref.watch(currentProfileProvider);
-    final useImperialUnits = profileAsync.valueOrNull?.usesImperialUnits ?? true;
+    final useImperialUnits = profileAsync.value?.usesImperialUnits ?? true;
 
     final paginatedState = ref.watch(paginatedWorkoutHistoryProvider);
 
@@ -132,7 +132,10 @@ class _WorkoutHistoryPageState extends ConsumerState<WorkoutHistoryPage> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withValues(alpha: 0.3),
                 shape: BoxShape.circle,
               ),
               child: Icon(

@@ -1,17 +1,17 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+part 'onboarding_preference.g.dart';
 
 const _onboardingCompletedKey = 'onboarding_completed';
 
 /// Provider for checking if onboarding has been completed.
-final onboardingCompletedProvider =
-    StateNotifierProvider<OnboardingNotifier, AsyncValue<bool>>((ref) {
-  return OnboardingNotifier();
-});
-
-class OnboardingNotifier extends StateNotifier<AsyncValue<bool>> {
-  OnboardingNotifier() : super(const AsyncValue.loading()) {
+@Riverpod(keepAlive: true)
+class OnboardingNotifier extends _$OnboardingNotifier {
+  @override
+  AsyncValue<bool> build() {
     _loadPreference();
+    return const AsyncValue.loading();
   }
 
   Future<void> _loadPreference() async {
@@ -36,3 +36,6 @@ class OnboardingNotifier extends StateNotifier<AsyncValue<bool>> {
     state = const AsyncValue.data(false);
   }
 }
+
+/// Legacy provider for backward compatibility
+final onboardingCompletedProvider = onboardingProvider;

@@ -5,7 +5,7 @@ part 'user_search_state.freezed.dart';
 
 /// State for user search functionality
 @freezed
-class UserSearchState with _$UserSearchState {
+abstract class UserSearchState with _$UserSearchState {
   const factory UserSearchState({
     @Default([]) List<Profile> searchResults,
     @Default(false) bool isSearching,

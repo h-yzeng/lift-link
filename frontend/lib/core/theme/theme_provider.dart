@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+part 'theme_provider.g.dart';
 
 const _themeModeKey = 'theme_mode';
 
 /// Provider for SharedPreferences.
-final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
+@Riverpod(keepAlive: true)
+Future<SharedPreferences> sharedPreferences(Ref ref) async {
   return SharedPreferences.getInstance();
-});
+}
 
 /// Provider for the current theme mode.
-final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) {
-  return ThemeModeNotifier(ref);
-});
-
-/// Notifier for managing theme mode state.
-class ThemeModeNotifier extends StateNotifier<ThemeMode> {
-  final Ref _ref;
+@Riverpod(keepAlive: true)
+class ThemeModeNotifier extends _$ThemeModeNotifier {
   bool _isInitialized = false;
 
-  ThemeModeNotifier(this._ref) : super(ThemeMode.system) {
+  @override
+  ThemeMode build() {
     _loadThemeMode();
+    return ThemeMode.system;
   }
 
   Future<void> _loadThemeMode() async {
     if (_isInitialized) return;
 
     try {
-      final prefs = await _ref.read(sharedPreferencesProvider.future);
+      final prefs = await ref.read(sharedPreferencesProvider.future);
       final themeModeString = prefs.getString(_themeModeKey);
 
       if (themeModeString != null) {
@@ -44,7 +44,7 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
     state = mode;
 
     try {
-      final prefs = await _ref.read(sharedPreferencesProvider.future);
+      final prefs = await ref.read(sharedPreferencesProvider.future);
       await prefs.setString(_themeModeKey, _themeModeToString(mode));
     } catch (e) {
       // Ignore save errors

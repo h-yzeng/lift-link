@@ -8,7 +8,7 @@ part 'exercise.g.dart';
 /// Can be either a system exercise (available to all users)
 /// or a custom exercise created by a specific user.
 @freezed
-class Exercise with _$Exercise {
+abstract class Exercise with _$Exercise {
   const Exercise._(); // Required for custom getters
 
   const factory Exercise({
@@ -56,14 +56,7 @@ abstract class MuscleGroups {
   static const String arms = 'arms';
   static const String core = 'core';
 
-  static const List<String> all = [
-    chest,
-    back,
-    legs,
-    shoulders,
-    arms,
-    core,
-  ];
+  static const List<String> all = [chest, back, legs, shoulders, arms, core];
 }
 
 /// Common equipment types

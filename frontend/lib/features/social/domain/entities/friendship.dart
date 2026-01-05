@@ -15,7 +15,7 @@ enum FriendshipStatus {
 
 /// Represents a friendship relationship between two users.
 @freezed
-class Friendship with _$Friendship {
+abstract class Friendship with _$Friendship {
   const Friendship._(); // Required for custom getters
 
   const factory Friendship({
@@ -54,8 +54,7 @@ class Friendship with _$Friendship {
   bool isAddressee(String userId) => addresseeId == userId;
 
   /// Whether the given user can accept/reject this friendship
-  bool canRespond(String userId) =>
-      isPending && isAddressee(userId);
+  bool canRespond(String userId) => isPending && isAddressee(userId);
 
   /// Get the nickname that the current user has given to the other user
   String? getNicknameForOther(String currentUserId) {

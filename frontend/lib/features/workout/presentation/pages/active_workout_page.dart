@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:liftlink/core/error/failures.dart';
 import 'package:liftlink/core/preferences/rest_timer_preference.dart';
 import 'package:liftlink/core/utils/unit_conversion.dart';
@@ -14,24 +15,28 @@ import 'package:liftlink/features/workout/presentation/widgets/rest_timer.dart';
 import 'package:liftlink/shared/utils/haptic_service.dart';
 import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 
+part 'active_workout_page.g.dart';
+
 /// Provider for active workout page loading state
-final activeWorkoutLoadingProvider = StateProvider.autoDispose<bool>((ref) => false);
+@riverpod
+class ActiveWorkoutLoading extends _$ActiveWorkoutLoading {
+  @override
+  bool build() => false;
+
+  void setLoading(bool value) => state = value;
+}
 
 /// Page for active workout tracking
 class ActiveWorkoutPage extends ConsumerStatefulWidget {
   final WorkoutSession workout;
 
-  const ActiveWorkoutPage({
-    required this.workout,
-    super.key,
-  });
+  const ActiveWorkoutPage({required this.workout, super.key});
 
   @override
   ConsumerState<ActiveWorkoutPage> createState() => _ActiveWorkoutPageState();
 }
 
 class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
-
   Future<void> _addExercise() async {
     final exercise = await Navigator.push<Map<String, String>>(
       context,
@@ -42,7 +47,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
 
     if (exercise == null || !mounted) return;
 
-    ref.read(activeWorkoutLoadingProvider.notifier).state = true;
+    ref.read(activeWorkoutLoadingProvider.notifier).setLoading(true);
 
     try {
       final useCase = ref.read(addExerciseToWorkoutUseCaseProvider);
@@ -56,9 +61,9 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
         (failure) {
           HapticService.error();
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(failure.userMessage)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(failure.userMessage)));
           }
         },
         (_) {
@@ -69,7 +74,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       );
     } finally {
       if (mounted) {
-        ref.read(activeWorkoutLoadingProvider.notifier).state = false;
+        ref.read(activeWorkoutLoadingProvider.notifier).setLoading(false);
       }
     }
   }
@@ -97,7 +102,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
 
     if (confirmed != true || !mounted) return;
 
-    ref.read(activeWorkoutLoadingProvider.notifier).state = true;
+    ref.read(activeWorkoutLoadingProvider.notifier).setLoading(true);
 
     try {
       final useCase = ref.read(completeWorkoutUseCaseProvider);
@@ -109,7 +114,9 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Failed to complete workout: ${failure.userMessage}'),
+                content: Text(
+                  'Failed to complete workout: ${failure.userMessage}',
+                ),
                 backgroundColor: Colors.red,
               ),
             );
@@ -140,7 +147,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       }
     } finally {
       if (mounted) {
-        ref.read(activeWorkoutLoadingProvider.notifier).state = false;
+        ref.read(activeWorkoutLoadingProvider.notifier).setLoading(false);
       }
     }
   }
@@ -173,7 +180,8 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
                     initialSeconds: defaultSeconds,
                   );
                 },
-                tooltip: 'Rest Timer (${RestTimerPresets.formatDuration(defaultSeconds)})',
+                tooltip:
+                    'Rest Timer (${RestTimerPresets.formatDuration(defaultSeconds)})',
               );
             },
           ),
@@ -201,9 +209,7 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
       body: workoutAsync.when(
         data: (workout) {
           if (workout == null) {
-            return const Center(
-              child: Text('No active workout'),
-            );
+            return const Center(child: Text('No active workout'));
           }
 
           return Column(
@@ -224,9 +230,8 @@ class _ActiveWorkoutPageState extends ConsumerState<ActiveWorkoutPage> {
           );
         },
         loading: () => const WorkoutHistorySkeleton(itemCount: 2),
-        error: (error, stack) => Center(
-          child: Text('Error: ${error.toString()}'),
-        ),
+        error: (error, stack) =>
+            Center(child: Text('Error: ${error.toString()}')),
       ),
       floatingActionButton: Consumer(
         builder: (context, ref, child) {
@@ -291,17 +296,15 @@ class _ExerciseHistorySectionState
                 child: Row(
                   children: [
                     Icon(
-                      _isExpanded
-                          ? Icons.expand_less
-                          : Icons.expand_more,
+                      _isExpanded ? Icons.expand_less : Icons.expand_more,
                       size: 20,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'Previous',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Container(
@@ -316,10 +319,10 @@ class _ExerciseHistorySectionState
                       child: Text(
                         '${history.sessions.length}',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer,
-                            ),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onPrimaryContainer,
+                        ),
                       ),
                     ),
                   ],
@@ -342,7 +345,7 @@ class _ExerciseHistorySectionState
         );
       },
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 }
@@ -367,10 +370,7 @@ class _HistorySessionCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant,
-          width: 1,
-        ),
+        border: Border.all(color: theme.colorScheme.outlineVariant, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -409,14 +409,15 @@ class _HistorySessionCard extends StatelessWidget {
               );
 
               return Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: set.isWarmup
-                      ? theme.colorScheme.secondaryContainer.withValues(alpha: 0.5)
-                      : theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                      ? theme.colorScheme.secondaryContainer.withValues(
+                          alpha: 0.5,
+                        )
+                      : theme.colorScheme.primaryContainer.withValues(
+                          alpha: 0.5,
+                        ),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(

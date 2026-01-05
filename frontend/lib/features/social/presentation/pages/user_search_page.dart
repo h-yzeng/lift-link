@@ -34,7 +34,7 @@ class _UserSearchPageState extends ConsumerState<UserSearchPage> {
 
     // Start new timer (300ms debounce)
     _debounce = Timer(const Duration(milliseconds: 300), () {
-      ref.read(userSearchNotifierProvider.notifier).search(query);
+      ref.read(userSearchProvider.notifier).search(query);
     });
   }
 
@@ -62,7 +62,8 @@ class _UserSearchPageState extends ConsumerState<UserSearchPage> {
       (friendship) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Friend request sent to ${profile.displayNameOrUsername}'),
+            content:
+                Text('Friend request sent to ${profile.displayNameOrUsername}'),
             backgroundColor: Colors.green,
           ),
         );
@@ -72,7 +73,7 @@ class _UserSearchPageState extends ConsumerState<UserSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final searchState = ref.watch(userSearchNotifierProvider);
+    final searchState = ref.watch(userSearchProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -92,7 +93,7 @@ class _UserSearchPageState extends ConsumerState<UserSearchPage> {
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
-                          ref.read(userSearchNotifierProvider.notifier).clear();
+                          ref.read(userSearchProvider.notifier).clear();
                         },
                       )
                     : null,

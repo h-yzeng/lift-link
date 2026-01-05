@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise_history.dart';
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
@@ -54,15 +55,10 @@ class PaginatedExerciseHistoryState {
 /// ```
 class PaginatedExerciseHistoryNotifier
     extends StateNotifier<PaginatedExerciseHistoryState> {
-  PaginatedExerciseHistoryNotifier(
-    this.ref,
-    this.exerciseId,
-  ) : super(
-          const PaginatedExerciseHistoryState(
-            isLoading: false,
-            hasMore: true,
-          ),
-        );
+  PaginatedExerciseHistoryNotifier(this.ref, this.exerciseId)
+    : super(
+        const PaginatedExerciseHistoryState(isLoading: false, hasMore: true),
+      );
 
   final Ref ref;
   final String exerciseId;
@@ -130,10 +126,7 @@ class PaginatedExerciseHistoryNotifier
 
       result.fold(
         (failure) {
-          state = state.copyWith(
-            isLoading: false,
-            error: failure.toString(),
-          );
+          state = state.copyWith(isLoading: false, error: failure.toString());
         },
         (history) {
           // Check if we've loaded all available data
@@ -148,10 +141,7 @@ class PaginatedExerciseHistoryNotifier
         },
       );
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
 }
@@ -168,12 +158,14 @@ class PaginatedExerciseHistoryNotifier
 ///   ref.read(paginatedExerciseHistoryProvider('exercise-123').notifier).loadMore();
 /// }
 /// ```
-final paginatedExerciseHistoryProvider = StateNotifierProvider.family<
-    PaginatedExerciseHistoryNotifier,
-    PaginatedExerciseHistoryState,
-    String>((ref, exerciseId) {
-  final notifier = PaginatedExerciseHistoryNotifier(ref, exerciseId);
-  // Auto-load initial history
-  Future.microtask(() => notifier.loadInitial());
-  return notifier;
-});
+final paginatedExerciseHistoryProvider =
+    StateNotifierProvider.family<
+      PaginatedExerciseHistoryNotifier,
+      PaginatedExerciseHistoryState,
+      String
+    >((ref, exerciseId) {
+      final notifier = PaginatedExerciseHistoryNotifier(ref, exerciseId);
+      // Auto-load initial history
+      Future.microtask(() => notifier.loadInitial());
+      return notifier;
+    });

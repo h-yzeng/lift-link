@@ -7,13 +7,13 @@ import 'package:liftlink/shared/database/database_provider.dart';
 part 'sync_queue_provider.g.dart';
 
 @riverpod
-Future<String?> currentUserId(CurrentUserIdRef ref) async {
+Future<String?> currentUserId(Ref ref) async {
   final user = await ref.watch(currentUserProvider.future);
   return user?.id;
 }
 
 @riverpod
-Future<SyncQueueService> syncQueueService(SyncQueueServiceRef ref) async {
+Future<SyncQueueService> syncQueueService(Ref ref) async {
   final networkInfo = ref.watch(sync_core.networkInfoProvider);
   final database = ref.watch(databaseProvider);
   final userId = await ref.watch(currentUserIdProvider.future);
@@ -36,7 +36,7 @@ Future<SyncQueueService> syncQueueService(SyncQueueServiceRef ref) async {
 }
 
 @riverpod
-Future<int> pendingSyncCount(PendingSyncCountRef ref) async {
+Future<int> pendingSyncCount(Ref ref) async {
   final service = await ref.watch(syncQueueServiceProvider.future);
   return await service.getPendingSyncCount();
 }

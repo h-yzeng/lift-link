@@ -124,4 +124,31 @@ class NotificationService {
   Future<List<PendingNotificationRequest>> getPendingNotifications() async {
     return await _notifications.pendingNotificationRequests();
   }
+
+  /// Show rest timer completion notification
+  Future<void> showRestTimerNotification({
+    required String exerciseName,
+    required int restSeconds,
+  }) async {
+    await _notifications.show(
+      100, // Use a fixed ID for rest timer notifications
+      'Rest Complete!',
+      'Time for your next set of $exerciseName',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'rest_timer',
+          'Rest Timer',
+          channelDescription: 'Notifications for rest timer completion',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+    );
+  }
 }

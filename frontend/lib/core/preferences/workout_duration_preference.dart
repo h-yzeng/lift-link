@@ -1,19 +1,18 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+part 'workout_duration_preference.g.dart';
 
 const _targetDurationKey = 'target_workout_duration_minutes';
 const _defaultTargetMinutes = 60; // 1 hour default
 
 /// Provider for target workout duration in minutes.
-final targetWorkoutDurationProvider =
-    StateNotifierProvider<TargetWorkoutDurationNotifier, int>((ref) {
-  return TargetWorkoutDurationNotifier();
-});
-
-/// Notifier for managing target workout duration.
-class TargetWorkoutDurationNotifier extends StateNotifier<int> {
-  TargetWorkoutDurationNotifier() : super(_defaultTargetMinutes) {
+@Riverpod(keepAlive: true)
+class TargetWorkoutDurationNotifier extends _$TargetWorkoutDurationNotifier {
+  @override
+  int build() {
     _loadValue();
+    return _defaultTargetMinutes;
   }
 
   Future<void> _loadValue() async {

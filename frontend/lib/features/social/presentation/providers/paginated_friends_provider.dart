@@ -8,7 +8,7 @@ part 'paginated_friends_provider.freezed.dart';
 part 'paginated_friends_provider.g.dart';
 
 @freezed
-class PaginatedFriendsState with _$PaginatedFriendsState {
+abstract class PaginatedFriendsState with _$PaginatedFriendsState {
   const factory PaginatedFriendsState({
     @Default([]) List<Friendship> friendships,
     @Default(false) bool isLoading,
@@ -44,10 +44,7 @@ class PaginatedFriends extends _$PaginatedFriends {
     await loadFirstPage();
   }
 
-  Future<void> _loadPage({
-    required int offset,
-    bool isRefresh = false,
-  }) async {
+  Future<void> _loadPage({required int offset, bool isRefresh = false}) async {
     try {
       final repository = ref.read(friendshipRepositoryProvider);
       final result = await repository.getFriendsPaginated(
@@ -75,10 +72,7 @@ class PaginatedFriends extends _$PaginatedFriends {
         },
       );
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }
 }

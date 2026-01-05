@@ -7,7 +7,8 @@ import 'package:liftlink/core/network/network_info.dart';
 import 'package:liftlink/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:liftlink/features/auth/data/datasources/auth_remote_datasource.dart';
 import 'package:liftlink/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:liftlink/features/auth/domain/entities/user.dart';
+import 'package:liftlink/features/auth/domain/entities/user.dart'
+    as auth_entity;
 import 'package:liftlink/features/auth/domain/repositories/auth_repository.dart';
 import 'package:liftlink/features/auth/domain/usecases/get_current_user.dart';
 import 'package:liftlink/features/auth/domain/usecases/login_with_email.dart';
@@ -17,6 +18,8 @@ import 'package:liftlink/features/auth/domain/usecases/reset_password.dart';
 import 'package:liftlink/features/auth/domain/usecases/update_password.dart';
 
 part 'auth_providers.g.dart';
+
+typedef AuthUser = auth_entity.User;
 
 // Infrastructure providers
 @riverpod
@@ -96,15 +99,15 @@ Future<ResetPassword> resetPasswordUseCase(Ref ref) async {
   return ResetPassword(repository);
 }
 
-// Auth state provider - Stream of current user
+// Auth state provider - Stream of current domain user
 @riverpod
-Stream<User?> authStateChanges(Ref ref) {
+Stream<AuthUser?> authStateChanges(Ref ref) {
   return ref.watch(authRemoteDataSourceProvider).authStateChanges;
 }
 
-// Current user provider
+// Current user provider (Domain User)
 @riverpod
-Future<User?> currentUser(Ref ref) async {
+Future<AuthUser?> currentUser(Ref ref) async {
   final useCase = await ref.watch(getCurrentUserUseCaseProvider.future);
   final result = await useCase();
   return result.fold((failure) => null, (user) => user);

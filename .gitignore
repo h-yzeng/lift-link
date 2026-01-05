@@ -22,4 +22,6 @@ Thumbs.db
 
 # Flutter/Desktop build artifacts
 build/
-!frontend/build/web/.vercel/
+
+# Vercel
+.vercel

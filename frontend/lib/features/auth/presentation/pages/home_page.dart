@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:liftlink/core/services/streak_service.dart';
+import 'package:liftlink/core/theme/theme_provider.dart';
 import 'package:liftlink/features/auth/presentation/providers/auth_providers.dart';
 import 'package:liftlink/features/profile/presentation/pages/settings_page.dart';
 import 'package:liftlink/features/profile/presentation/providers/profile_providers.dart';
@@ -14,7 +16,6 @@ import 'package:liftlink/features/workout/presentation/pages/workout_history_pag
 import 'package:liftlink/features/workout/presentation/providers/workout_providers.dart';
 import 'package:liftlink/shared/widgets/shimmer_loading.dart';
 import 'package:liftlink/shared/widgets/sync_status_widget.dart';
-import 'package:liftlink/core/services/streak_service.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -84,12 +85,33 @@ class HomePage extends ConsumerWidget {
     final profileAsync = ref.watch(currentProfileProvider);
     final activeWorkoutAsync = ref.watch(activeWorkoutProvider);
     final theme = Theme.of(context);
+    final brightness = Theme.of(context).brightness;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('LiftLink'),
-        actions: const [
-          SyncStatusWidget(),
+        actions: [
+          Semantics(
+            label: 'Toggle theme',
+            button: true,
+            child: IconButton(
+              icon: Icon(
+                brightness == Brightness.dark
+                    ? Icons.light_mode
+                    : Icons.dark_mode,
+              ),
+              onPressed: () {
+                final newMode = brightness == Brightness.dark
+                    ? ThemeMode.light
+                    : ThemeMode.dark;
+                ref.read(themeModeProvider.notifier).setThemeMode(newMode);
+              },
+              tooltip: brightness == Brightness.dark
+                  ? 'Switch to light mode'
+                  : 'Switch to dark mode',
+            ),
+          ),
+          const SyncStatusWidget(),
         ],
       ),
       body: SafeArea(

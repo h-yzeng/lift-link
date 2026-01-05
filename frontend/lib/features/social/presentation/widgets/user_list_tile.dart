@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:liftlink/features/profile/domain/entities/profile.dart';
 
@@ -18,38 +19,40 @@ class UserListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        backgroundImage: profile.hasAvatar
-            ? NetworkImage(profile.avatarUrl!)
-            : null,
-        child: profile.hasAvatar
-            ? null
-            : Text(
-                profile.initials,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+    return RepaintBoundary(
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundImage: profile.hasAvatar
+              ? CachedNetworkImageProvider(profile.avatarUrl!)
+              : null,
+          child: profile.hasAvatar
+              ? null
+              : Text(
+                  profile.initials,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
+        ),
+        title: Text(
+          profile.displayNameOrUsername,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        subtitle: profile.hasUsername && profile.hasCustomDisplayName
+            ? Text('@${profile.username}')
+            : null,
+        trailing: trailing ??
+            (onAddFriend != null
+                ? IconButton(
+                    icon: const Icon(Icons.person_add),
+                    onPressed: onAddFriend,
+                    tooltip: 'Send friend request',
+                  )
+                : null),
+        onTap: onViewProfile,
       ),
-      title: Text(
-        profile.displayNameOrUsername,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
-      subtitle: profile.hasUsername && profile.hasCustomDisplayName
-          ? Text('@${profile.username}')
-          : null,
-      trailing: trailing ??
-          (onAddFriend != null
-              ? IconButton(
-                  icon: const Icon(Icons.person_add),
-                  onPressed: onAddFriend,
-                  tooltip: 'Send friend request',
-                )
-              : null),
-      onTap: onViewProfile,
     );
   }
 }

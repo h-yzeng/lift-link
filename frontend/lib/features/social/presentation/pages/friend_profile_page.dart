@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/features/profile/domain/entities/profile.dart';
@@ -46,7 +47,7 @@ class FriendProfilePage extends ConsumerWidget {
                       radius: 50,
                       backgroundColor: theme.colorScheme.primary,
                       backgroundImage: profile?.hasAvatar == true
-                          ? NetworkImage(profile!.avatarUrl!)
+                          ? CachedNetworkImageProvider(profile!.avatarUrl!)
                           : null,
                       child: profile?.hasAvatar == true
                           ? null

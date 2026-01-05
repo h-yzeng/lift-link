@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/features/profile/presentation/pages/settings_page.dart';
@@ -54,7 +55,7 @@ class ProfilePage extends ConsumerWidget {
                         radius: 50,
                         backgroundColor: theme.colorScheme.primary,
                         backgroundImage: profile.hasAvatar
-                            ? NetworkImage(profile.avatarUrl!)
+                            ? CachedNetworkImageProvider(profile.avatarUrl!)
                             : null,
                         child: profile.hasAvatar
                             ? null

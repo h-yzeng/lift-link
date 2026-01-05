@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/error/failures.dart';
@@ -17,15 +19,23 @@ class UserSearchPage extends ConsumerStatefulWidget {
 
 class _UserSearchPageState extends ConsumerState<UserSearchPage> {
   final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
 
   @override
   void dispose() {
     _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
   void _performSearch(String query) {
-    ref.read(userSearchNotifierProvider.notifier).search(query);
+    // Cancel previous timer
+    _debounce?.cancel();
+
+    // Start new timer (300ms debounce)
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      ref.read(userSearchNotifierProvider.notifier).search(query);
+    });
   }
 
   Future<void> _sendFriendRequest(Profile profile) async {

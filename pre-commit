@@ -1,0 +1,35 @@
+#!/bin/sh
+# Pre-commit hook for LiftLink Flutter project
+# This hook runs flutter format, analyze, and tests before committing
+
+echo "Running pre-commit hooks..."
+
+# Navigate to frontend directory
+cd frontend || exit 1
+
+# 1. Format code
+echo "📝 Formatting Dart code..."
+dart format . --set-exit-if-changed
+if [ $? -ne 0 ]; then
+  echo "❌ Code formatting failed. Please run 'dart format .' to fix formatting issues."
+  exit 1
+fi
+
+# 2. Analyze code
+echo "🔍 Analyzing code..."
+flutter analyze
+if [ $? -ne 0 ]; then
+  echo "❌ Code analysis found issues. Please fix them before committing."
+  exit 1
+fi
+
+# 3. Run tests (optional - commented out by default as it can be slow)
+# echo "🧪 Running tests..."
+# flutter test
+# if [ $? -ne 0 ]; then
+#   echo "❌ Tests failed. Please fix failing tests before committing."
+#   exit 1
+# fi
+
+echo "✅ All pre-commit checks passed!"
+exit 0

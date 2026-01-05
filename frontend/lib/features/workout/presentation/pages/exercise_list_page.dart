@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/features/workout/domain/entities/exercise.dart';
@@ -21,11 +23,12 @@ class ExerciseListPage extends ConsumerStatefulWidget {
 
 class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
   final _searchController = TextEditingController();
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
-    // Sync search controller with provider state
+    // Sync search controller with provider state (with debouncing)
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -33,13 +36,20 @@ class _ExerciseListPageState extends ConsumerState<ExerciseListPage> {
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
   void _onSearchChanged() {
-    ref
-        .read(exerciseListFilterNotifierProvider.notifier)
-        .setSearchQuery(_searchController.text);
+    // Cancel previous timer
+    _debounce?.cancel();
+
+    // Start new timer (300ms debounce)
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      ref
+          .read(exerciseListFilterNotifierProvider.notifier)
+          .setSearchQuery(_searchController.text);
+    });
   }
 
   void _clearFilters() {

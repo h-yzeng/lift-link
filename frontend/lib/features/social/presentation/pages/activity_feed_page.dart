@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:liftlink/core/utils/unit_conversion.dart';
@@ -190,7 +191,7 @@ class _WorkoutActivityCard extends ConsumerWidget {
                         radius: 20,
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         backgroundImage: profile?.hasAvatar == true
-                            ? NetworkImage(profile!.avatarUrl!)
+                            ? CachedNetworkImageProvider(profile!.avatarUrl!)
                             : null,
                         child: profile?.hasAvatar == true
                             ? null

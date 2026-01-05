@@ -34,12 +34,32 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
         onCreate: (Migrator m) async {
           await m.createAll();
+
+          // Create indexes for performance optimization
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_workout_sessions_user_id ON workout_sessions(user_id)',
+          );
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_workout_sessions_completed_at ON workout_sessions(completed_at)',
+          );
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_exercise_performances_workout_id ON exercise_performances(workout_session_id)',
+          );
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_sets_performance_id ON sets(exercise_performance_id)',
+          );
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)',
+          );
+          await customStatement(
+            'CREATE INDEX IF NOT EXISTS idx_sync_queue_synced ON sync_queue(is_synced)',
+          );
         },
         onUpgrade: (Migrator m, int from, int to) async {
           // Migration from v1 to v2: Add exercise_name column if it doesn't exist
@@ -140,6 +160,28 @@ class AppDatabase extends _$AppDatabase {
             );
             await customStatement(
               'ALTER TABLE exercises ADD COLUMN usage_count INTEGER NOT NULL DEFAULT 0',
+            );
+          }
+
+          // Migration from v10 to v11: Add performance indexes
+          if (from < 11) {
+            await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_workout_sessions_user_id ON workout_sessions(user_id)',
+            );
+            await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_workout_sessions_completed_at ON workout_sessions(completed_at)',
+            );
+            await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_exercise_performances_workout_id ON exercise_performances(workout_session_id)',
+            );
+            await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_sets_performance_id ON sets(exercise_performance_id)',
+            );
+            await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_friendships_status ON friendships(status)',
+            );
+            await customStatement(
+              'CREATE INDEX IF NOT EXISTS idx_sync_queue_synced ON sync_queue(is_synced)',
             );
           }
         },

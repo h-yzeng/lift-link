@@ -17,7 +17,6 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.38.5"
           channel: "stable"
 
       - name: Install dependencies
@@ -48,11 +47,6 @@ jobs:
           cd frontend/build/web
           mkdir -p .vercel
           echo '{"orgId":"${{ secrets.VERCEL_ORG_ID }}","projectId":"${{ secrets.VERCEL_PROJECT_ID }}"}' > .vercel/project.json
-
-      - name: Pull Vercel Environment Information
-        run: |
-          cd frontend/build/web
-          vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to Vercel
         env:
